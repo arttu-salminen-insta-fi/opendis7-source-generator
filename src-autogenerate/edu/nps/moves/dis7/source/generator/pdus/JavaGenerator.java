@@ -1100,6 +1100,9 @@ public class JavaGenerator extends AbstractGenerator
             parentClass = "Object";
 
         pw.print("public "+ abstractcls + "class " + aClass.getName() + " extends " + parentClass + " implements Serializable");
+        if (interfaces == null || !interfaces.contains("Marshaller")) {
+            pw.print(", Marshaller");
+        }
         if(interfaces != null)
             pw.println(","+interfaces);
         else
@@ -1427,8 +1430,8 @@ public class JavaGenerator extends AbstractGenerator
 "   * @see <a href=\"https://en.wikipedia.org/wiki/Marshalling_(computer_science)\" target=\"_blank\">https://en.wikipedia.org/wiki/Marshalling_(computer_science)</a>\n" +
 "   * @return serialized size in bytes\n" +
 "   */");
-        if (aClass.getName().endsWith("Pdu"))
-            printWriter.println("@Override");
+//        if (aClass.getName().endsWith("Pdu"))
+        printWriter.println("@Override");
         printWriter.println("public synchronized int getMarshalledSize()");
         printWriter.println("{");
         printWriter.println("   int marshalSize = 0; ");
@@ -1771,8 +1774,8 @@ public class JavaGenerator extends AbstractGenerator
         pw.println(" * @param dos the OutputStream");
         pw.println(" */");
  
-        if (aClass.getName().endsWith("Pdu"))
-            pw.println("@Override");
+//        if (aClass.getName().endsWith("Pdu"))
+        pw.println("@Override");
         pw.println("public synchronized void marshal(DataOutputStream dos) throws Exception");
         pw.println("{");
 
@@ -1911,8 +1914,8 @@ public class JavaGenerator extends AbstractGenerator
         pw.println(" * @return marshalled serialized size in bytes");
         pw.println(" */");
 
-        if (aClass.getName().endsWith("Pdu"))
-            pw.println("@Override");
+//        if (aClass.getName().endsWith("Pdu"))
+        pw.println("@Override");
         pw.println("public synchronized int unmarshal(DataInputStream dis) throws Exception");
         pw.println("{");
         pw.flush();
@@ -2059,8 +2062,8 @@ public class JavaGenerator extends AbstractGenerator
         pw.println(" * @param byteBuffer The ByteBuffer at the position to begin writing");
         pw.println(" * @throws Exception ByteBuffer-generated exception");
         pw.println(" */");
-        if (aClass.getName().endsWith("Pdu"))
-            pw.println("@Override");
+//        if (aClass.getName().endsWith("Pdu"))
+        pw.println("@Override");
         pw.println("public synchronized void marshal(java.nio.ByteBuffer byteBuffer) throws Exception");
         pw.println("{");
 
@@ -2196,8 +2199,8 @@ public class JavaGenerator extends AbstractGenerator
         pw.println(" * @throws Exception ByteBuffer-generated exception");
         pw.println(" */");
 
-        if (aClass.getName().endsWith("Pdu"))
-            pw.println("@Override");
+//        if (aClass.getName().endsWith("Pdu"))
+        pw.println("@Override");
         pw.println("public synchronized int unmarshal(java.nio.ByteBuffer byteBuffer) throws Exception"); // throws EnumNotFoundException");
         pw.println("{");
 

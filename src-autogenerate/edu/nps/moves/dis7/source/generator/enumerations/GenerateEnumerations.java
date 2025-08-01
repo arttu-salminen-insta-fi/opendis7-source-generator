@@ -432,6 +432,10 @@ public class GenerateEnumerations
       <cr value="1913" />
     </enumrow>
 */            
+                    
+            // Prevent compiled code from interpreting enum values with leading zeros as octals
+            currentEnumRow.value = currentEnumRow.value.replaceFirst("^0+(?!$)", "");
+                    
             if (currentEnumRow.value.equals("2147483648"))
             {
                 System.out.println ("*** Special case 'Rectangular Volume Record 4' value 2147483648 reset to 2147483647" +

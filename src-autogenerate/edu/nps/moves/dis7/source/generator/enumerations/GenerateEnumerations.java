@@ -605,7 +605,7 @@ public class GenerateEnumerations
             });
 
             if (!el.elems.isEmpty())
-                sb.setLength(sb.length() - 2);
+                sb.setLength(sb.length() - 3);
             sb.append(";\n");
 
             // footer section
@@ -689,7 +689,7 @@ public class GenerateEnumerations
                 }
             });
             if (!el.elems.isEmpty())
-                sb.setLength(sb.length() - 2);
+                sb.setLength(sb.length() - 3);
             sb.append(";\n");
 
             sb.append(String.format(disbitset2Template, classNameCorrected, el.size, classNameCorrected, classNameCorrected, classNameCorrected, classNameCorrected, classNameCorrected));
@@ -882,7 +882,7 @@ public class GenerateEnumerations
 //                }
                 }
                 if (!elementsInClass.isEmpty())
-                    sb.setLength(sb.length() - 2);
+                    sb.setLength(sb.length() - 3);
                 sb.append(";\n");
 
                 if (el.size == null)

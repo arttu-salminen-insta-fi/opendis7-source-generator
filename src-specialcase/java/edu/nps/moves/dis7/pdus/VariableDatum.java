@@ -309,6 +309,22 @@ public class VariableDatum extends Object implements Serializable {
         return map;
     }
 
+    /**
+     * Packs a Pdu represented in map into the ByteBuffer.
+     * @throws java.nio.BufferOverflowException if byteBuffer is too small
+     * @throws java.nio.ReadOnlyBufferException if byteBuffer is read only
+     * @see java.nio.ByteBuffer
+     * @param byteBuffer The ByteBuffer at the position to begin writing
+     * @throws Exception ByteBuffer-generated exception
+     */
+    public static void fromMapToBuffer(Map<String, Object> map, java.nio.ByteBuffer byteBuffer) throws Exception
+    {
+        ((VariableRecordType) map.get("variableDatumID")).marshal(byteBuffer);
+        byteBuffer.putInt(((int) map.get("variableDatumLength")));
+        byteBuffer.put((byte[]) map.get("variableDatumValue"));
+        byte[] padding = new byte[Align.to64bits(byteBuffer)];
+    }
+
     /*
      * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
      */

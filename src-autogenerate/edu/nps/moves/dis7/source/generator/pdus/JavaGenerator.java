@@ -2474,6 +2474,146 @@ public class JavaGenerator extends AbstractGenerator
     }
 
     private void writeFromMapToBuffer(PrintWriter pw, GeneratedClass aClass) {
+        pw.println("/**");
+        pw.println(" * Packs a Pdu represented in map into the ByteBuffer.");
+        pw.println(" * @throws java.nio.BufferOverflowException if byteBuffer is too small");
+        pw.println(" * @throws java.nio.ReadOnlyBufferException if byteBuffer is read only");
+        pw.println(" * @see java.nio.ByteBuffer");
+        pw.println(" * @param byteBuffer The ByteBuffer at the position to begin writing");
+        pw.println(" * @throws Exception ByteBuffer-generated exception");
+        pw.println(" */");
+//        if (aClass.getName().endsWith("Pdu"))
+//        pw.println("@Override");
+        pw.println("public static void fromMapToBuffer(Map<String, Object> map, java.nio.ByteBuffer byteBuffer) throws Exception");
+        pw.println("{");
+
+        // If we're a sublcass of another class, we should first call super
+        // to make sure the superclass's ivars are marshaled out.
+
+        if(!(aClass.getParentClass().equalsIgnoreCase("root")))
+            pw.println("   " + aClass.getParentClass() + ".fromMapToBuffer((Map<String, Object>) map.get(\"super\"), byteBuffer);");
+
+        //pw.println("    try \n    {");
+
+        // Loop through the class attributes, generating the output for each.
+        for (GeneratedClassAttribute anAttribute: aClass.getClassAttributes())
+        {
+            if(anAttribute.shouldSerialize == false) {
+                pw.println("    // attribute " + anAttribute.getName() + " marked as not serialized");
+                continue;
+            }
+            String marshalType;
+            String capped;
+
+            switch(anAttribute.getAttributeKind()) {
+                case PRIMITIVE:
+                    marshalType = marshalTypes.getProperty(anAttribute.getType());
+                    capped = this.initialCapital(marshalType);
+                    if( capped.equals("Byte") )
+                        capped = "";    // ByteBuffer just has put() for bytes
+
+                    // If we're a normal primitivetype, marshal out directly; otherwise, marshall out
+                    // the list length.
+                    // NOTE we use the value directly in the map
+//                    if(anAttribute.getIsDynamicListLengthField())
+//                        pw.println("   byteBuffer.put" + capped + "( (" + marshalType + ")" + anAttribute.getDynamicListClassAttribute().getName() + ".size());");
+//                    else if(anAttribute.getIsPrimitiveListLengthField())
+//                        pw.println("   byteBuffer.put" + capped + "( (" + marshalType + ")" + anAttribute.getDynamicListClassAttribute().getName() + ".length);");
+//                    else
+                    pw.println("   byteBuffer.put" + capped + "( (" + marshalType + ") map.get(\"" + anAttribute.getName() + "\"));");
+
+                    break;
+
+                case SISO_ENUM:
+                    pw.println("   ((" + anAttribute.getType() + ") map.get(\"" + anAttribute.getName() + "\")).marshal(byteBuffer);");
+                    break;
+
+                case SISO_BITFIELD:
+                case CLASSREF:
+                    if (anAttribute.getName().startsWith("iFFPduLayer")) {
+                        pw.println("   if (map.containsKey(\"" + anAttribute.getName() + "\"))");
+                        pw.println("       " + anAttribute.getType() + ".fromMapToBuffer((Map<String, Object>) map.get(\"" + anAttribute.getName() + "\"), byteBuffer);" );
+                    }
+                    else {
+                        pw.println("   " + anAttribute.getType() + ".fromMapToBuffer((Map<String, Object>) map.get(\"" + anAttribute.getName() + "\"), byteBuffer);" );
+                    }
+
+                    break;
+
+                case PRIMITIVE_LIST:
+                    pw.println();
+
+                    if (anAttribute.getCountFieldName() != null) {
+                        pw.println("    for (int idx = 0; idx < (int) map.get(\"" + anAttribute.getCountFieldName() + "\"); idx++)");
+                    }
+
+                    // FIXME there are errors un unmarshalling the same PDUs where this is set to 0.
+                    // FIXME implement some proper fix
+//                    else if (anAttribute.getListLength() > 0) {
+                    else {
+                        pw.println("    for (int idx = 0; idx < " + anAttribute.getListLength() + "; idx++)");
+                    }
+
+                    marshalType = marshalTypes.getProperty(anAttribute.getType());
+
+                    if(anAttribute.getUnderlyingTypeIsPrimitive())
+                    {
+                        capped = this.initialCapital(marshalType);
+                        if( capped.equals("Byte") )
+                            capped = "";    // ByteBuffer just has put() for bytes
+                        pw.println("       byteBuffer.put" + capped + "((" + marshalType + ") map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)));");
+                    }
+                    else
+                        pw.println("       " + anAttribute.getType() +".fromMapToBuffer(map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)), byteBuffer);" ); //"[idx].marshal(dos);" )
+
+                    pw.println();
+                    break;
+
+                case OBJECT_LIST:
+                    pw.println();
+                    if(anAttribute.getCountFieldName() != null)
+                        pw.println("    for (int idx = 0; idx < (int) map.get(\"" + anAttribute.getCountFieldName() + "\"); idx++)");
+                    else
+                        pw.println("    for (int idx = 0; idx < (int) (((List) map.get(\"" + anAttribute.getName() + "\")).size(); idx++)");
+
+                    pw.println("    {");
+
+                    marshalType = marshalTypes.getProperty(anAttribute.getType());
+
+                    if(anAttribute.getUnderlyingTypeIsPrimitive())
+                    {
+                        capped = this.initialCapital(marshalType);
+                        if( capped.equals("Byte") ){
+                            capped = "";    // ByteBuffer just uses put() for bytes
+                        }
+                        //pw.println("           dos.write" + capped + "(" + anAttribute.getName() + ");");
+                        pw.println("       byteBuffer.put" + capped + "((" + marshalType + ") map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)));");
+                    }
+                    else if(anAttribute.getUnderlyingTypeIsEnum()) {
+                        pw.println("        ((" + anAttribute.getType() + ") map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx))).marshal(byteBuffer);");
+                    }
+                    else
+                    {
+                        pw.println("        " + anAttribute.getType() + ".fromMapToBuffer((Map<String, Object>) map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)), byteBuffer);");
+                    }
+
+                    pw.println("   }");
+                    pw.println();
+                    break;
+
+                case PADTO16:
+                    pw.println("   byte[] "+anAttribute.getName()+" = new byte[Align.to16bits(byteBuffer)];");
+                    break;
+                case PADTO32:
+                    pw.println("   byte[] "+anAttribute.getName()+" = new byte[Align.to32bits(byteBuffer)];");
+                    break;
+                case PADTO64:
+                    pw.println("   byte[] "+anAttribute.getName()+" = new byte[Align.to64bits(byteBuffer)];");
+                    break;
+            }
+        } // End of loop through the ivars for a marshal method
+
+        pw.println("}");
     }
 
     /**

@@ -206,6 +206,19 @@ public class PduStatus
     return map;
   }
 
+  /**
+   * Packs a Pdu represented in map into the ByteBuffer.
+   * @throws java.nio.BufferOverflowException if byteBuffer is too small
+   * @throws java.nio.ReadOnlyBufferException if byteBuffer is read only
+   * @see java.nio.ByteBuffer
+   * @param byteBuffer The ByteBuffer at the position to begin writing
+   * @throws Exception ByteBuffer-generated exception
+   */
+  public static void fromMapToBuffer(Map<String, Object> map, java.nio.ByteBuffer byteBuffer) throws Exception
+  {
+    byteBuffer.put((byte) map.get("value"));
+  }
+
     /**
      * Object equality comparison
      * @param obj object to compare

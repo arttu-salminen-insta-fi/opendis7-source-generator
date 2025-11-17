@@ -378,6 +378,25 @@ public synchronized int unmarshal(java.nio.ByteBuffer byteBuffer) throws Excepti
         return map;
     }
 
+    /**
+     * Packs a Pdu represented in map into the ByteBuffer.
+     * @throws java.nio.BufferOverflowException if byteBuffer is too small
+     * @throws java.nio.ReadOnlyBufferException if byteBuffer is read only
+     * @see java.nio.ByteBuffer
+     * @param byteBuffer The ByteBuffer at the position to begin writing
+     * @throws Exception ByteBuffer-generated exception
+     */
+    public static void fromMapToBuffer(Map<String, Object> map, java.nio.ByteBuffer byteBuffer) throws Exception
+    {
+        ((EntityKind) map.get("entityKind")).marshal(byteBuffer);
+        ((Domain) map.get("domain")).marshal(byteBuffer);
+        ((Country) map.get("country")).marshal(byteBuffer);
+        byteBuffer.put((byte) map.get("category"));
+        byteBuffer.put((byte) map.get("subCategory"));
+        byteBuffer.put((byte) map.get("specific"));
+        byteBuffer.put((byte) map.get("extra"));
+    }
+
  /*
   * Override of default equals method.  Calls equalsImpl() for content comparison.
   */

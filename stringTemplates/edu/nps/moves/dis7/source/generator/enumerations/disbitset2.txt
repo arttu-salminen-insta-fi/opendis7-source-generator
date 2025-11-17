@@ -100,4 +100,9 @@
       return map;
   }
 
+  public static void fromMapToBuffer(Map<String, Object> map, java.nio.ByteBuffer byteBuffer) throws Exception
+    {
+        ((%s) map.get("bitset")).marshal(byteBuffer);
+    }
+
 }

@@ -15,7 +15,7 @@ import edu.nps.moves.dis7.enumerations.*;
 
 /**
  * Identifies the type of Entity
- * @see <a href="https://ieeexplore.ieee.org/document/6387564" target="_blank">IEEE Std 1278.1-2012, IEEE Standard for Distributed Interactive Simulation - Application Protocols</a> 
+ * @see <a href="https://ieeexplore.ieee.org/document/6387564" target="_blank">IEEE Std 1278.1-2012, IEEE Standard for Distributed Interactive Simulation - Application Protocols</a>
  */
 public class EntityType extends Object implements Marshaller, Serializable
 {
@@ -23,7 +23,7 @@ public class EntityType extends Object implements Marshaller, Serializable
    protected EntityKind entityKind = EntityKind.values()[0];
 
    /** Domain of entity (air, surface, subsurface, space, etc.) */
-   protected Domain  domain =  Domain.inst(PlatformDomain.OTHER); 
+   protected Domain  domain =  Domain.inst(PlatformDomain.OTHER);
 
    /** country to which the design of the entity is attributed uid 29 */
    protected Country country = Country.values()[0];
@@ -53,7 +53,7 @@ public class EntityType extends Object implements Marshaller, Serializable
    */
 public synchronized int getMarshalledSize()
 {
-   int marshalSize = 0; 
+   int marshalSize = 0;
 
    if (entityKind != null)
        marshalSize += entityKind.getMarshalledSize();
@@ -82,7 +82,7 @@ public synchronized EntityType setEntityKind(EntityKind pEntityKind)
   * @return value of interest */
 public EntityKind getEntityKind()
 {
-    return entityKind; 
+    return entityKind;
 }
 
 /** Setter for {@link EntityType#domain}
@@ -113,7 +113,7 @@ public synchronized EntityType setCountry(Country pCountry)
   * @return value of interest */
 public Country getCountry()
 {
-    return country; 
+    return country;
 }
 
 /** Setter for {@link EntityType#category}
@@ -135,7 +135,7 @@ public synchronized EntityType setCategory(int pCategory){
   * @return value of interest */
 public byte getCategory()
 {
-    return category; 
+    return category;
 }
 
 /** Setter for {@link EntityType#subCategory}
@@ -157,7 +157,7 @@ public synchronized EntityType setSubCategory(int pSubCategory){
   * @return value of interest */
 public byte getSubCategory()
 {
-    return subCategory; 
+    return subCategory;
 }
 
 /** Setter for {@link EntityType#specific}
@@ -179,7 +179,7 @@ public synchronized EntityType setSpecific(int pSpecific){
   * @return value of interest */
 public byte getSpecific()
 {
-    return specific; 
+    return specific;
 }
 
 /** Setter for {@link EntityType#extra}
@@ -201,7 +201,7 @@ public synchronized EntityType setExtra(int pExtra){
   * @return value of interest */
 public byte getExtra()
 {
-    return extra; 
+    return extra;
 }
 
 /**
@@ -212,7 +212,7 @@ public byte getExtra()
  */
 public synchronized void marshal(DataOutputStream dos) throws Exception
 {
-    try 
+    try
     {
        entityKind.marshal(dos);
        domain.marshal(dos);
@@ -239,11 +239,11 @@ public synchronized void marshal(DataOutputStream dos) throws Exception
 public synchronized int unmarshal(DataInputStream dis) throws Exception
 {
     int uPosition = 0;
-    try 
+    try
     {
         entityKind = EntityKind.unmarshalEnum(dis);
         uPosition += entityKind.getMarshalledSize();
-        
+
         // Fix to enable the use of different domain enumerations
         if (entityKind == EntityKind.MUNITION) {
             domain = Domain.inst(MunitionDomain.OTHER);
@@ -264,8 +264,8 @@ public synchronized int unmarshal(DataInputStream dis) throws Exception
         uPosition += 1;
     }
     catch(Exception e)
-    { 
-      System.err.println(e); 
+    {
+      System.err.println(e);
     }
     return getMarshalledSize();
 }
@@ -304,7 +304,7 @@ public synchronized int unmarshal(java.nio.ByteBuffer byteBuffer) throws Excepti
     {
         // attribute entityKind marked as not serialized
         entityKind = EntityKind.unmarshalEnum(byteBuffer);
-        
+
         // Fix to enable the use of different domain enumerations
         if (entityKind == EntityKind.MUNITION) {
             domain = Domain.inst(MunitionDomain.OTHER);
@@ -314,7 +314,7 @@ public synchronized int unmarshal(java.nio.ByteBuffer byteBuffer) throws Excepti
         }
         // attribute domain marked as not serialized
         domain.unmarshal(byteBuffer);
-        
+
         // attribute country marked as not serialized
         country = Country.unmarshalEnum(byteBuffer);
         // attribute category marked as not serialized
@@ -332,6 +332,51 @@ public synchronized int unmarshal(java.nio.ByteBuffer byteBuffer) throws Excepti
     }
     return getMarshalledSize();
 }
+
+    /**
+     * Unpacks a Pdu into a map from the underlying data.
+     * @throws java.nio.BufferUnderflowException if byteBuffer is too small
+     * @see java.nio.ByteBuffer
+     * @see <a href="https://en.wikipedia.org/wiki/Marshalling_(computer_science)" target="_blank">https://en.wikipedia.org/wiki/Marshalling_(computer_science)</a>
+     * @param byteBuffer The ByteBuffer at the position to begin reading
+     * @return marshalled serialized size in bytes
+     * @throws Exception ByteBuffer-generated exception
+     */
+    public static Map<String, Object> fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception {
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        try {
+            // attribute entityKind marked as not serialized
+            map.put("entityKind", EntityKind.unmarshalEnum(byteBuffer));
+
+            // Fix to enable the use of different domain enumerations
+            Domain domain = Domain.inst(PlatformDomain.OTHER);
+            if (map.get("entityKind") == EntityKind.MUNITION) {
+                domain = Domain.inst(MunitionDomain.OTHER);
+            }
+            else if(map.get("entityKind") == EntityKind.SUPPLY) {
+                domain = Domain.inst(SupplyDomain.NOT_USED);
+            }
+            domain.unmarshal(byteBuffer);
+            // attribute domain marked as not serialized
+            map.put("domain", domain);
+
+            // attribute country marked as not serialized
+            map.put("country", Country.unmarshalEnum(byteBuffer));
+            // attribute category marked as not serialized
+            map.put("category", (byte)(byteBuffer.get() & 0xFF));
+            // attribute subCategory marked as not serialized
+            map.put("subCategory", (byte)(byteBuffer.get() & 0xFF));
+            // attribute specific marked as not serialized
+            map.put("specific", (byte)(byteBuffer.get() & 0xFF));
+            // attribute extra marked as not serialized
+            map.put("extra", (byte)(byteBuffer.get() & 0xFF));
+        }
+        catch (java.nio.BufferUnderflowException bue)
+        {
+            System.err.println("*** buffer underflow error while unmarshalling EntityType data.");
+        }
+        return map;
+    }
 
  /*
   * Override of default equals method.  Calls equalsImpl() for content comparison.

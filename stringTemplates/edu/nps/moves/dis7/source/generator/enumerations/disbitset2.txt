@@ -83,4 +83,21 @@
   {
       return "%s: " + super.toString();
   }
+
+  public static Map<String, Object> fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception
+  {
+      LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+      try
+      {
+         %s bitset = new %s();
+         bitset.unmarshal(byteBuffer);
+         map.put("bitset", bitset);
+      }
+      catch (java.nio.BufferUnderflowException bue)
+      {
+          System.err.println("*** buffer underflow error while unmarshalling %s data.");
+      }
+      return map;
+  }
+
 }

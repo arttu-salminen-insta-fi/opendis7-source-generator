@@ -8,6 +8,8 @@ import edu.nps.moves.dis7.enumerations.*;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -273,6 +275,38 @@ public class VariableDatum extends Object implements Serializable {
 
     private int calculateDatumLength() {
         return variableDatumValue.length * Byte.SIZE;
+    }
+
+    /**
+     * Unpacks a Pdu into a map from the underlying data.
+     * @throws java.nio.BufferUnderflowException if byteBuffer is too small
+     * @see java.nio.ByteBuffer
+     * @see <a href="https://en.wikipedia.org/wiki/Marshalling_(computer_science)" target="_blank">https://en.wikipedia.org/wiki/Marshalling_(computer_science)</a>
+     * @param byteBuffer The ByteBuffer at the position to begin reading
+     * @return marshalled serialized size in bytes
+     * @throws Exception ByteBuffer-generated exception
+     */
+    public static Map<String, Object> fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception
+    {
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        try
+        {
+            map.put("variableDatumID", VariableRecordType.unmarshalEnum(byteBuffer));
+            int variableDatumLength = byteBuffer.getInt();
+            map.put("variableDatumLength", variableDatumLength);
+            int byteLength = (variableDatumLength + 7) / 8;
+            byte[] variableDatumValue = new byte[byteLength];
+            for (int idx = 0; idx < byteLength; idx++) {
+                variableDatumValue[idx] = byteBuffer.get();
+            }
+            map.put("variableDatumValue", variableDatumValue);
+            map.put("padding", new byte[Align.from64bits(byteBuffer)]);
+        }
+        catch (java.nio.BufferUnderflowException bue)
+        {
+            System.err.println("*** buffer underflow error while unmarshalling VariableDatum data.");
+        }
+        return map;
     }
 
     /*

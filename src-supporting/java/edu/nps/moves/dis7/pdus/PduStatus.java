@@ -8,6 +8,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * PduStatus.java, section 6.2.67
@@ -180,6 +182,29 @@ public class PduStatus
       value = byteBuffer.get();
       return 1;
     }
+
+  /**
+   * Unpacks a Pdu into a map from the underlying data.
+   * @throws java.nio.BufferUnderflowException if byteBuffer is too small
+   * @see java.nio.ByteBuffer
+   * @see <a href="https://en.wikipedia.org/wiki/Marshalling_(computer_science)" target="_blank">https://en.wikipedia.org/wiki/Marshalling_(computer_science)</a>
+   * @param byteBuffer The ByteBuffer at the position to begin reading
+   * @return marshalled serialized size in bytes
+   * @throws Exception ByteBuffer-generated exception
+   */
+  public static Map<String, Object> fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception
+  {
+    LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+    try
+    {
+      map.put("value", byteBuffer.get());
+    }
+    catch (java.nio.BufferUnderflowException bue)
+    {
+      System.err.println("*** buffer underflow error while unmarshalling PduStatus data.");
+    }
+    return map;
+  }
 
     /**
      * Object equality comparison

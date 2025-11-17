@@ -709,6 +709,11 @@ public class JavaGenerator extends AbstractGenerator
             writeUnmarshallMethodWithByteBuffer(pw, aClass);
             pw.flush();
 
+            writeFromBufferToMap(pw, aClass);
+            pw.flush();
+            writeFromMapToBuffer(pw, aClass);
+            pw.flush();
+
             if (aClass.getName().equals("Pdu")) {
                 writeMarshalMethodToByteArray(pw, aClass);
             }
@@ -732,6 +737,7 @@ public class JavaGenerator extends AbstractGenerator
                 pw.flush();
                 writeCheckWhichLayersNeedsUnmarshalingMethod(pw);
                 pw.flush();
+                writeInitLayerKeys(pw);
             }
 
             pw.println("} // end of " + aClass.getName());
@@ -2322,6 +2328,154 @@ public class JavaGenerator extends AbstractGenerator
         pw.println("}\n");
     }
 
+    private void writeFromBufferToMap(PrintWriter pw, GeneratedClass aClass) {
+        pw.println();
+        pw.println("/**");
+        pw.println(" * Unpacks a Pdu into a map from the underlying data.");
+        pw.println(" * @throws java.nio.BufferUnderflowException if byteBuffer is too small");
+        pw.println(" * @see java.nio.ByteBuffer");
+        pw.println(" * @see <a href=\"https://en.wikipedia.org/wiki/Marshalling_(computer_science)\" target=\"_blank\">https://en.wikipedia.org/wiki/Marshalling_(computer_science)</a>");
+        pw.println(" * @param byteBuffer The ByteBuffer at the position to begin reading");
+        pw.println(" * @return marshalled serialized size in bytes");
+        pw.println(" * @throws Exception ByteBuffer-generated exception");
+        pw.println(" */");
+
+//        if (aClass.getName().endsWith("Pdu"))
+//        pw.println("@Override");
+        pw.println("public static Map<String, Object> fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception"); // throws EnumNotFoundException");
+        pw.println("{");
+
+        pw.println("    LinkedHashMap<String, Object> map = new LinkedHashMap<>();");
+
+        if(!(aClass.getParentClass().equalsIgnoreCase("root")))
+            pw.println("    map.put(\"super\", " + aClass.getParentClass() + ".fromBufferToMap(byteBuffer));\n");
+
+        pw.println("    try");
+        pw.println("    {");
+
+        // Loop through the class attributes, generating the output for each.
+        for (GeneratedClassAttribute anAttribute : aClass.getClassAttributes()) {
+            if(anAttribute.shouldSerialize == false) {
+                pw.println("        // attribute " + anAttribute.getName() + " marked as not serialized");
+                continue;
+            }
+            pw.println("        // attribute " + anAttribute.getName() + " marked as not serialized");
+            String marshalType;
+            String capped;
+            switch(anAttribute.getAttributeKind()) {
+                case PRIMITIVE:
+                    marshalType = unmarshalTypes.getProperty(anAttribute.getType());
+                    capped = this.initialCapital(marshalType);
+                    if( capped.equals("Byte") )
+                        capped = "";
+
+                    if(marshalType.equalsIgnoreCase("UnsignedByte"))
+                        pw.println("        map.put(\"" + anAttribute.getName() + "\", (byte)(byteBuffer.get() & 0xFF));");
+                    else if (marshalType.equalsIgnoreCase("UnsignedShort"))
+                        pw.println("        map.put(\"" + anAttribute.getName() + "\", (short)(byteBuffer.getShort() & 0xFFFF));");
+                    else
+                        pw.println("        map.put(\"" + anAttribute.getName() + "\", byteBuffer.get" + capped + "());");
+
+                    break;
+
+                case SISO_ENUM:
+                    pw.println("        map.put(\"" + anAttribute.getName() + "\", "+anAttribute.getType()+".unmarshalEnum(byteBuffer));");
+                    break;
+
+                case SISO_BITFIELD:
+                case CLASSREF:
+                    if (anAttribute.getName().startsWith("iFFPduLayer")) {
+                        pw.println("        if (map.containsKey(\"" + anAttribute.getName() + "\"))");
+                        pw.println("            map.put(\"" + anAttribute.getName() + "\", " + anAttribute.getType() + ".fromBufferToMap(byteBuffer));" );
+                    }
+                    else {
+                        pw.println("        map.put(\"" + anAttribute.getName() + "\", " + anAttribute.getType() + ".fromBufferToMap(byteBuffer));" );
+                    }
+                    if (aClass.getName().equals("IFFPdu") && anAttribute.getName().equals("fundamentalParameters")) {
+                        pw.println("        if (((int) ((Map) map.get(\"fundamentalParameters\")).get(\"informationLayers\")) != 0)");
+                        pw.println("            initLayerKeys(map);");
+                    }
+                    break;
+
+                case PRIMITIVE_LIST:
+                    if (anAttribute.getCountFieldName() != null) {
+                        pw.println("        for (int idx = 0; idx < (int) map.get(\"" + anAttribute.getCountFieldName() + "\"); idx++)");
+                    }
+
+                    // FIXME there are errors un unmarshalling the same PDUs where this is set to 0.
+                    // FIXME implement some proper fix
+//                    else if (anAttribute.getListLength() > 0) {
+                    else {
+                        pw.println("        for (int idx = 0; idx < " + anAttribute.getListLength() + "; idx++)");
+                    }
+//                    }
+//                    else {
+//                        throw new RuntimeException("Figure out actual list size!");
+//                    }
+
+                    marshalType = marshalTypes.getProperty(anAttribute.getType());
+
+                    if(marshalType == null) // It's a class  // should be unnecessary w/ refactor
+                        throw new RuntimeException("Primitivelist with a class type, illegal.");
+                    else { // It's a primitive
+                        capped = this.initialCapital(marshalType);
+                        if( capped.equals("Byte") )
+                            capped = "";
+                        pw.println("            map.put(\"" +  anAttribute.getName() + "\" + String.valueOf(idx), byteBuffer.get" + capped + "());");
+                    }
+                    break;
+
+                case OBJECT_LIST:
+                    if(anAttribute.getCountFieldName() != null)
+                        pw.println("        for (int idx = 0; idx < (int) map.get(\"" + anAttribute.getCountFieldName() + "\"); idx++)");
+                    else
+                        pw.println("        for (int idx = 0; idx < (int) (((List) map.get(\"" + anAttribute.getName() + "\")).size(); idx++)");
+
+                    pw.println("        {");
+
+                    if(anAttribute.getUnderlyingTypeIsEnum()) {
+                        pw.println("        " +anAttribute.getType() + " anX = "+anAttribute.getType() + ".unmarshalEnum(byteBuffer);");
+                        pw.println("        map.put(\"" + anAttribute.getName() + "\" + String.valueOf(idx), anX);");
+                    }
+                    else {
+                        marshalType = marshalTypes.getProperty(anAttribute.getType());
+
+                        if(marshalType == null) { // It's a class
+                            pw.println("        map.put(\"" + anAttribute.getName() + "\" + String.valueOf(idx), " + anAttribute.getType() + ".fromBufferToMap(byteBuffer));");
+                        }
+                        else { // It's a primitive  // should be unnecessary now w/ refactor
+                            throw new RuntimeException("Objectlist with a primitive type, illegal.");
+                        }
+                    }
+                    pw.println("        }");
+                    pw.println();
+                    break;
+
+
+                case PADTO16:
+                    pw.println("        map.put(\"" + anAttribute.getName() + "\", new byte[Align.from16bits(byteBuffer)]);");
+                    break;
+                case PADTO32:
+                    pw.println("        map.put(\""+anAttribute.getName() + "\", new byte[Align.from32bits(byteBuffer)]);");
+                    break;
+                case PADTO64:
+                    pw.println("        map.put(\""+anAttribute.getName() + "\", new byte[Align.from64bits(byteBuffer)]);");
+                    break;
+            }
+        } // End of loop through ivars for writing the unmarshal method
+
+        pw.println("    }");
+        pw.println("    catch (java.nio.BufferUnderflowException bue)");
+        pw.println("    {");
+        pw.println("        System.err.println(\"*** buffer underflow error while unmarshalling " + aClass.getName() + " data.\");");
+        pw.println("    }");
+        pw.println("    return map;");
+        pw.println("}\n");
+    }
+
+    private void writeFromMapToBuffer(PrintWriter pw, GeneratedClass aClass) {
+    }
+
     /**
      * Placed in the {@link Pdu} class, this method provides a convenient
      * and efficient way to marshal a Pdu.
@@ -2779,6 +2933,31 @@ public class JavaGenerator extends AbstractGenerator
         }
     	pw.println(" }");
 
+    }
+
+    private void writeInitLayerKeys(PrintWriter pw) {
+        pw.println(" /** Does not initialize iFFPduLayerFormatDatas if systemID.getSystemType contains both transponder and interrogator, you need to choose one.*/");
+        pw.println(" private static void initLayerKeys(LinkedHashMap<String, Object> map) {");
+        pw.println("	 byte informationLayers = (byte) ((Map) map.get(\"fundamentalParameters\")).get(\"informationLayers\");\n");
+        pw.println("     SystemIdentifier systemID = (SystemIdentifier) map.get(\"systemID\");");
+        for (int i = 2; i < 8; i++) {
+            if (i == 2 || i == 5) {
+                pw.println("	 if (((informationLayers & 1 << LAYER_DATA_"+ i +"_BIT_INDEX) > 0)) {");
+                pw.println("	 		map.put(\"iFFPduLayer" + i + "Data\", null);");
+                pw.println("	 }");
+            }
+            else if (i == 3 || i == 4) {
+                pw.println("	 if (((informationLayers & 1 << LAYER_DATA_"+ i +"_BIT_INDEX) > 0)) {");
+                pw.println("		 if (systemID.getSystemType().toString().contains(TRANSPONDER)) {");
+                pw.println("	 			map.put(\"iFFPduLayer" + i + "TransponderFormatData\", null);");
+                pw.println("	 	 }");
+                pw.println("	 	 else if (systemID.getSystemType().toString().contains(INTERROGATOR)) {");
+                pw.println("	 			map.put(\"iFFPduLayer" + i + "InterrogatorFormatData\", null);");
+                pw.println("	 	 }");
+                pw.println("	 }");
+            }
+        }
+        pw.println(" }");
     }
     
     private void writeHashCodeMethod(PrintWriter pw, GeneratedClass aClass) {

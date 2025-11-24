@@ -713,6 +713,8 @@ public class JavaGenerator extends AbstractGenerator
             pw.flush();
             writeFromMapToBuffer(pw, aClass);
             pw.flush();
+            writeGetMarshalledSizeFromMapMethod(pw, aClass);
+            pw.flush();
 
             if (aClass.getName().equals("Pdu")) {
                 writeMarshalMethodToByteArray(pw, aClass);
@@ -1492,6 +1494,93 @@ public class JavaGenerator extends AbstractGenerator
         printWriter.println("}");
         printWriter.println();
     }
+
+    /**
+     * Produce custom getMarshalledSize(PduMap map) method
+     * @param pw output
+     * @param aClass input class
+     */
+    public void writeGetMarshalledSizeFromMapMethod(PrintWriter pw, GeneratedClass aClass)
+    {
+        pw.println();
+        pw.println(
+                "  /**\n" +
+                        "   * Returns size of this serialized (marshalled) object in bytes\n" +
+                        "   * @see <a href=\"https://en.wikipedia.org/wiki/Marshalling_(computer_science)\" target=\"_blank\">https://en.wikipedia.org/wiki/Marshalling_(computer_science)</a>\n" +
+                        "   * @return serialized size in bytes\n" +
+                        "   * @throws Exception" +
+                        "   */");
+//        if (aClass.getName().endsWith("Pdu"))
+//        pw.println("@Override");
+        pw.println("public static int getMarshalledSize(PduMap map) throws Exception");
+        pw.println("{");
+        pw.println("   int marshalSize = 0; ");
+        pw.println();
+
+        // Size of superclass is the starting point
+        if (!aClass.getParentClass().equalsIgnoreCase("root")) {
+            pw.println("   marshalSize += " + aClass.getParentClass() + ".getMarshalledSize(map);");
+        }
+
+        for (GeneratedClassAttribute anAttribute : aClass.getClassAttributes()) {
+            switch (anAttribute.getAttributeKind()) {
+                case PRIMITIVE:
+                    // primitive cannot be null, no checking required
+                    pw.print("   marshalSize += ");
+                    pw.println(primitiveSizes.get(anAttribute.getType()) + ";  // " + anAttribute.getName());
+                    break;
+
+                case SISO_ENUM:
+                    pw.println("   marshalSize += ((" + anAttribute.getType() + ") map.get(\"" + anAttribute.getName() + "\")).getMarshalledSize();");
+                    break;
+
+                case CLASSREF:
+                case SISO_BITFIELD:
+                    if (anAttribute.getName().startsWith("iFFPduLayer")) {
+                        pw.println("   if (map.containsKey(\"" + anAttribute.getName() + "\"))");
+                        pw.println("       marshalSize += " + anAttribute.getType() + ".getMarshalledSize((PduMap) map.get(\"" + anAttribute.getName() + "\"));");
+                    }
+                    else {
+                        pw.println("   marshalSize += " + anAttribute.getType() + ".getMarshalledSize((PduMap) map.get(\"" + anAttribute.getName() + "\"));");
+                    }
+                    break;
+
+                case PRIMITIVE_LIST:
+                    if (anAttribute.getCountFieldName() != null) {
+                        pw.println("   for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
+                    }
+                    // FIXME there are errors in unmarshalling the same PDUs where this is set to 0.
+                    // FIXME implement some proper fix
+                    else {
+                        pw.println("   for (int idx = 0; idx < " + anAttribute.getListLength() + "; idx++)");
+                    }
+                    pw.println("      marshalSize += " + primitiveSizes.get(anAttribute.getType()) + ";");
+                    break;
+
+                case OBJECT_LIST:
+                    pw.println("   for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
+                    if(anAttribute.getUnderlyingTypeIsPrimitive()) {
+                        pw.println("      marshalSize += " + primitiveSizes.get(anAttribute.getType()) + ";");
+                    } else if (anAttribute.getUnderlyingTypeIsEnum()) {
+                        pw.println("      marshalSize += ((" + anAttribute.getType() +") map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx))).getMarshalledSize();");
+                    }
+                    else {
+                        pw.println("      marshalSize += " + anAttribute.getType() + ".getMarshalledSize((PduMap) map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)));");
+                    }
+                    break;
+
+                case PADTO16:
+                case PADTO32:
+                case PADTO64:
+                    pw.println("   marshalSize += ((byte[]) map.get(\"" + anAttribute.getName() + "\")).length;");
+                    break;
+            }
+        }
+        pw.println();
+        pw.println("   return marshalSize;");
+        pw.println("}");
+        pw.println();
+    }
  
     private void writeGettersAndSetters(PrintWriter pw, GeneratedClass aClass)
     {
@@ -1790,7 +1879,8 @@ public class JavaGenerator extends AbstractGenerator
         if (!(aClass.getParentClass().equalsIgnoreCase("root")))
             pw.println("    super.marshal(dos);");
 
-        pw.println("    try \n    {");
+//        pw.println("    try");
+        pw.println("\n    {");
 
         // Loop through the class attributes, generating the output for each.
         for (GeneratedClassAttribute anAttribute : aClass.getClassAttributes()) {
@@ -1902,8 +1992,9 @@ public class JavaGenerator extends AbstractGenerator
 
         } // End of loop through the ivars for a marshal method
 
-        pw.println("    }\n    catch(Exception e)");
-        pw.println("    {\n      System.err.println(e);\n    }");
+        pw.println("    }");
+//        pw.println("\n    catch(Exception e)");
+//        pw.println("    {\n      System.err.println(e);\n    }");
 
         pw.println("}");
     }
@@ -1930,7 +2021,8 @@ public class JavaGenerator extends AbstractGenerator
         if (!(aClass.getParentClass().equalsIgnoreCase("root")))
             pw.println("    uPosition += super.unmarshal(dis);\n");
 
-        pw.println("    try \n    {");
+//        pw.println("    try");
+        pw.println("\n    {");
 
         // Loop through the class attributes, generating the output for each.
         for (GeneratedClassAttribute anAttribute : aClass.getClassAttributes()) {
@@ -2050,8 +2142,9 @@ public class JavaGenerator extends AbstractGenerator
             }
         } // End of loop through ivars for writing the unmarshal method
 
-        pw.println("    }\n    catch(Exception e)");
-        pw.println("    { \n      System.err.println(e); \n    }");
+        pw.println("    }");
+//        pw.println("\n    catch(Exception e)");
+//        pw.println("    { \n      System.err.println(e); \n    }");
         
         pw.println("    return getMarshalledSize();");
         pw.println("}\n");
@@ -2213,7 +2306,7 @@ public class JavaGenerator extends AbstractGenerator
         if(!(aClass.getParentClass().equalsIgnoreCase("root")))
             pw.println("    super.unmarshal(byteBuffer);\n");
 
-        pw.println("    try");
+//        pw.println("    try");
         pw.println("    {");
         // Loop through the class attributes, generating the output for each.
         for (GeneratedClassAttribute anAttribute : aClass.getClassAttributes()) { 
@@ -2320,10 +2413,10 @@ public class JavaGenerator extends AbstractGenerator
         } // End of loop through ivars for writing the unmarshal method
         
         pw.println("    }");
-        pw.println("    catch (java.nio.BufferUnderflowException bue)");
-        pw.println("    {");
-        pw.println("        System.err.println(\"*** buffer underflow error while unmarshalling \" + this.getClass().getName());");
-        pw.println("    }");
+//        pw.println("    catch (java.nio.BufferUnderflowException bue)");
+//        pw.println("    {");
+//        pw.println("        System.err.println(\"*** buffer underflow error while unmarshalling \" + this.getClass().getName());");
+//        pw.println("    }");
         pw.println("    return getMarshalledSize();");
         pw.println("}\n");
     }
@@ -2342,15 +2435,20 @@ public class JavaGenerator extends AbstractGenerator
 
 //        if (aClass.getName().endsWith("Pdu"))
 //        pw.println("@Override");
-        pw.println("public static Map<String, Object> fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception"); // throws EnumNotFoundException");
+        pw.println("public static PduMap fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception"); // throws EnumNotFoundException");
         pw.println("{");
 
-        pw.println("    LinkedHashMap<String, Object> map = new LinkedHashMap<>();");
+        pw.println("    PduMap map;");
 
         if(!(aClass.getParentClass().equalsIgnoreCase("root")))
-            pw.println("    map.put(\"super\", " + aClass.getParentClass() + ".fromBufferToMap(byteBuffer));\n");
+            pw.println("    map = " + aClass.getParentClass() + ".fromBufferToMap(byteBuffer);\n");
+        else {
+            pw.println("    map = new PduMap();\n");
+        }
 
-        pw.println("    try");
+
+
+//        pw.println("    try");
         pw.println("    {");
 
         // Loop through the class attributes, generating the output for each.
@@ -2392,14 +2490,14 @@ public class JavaGenerator extends AbstractGenerator
                         pw.println("        map.put(\"" + anAttribute.getName() + "\", " + anAttribute.getType() + ".fromBufferToMap(byteBuffer));" );
                     }
                     if (aClass.getName().equals("IFFPdu") && anAttribute.getName().equals("fundamentalParameters")) {
-                        pw.println("        if (((int) ((Map) map.get(\"fundamentalParameters\")).get(\"informationLayers\")) != 0)");
+                        pw.println("        if (((Number) ((PduMap) map.get(\"fundamentalParameters\")).get(\"informationLayers\")).byteValue() != 0)");
                         pw.println("            initLayerKeys(map);");
                     }
                     break;
 
                 case PRIMITIVE_LIST:
                     if (anAttribute.getCountFieldName() != null) {
-                        pw.println("        for (int idx = 0; idx < (int) map.get(\"" + anAttribute.getCountFieldName() + "\"); idx++)");
+                        pw.println("        for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
                     }
 
                     // FIXME there are errors un unmarshalling the same PDUs where this is set to 0.
@@ -2426,11 +2524,7 @@ public class JavaGenerator extends AbstractGenerator
                     break;
 
                 case OBJECT_LIST:
-                    if(anAttribute.getCountFieldName() != null)
-                        pw.println("        for (int idx = 0; idx < (int) map.get(\"" + anAttribute.getCountFieldName() + "\"); idx++)");
-                    else
-                        pw.println("        for (int idx = 0; idx < (int) (((List) map.get(\"" + anAttribute.getName() + "\")).size(); idx++)");
-
+                    pw.println("        for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
                     pw.println("        {");
 
                     if(anAttribute.getUnderlyingTypeIsEnum()) {
@@ -2465,10 +2559,10 @@ public class JavaGenerator extends AbstractGenerator
         } // End of loop through ivars for writing the unmarshal method
 
         pw.println("    }");
-        pw.println("    catch (java.nio.BufferUnderflowException bue)");
-        pw.println("    {");
-        pw.println("        System.err.println(\"*** buffer underflow error while unmarshalling " + aClass.getName() + " data.\");");
-        pw.println("    }");
+//        pw.println("    catch (java.nio.BufferUnderflowException bue)");
+//        pw.println("    {");
+//        pw.println("        System.err.println(\"*** buffer underflow error while unmarshalling " + aClass.getName() + " data.\");");
+//        pw.println("    }");
         pw.println("    return map;");
         pw.println("}\n");
     }
@@ -2484,14 +2578,14 @@ public class JavaGenerator extends AbstractGenerator
         pw.println(" */");
 //        if (aClass.getName().endsWith("Pdu"))
 //        pw.println("@Override");
-        pw.println("public static void fromMapToBuffer(Map<String, Object> map, java.nio.ByteBuffer byteBuffer) throws Exception");
+        pw.println("public static void fromMapToBuffer(PduMap map, java.nio.ByteBuffer byteBuffer) throws Exception");
         pw.println("{");
 
         // If we're a sublcass of another class, we should first call super
         // to make sure the superclass's ivars are marshaled out.
 
         if(!(aClass.getParentClass().equalsIgnoreCase("root")))
-            pw.println("   " + aClass.getParentClass() + ".fromMapToBuffer((Map<String, Object>) map.get(\"super\"), byteBuffer);");
+            pw.println("   " + aClass.getParentClass() + ".fromMapToBuffer(map, byteBuffer);");
 
         //pw.println("    try \n    {");
 
@@ -2520,7 +2614,7 @@ public class JavaGenerator extends AbstractGenerator
 //                    else if(anAttribute.getIsPrimitiveListLengthField())
 //                        pw.println("   byteBuffer.put" + capped + "( (" + marshalType + ")" + anAttribute.getDynamicListClassAttribute().getName() + ".length);");
 //                    else
-                    pw.println("   byteBuffer.put" + capped + "( (" + marshalType + ") map.get(\"" + anAttribute.getName() + "\"));");
+                    pw.println("   byteBuffer.put" + capped + "(((Number) map.get(\"" + anAttribute.getName() + "\"))." + marshalType + "Value());");
 
                     break;
 
@@ -2532,10 +2626,10 @@ public class JavaGenerator extends AbstractGenerator
                 case CLASSREF:
                     if (anAttribute.getName().startsWith("iFFPduLayer")) {
                         pw.println("   if (map.containsKey(\"" + anAttribute.getName() + "\"))");
-                        pw.println("       " + anAttribute.getType() + ".fromMapToBuffer((Map<String, Object>) map.get(\"" + anAttribute.getName() + "\"), byteBuffer);" );
+                        pw.println("       " + anAttribute.getType() + ".fromMapToBuffer((PduMap) map.get(\"" + anAttribute.getName() + "\"), byteBuffer);" );
                     }
                     else {
-                        pw.println("   " + anAttribute.getType() + ".fromMapToBuffer((Map<String, Object>) map.get(\"" + anAttribute.getName() + "\"), byteBuffer);" );
+                        pw.println("   " + anAttribute.getType() + ".fromMapToBuffer((PduMap) map.get(\"" + anAttribute.getName() + "\"), byteBuffer);" );
                     }
 
                     break;
@@ -2544,7 +2638,7 @@ public class JavaGenerator extends AbstractGenerator
                     pw.println();
 
                     if (anAttribute.getCountFieldName() != null) {
-                        pw.println("    for (int idx = 0; idx < (int) map.get(\"" + anAttribute.getCountFieldName() + "\"); idx++)");
+                        pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
                     }
 
                     // FIXME there are errors un unmarshalling the same PDUs where this is set to 0.
@@ -2561,7 +2655,7 @@ public class JavaGenerator extends AbstractGenerator
                         capped = this.initialCapital(marshalType);
                         if( capped.equals("Byte") )
                             capped = "";    // ByteBuffer just has put() for bytes
-                        pw.println("       byteBuffer.put" + capped + "((" + marshalType + ") map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)));");
+                        pw.println("       byteBuffer.put" + capped + "(((Number) map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)))." + marshalType + "Value());");
                     }
                     else
                         pw.println("       " + anAttribute.getType() +".fromMapToBuffer(map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)), byteBuffer);" ); //"[idx].marshal(dos);" )
@@ -2571,11 +2665,7 @@ public class JavaGenerator extends AbstractGenerator
 
                 case OBJECT_LIST:
                     pw.println();
-                    if(anAttribute.getCountFieldName() != null)
-                        pw.println("    for (int idx = 0; idx < (int) map.get(\"" + anAttribute.getCountFieldName() + "\"); idx++)");
-                    else
-                        pw.println("    for (int idx = 0; idx < (int) (((List) map.get(\"" + anAttribute.getName() + "\")).size(); idx++)");
-
+                    pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
                     pw.println("    {");
 
                     marshalType = marshalTypes.getProperty(anAttribute.getType());
@@ -2587,14 +2677,14 @@ public class JavaGenerator extends AbstractGenerator
                             capped = "";    // ByteBuffer just uses put() for bytes
                         }
                         //pw.println("           dos.write" + capped + "(" + anAttribute.getName() + ");");
-                        pw.println("       byteBuffer.put" + capped + "((" + marshalType + ") map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)));");
+                        pw.println("       byteBuffer.put" + capped + "(((Number) map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)))." + marshalType + "Value());");
                     }
                     else if(anAttribute.getUnderlyingTypeIsEnum()) {
                         pw.println("        ((" + anAttribute.getType() + ") map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx))).marshal(byteBuffer);");
                     }
                     else
                     {
-                        pw.println("        " + anAttribute.getType() + ".fromMapToBuffer((Map<String, Object>) map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)), byteBuffer);");
+                        pw.println("        " + anAttribute.getType() + ".fromMapToBuffer((PduMap) map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)), byteBuffer);");
                     }
 
                     pw.println("   }");
@@ -2645,7 +2735,7 @@ public class JavaGenerator extends AbstractGenerator
         pw.println("    return byteBuffer.rewind();");
         pw.println("}\n");
     }
-  
+
     /**
      * Generate method to write out data in XML format.
      */
@@ -3077,9 +3167,9 @@ public class JavaGenerator extends AbstractGenerator
 
     private void writeInitLayerKeys(PrintWriter pw) {
         pw.println(" /** Does not initialize iFFPduLayerFormatDatas if systemID.getSystemType contains both transponder and interrogator, you need to choose one.*/");
-        pw.println(" private static void initLayerKeys(LinkedHashMap<String, Object> map) {");
-        pw.println("	 byte informationLayers = (byte) ((Map) map.get(\"fundamentalParameters\")).get(\"informationLayers\");\n");
-        pw.println("     SystemIdentifier systemID = (SystemIdentifier) map.get(\"systemID\");");
+        pw.println(" private static void initLayerKeys(PduMap map) {");
+        pw.println("	 byte informationLayers = ((Number) ((PduMap) map.get(\"fundamentalParameters\")).get(\"informationLayers\")).byteValue();");
+        pw.println("     IFFSystemType iffSystemType = (IFFSystemType) ((PduMap) map.get(\"systemID\")).get(\"systemType\");\n");
         for (int i = 2; i < 8; i++) {
             if (i == 2 || i == 5) {
                 pw.println("	 if (((informationLayers & 1 << LAYER_DATA_"+ i +"_BIT_INDEX) > 0)) {");
@@ -3088,10 +3178,10 @@ public class JavaGenerator extends AbstractGenerator
             }
             else if (i == 3 || i == 4) {
                 pw.println("	 if (((informationLayers & 1 << LAYER_DATA_"+ i +"_BIT_INDEX) > 0)) {");
-                pw.println("		 if (systemID.getSystemType().toString().contains(TRANSPONDER)) {");
+                pw.println("		 if (iffSystemType.toString().contains(TRANSPONDER)) {");
                 pw.println("	 			map.put(\"iFFPduLayer" + i + "TransponderFormatData\", null);");
                 pw.println("	 	 }");
-                pw.println("	 	 else if (systemID.getSystemType().toString().contains(INTERROGATOR)) {");
+                pw.println("	 	 else if (iffSystemType.toString().contains(INTERROGATOR)) {");
                 pw.println("	 			map.put(\"iFFPduLayer" + i + "InterrogatorFormatData\", null);");
                 pw.println("	 	 }");
                 pw.println("	 }");

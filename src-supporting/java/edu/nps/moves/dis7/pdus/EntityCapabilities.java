@@ -5,6 +5,9 @@
 
 package edu.nps.moves.dis7.pdus;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.nio.ByteBuffer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -13,7 +16,7 @@ import java.util.Map;
  */
 public interface EntityCapabilities extends Marshaller
 {
-    class GenericCapabilityBitSet extends DisBitSet {
+    class GenericCapabilityBitSet extends DisBitSet implements EntityCapabilities {
         public GenericCapabilityBitSet() {
             super(32);
         }
@@ -28,9 +31,9 @@ public interface EntityCapabilities extends Marshaller
      * @return marshalled serialized size in bytes
      * @throws Exception ByteBuffer-generated exception
      */
-    static Map<String, Object> fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception
+    static PduMap fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception
     {
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        PduMap map = new PduMap();
         try
         {
             // This is so dirty
@@ -53,9 +56,18 @@ public interface EntityCapabilities extends Marshaller
      * @param byteBuffer The ByteBuffer at the position to begin writing
      * @throws Exception ByteBuffer-generated exception
      */
-    static void fromMapToBuffer(Map<String, Object> map, java.nio.ByteBuffer byteBuffer) throws Exception
+    static void fromMapToBuffer(PduMap map, java.nio.ByteBuffer byteBuffer) throws Exception
     {
         ((EntityCapabilities) map.get("entityCapabilities")).marshal(byteBuffer);
+    }
+
+    /**
+     * Returns size of this serialized (marshalled) object in bytes
+     * @see <a href="https://en.wikipedia.org/wiki/Marshalling_(computer_science)" target="_blank">https://en.wikipedia.org/wiki/Marshalling_(computer_science)</a>
+     * @return serialized size in bytes
+     */
+    static int getMarshalledSize(PduMap map) {
+        return ((EntityCapabilities) map.get("entityCapabilities")).getMarshalledSize();
     }
 
 }

@@ -342,8 +342,8 @@ public synchronized int unmarshal(java.nio.ByteBuffer byteBuffer) throws Excepti
      * @return marshalled serialized size in bytes
      * @throws Exception ByteBuffer-generated exception
      */
-    public static Map<String, Object> fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception {
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+    public static PduMap fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception {
+        PduMap map = new PduMap();
         try {
             // attribute entityKind marked as not serialized
             map.put("entityKind", EntityKind.unmarshalEnum(byteBuffer));
@@ -386,15 +386,35 @@ public synchronized int unmarshal(java.nio.ByteBuffer byteBuffer) throws Excepti
      * @param byteBuffer The ByteBuffer at the position to begin writing
      * @throws Exception ByteBuffer-generated exception
      */
-    public static void fromMapToBuffer(Map<String, Object> map, java.nio.ByteBuffer byteBuffer) throws Exception
+    public static void fromMapToBuffer(PduMap map, java.nio.ByteBuffer byteBuffer) throws Exception
     {
         ((EntityKind) map.get("entityKind")).marshal(byteBuffer);
         ((Domain) map.get("domain")).marshal(byteBuffer);
         ((Country) map.get("country")).marshal(byteBuffer);
-        byteBuffer.put((byte) map.get("category"));
-        byteBuffer.put((byte) map.get("subCategory"));
-        byteBuffer.put((byte) map.get("specific"));
-        byteBuffer.put((byte) map.get("extra"));
+        byteBuffer.put(((Number) map.get("category")).byteValue());
+        byteBuffer.put(((Number) map.get("subCategory")).byteValue());
+        byteBuffer.put(((Number) map.get("specific")).byteValue());
+        byteBuffer.put(((Number) map.get("extra")).byteValue());
+    }
+
+    /**
+     * Returns size of this serialized (marshalled) object in bytes
+     * @see <a href="https://en.wikipedia.org/wiki/Marshalling_(computer_science)" target="_blank">https://en.wikipedia.org/wiki/Marshalling_(computer_science)</a>
+     * @return serialized size in bytes
+     */
+    public static int getMarshalledSize(PduMap map)
+    {
+        int marshalSize = 0;
+
+        marshalSize += ((EntityKind) map.get("entityKind")).getMarshalledSize();
+        marshalSize += ((Domain) map.get("domain")).getMarshalledSize();
+        marshalSize += ((Country) map.get("country")).getMarshalledSize();
+        marshalSize += 1;  // category
+        marshalSize += 1;  // subCategory
+        marshalSize += 1;  // specific
+        marshalSize += 1;  // extra
+
+        return marshalSize;
     }
 
  /*

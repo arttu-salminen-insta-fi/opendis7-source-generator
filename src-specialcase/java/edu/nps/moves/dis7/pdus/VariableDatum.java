@@ -286,9 +286,9 @@ public class VariableDatum extends Object implements Serializable {
      * @return marshalled serialized size in bytes
      * @throws Exception ByteBuffer-generated exception
      */
-    public static Map<String, Object> fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception
+    public static PduMap fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception
     {
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        PduMap map = new PduMap();
         try
         {
             map.put("variableDatumID", VariableRecordType.unmarshalEnum(byteBuffer));
@@ -317,12 +317,29 @@ public class VariableDatum extends Object implements Serializable {
      * @param byteBuffer The ByteBuffer at the position to begin writing
      * @throws Exception ByteBuffer-generated exception
      */
-    public static void fromMapToBuffer(Map<String, Object> map, java.nio.ByteBuffer byteBuffer) throws Exception
+    public static void fromMapToBuffer(PduMap map, java.nio.ByteBuffer byteBuffer) throws Exception
     {
         ((VariableRecordType) map.get("variableDatumID")).marshal(byteBuffer);
-        byteBuffer.putInt(((int) map.get("variableDatumLength")));
+        byteBuffer.putInt(((Number) map.get("variableDatumLength")).intValue());
         byteBuffer.put((byte[]) map.get("variableDatumValue"));
         byte[] padding = new byte[Align.to64bits(byteBuffer)];
+    }
+
+    /**
+     * Returns size of this serialized (marshalled) object in bytes
+     * @see <a href="https://en.wikipedia.org/wiki/Marshalling_(computer_science)" target="_blank">https://en.wikipedia.org/wiki/Marshalling_(computer_science)</a>
+     * @return serialized size in bytes
+     */
+    public static int getMarshalledSize(PduMap map)
+    {
+        int marshalSize = 0;
+
+        marshalSize += ((VariableRecordType) map.get("variableDatumID")).getMarshalledSize();
+        marshalSize += 4;  // variableDatumLength
+        marshalSize += ((byte[]) map.get("variableDatumValue")).length;
+        marshalSize += ((byte[]) map.get("padding")).length; // In marshal & unmarshal this is done with byteBuffer
+
+        return marshalSize;
     }
 
     /*

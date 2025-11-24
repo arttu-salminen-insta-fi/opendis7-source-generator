@@ -84,9 +84,9 @@
       return "%s: " + super.toString();
   }
 
-  public static Map<String, Object> fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception
+  public static PduMap fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception
   {
-      LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+      PduMap map = new PduMap();
       try
       {
          %s bitset = new %s();
@@ -100,9 +100,14 @@
       return map;
   }
 
-  public static void fromMapToBuffer(Map<String, Object> map, java.nio.ByteBuffer byteBuffer) throws Exception
-    {
-        ((%s) map.get("bitset")).marshal(byteBuffer);
-    }
+  public static void fromMapToBuffer(PduMap map, java.nio.ByteBuffer byteBuffer) throws Exception
+  {
+      ((%s) map.get("bitset")).marshal(byteBuffer);
+  }
+
+  public static int getMarshalledSize(PduMap map)
+  {
+      return ((%s) map.get("bitset")).getMarshalledSize();
+  }
 
 }

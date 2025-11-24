@@ -192,9 +192,9 @@ public class PduStatus
    * @return marshalled serialized size in bytes
    * @throws Exception ByteBuffer-generated exception
    */
-  public static Map<String, Object> fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception
+  public static PduMap fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception
   {
-    LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+    PduMap map = new PduMap();
     try
     {
       map.put("value", byteBuffer.get());
@@ -214,9 +214,23 @@ public class PduStatus
    * @param byteBuffer The ByteBuffer at the position to begin writing
    * @throws Exception ByteBuffer-generated exception
    */
-  public static void fromMapToBuffer(Map<String, Object> map, java.nio.ByteBuffer byteBuffer) throws Exception
+  public static void fromMapToBuffer(PduMap map, java.nio.ByteBuffer byteBuffer) throws Exception
   {
-    byteBuffer.put((byte) map.get("value"));
+    byteBuffer.put(((Number) map.get("value")).byteValue());
+  }
+
+  /**
+   * Returns size of this serialized (marshalled) object in bytes
+   * @see <a href="https://en.wikipedia.org/wiki/Marshalling_(computer_science)" target="_blank">https://en.wikipedia.org/wiki/Marshalling_(computer_science)</a>
+   * @return serialized size in bytes
+   */
+  public static int getMarshalledSize(PduMap map)
+  {
+    int marshalSize = 0;
+
+    marshalSize += 1; // value
+
+    return marshalSize;
   }
 
     /**

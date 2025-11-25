@@ -2529,13 +2529,13 @@ public class JavaGenerator extends AbstractGenerator
 
                     if(anAttribute.getUnderlyingTypeIsEnum()) {
                         pw.println("        " +anAttribute.getType() + " anX = "+anAttribute.getType() + ".unmarshalEnum(byteBuffer);");
-                        pw.println("        map.put(\"" + anAttribute.getName() + "\" + String.valueOf(idx), anX);");
+                        pw.println("            map.put(\"" + anAttribute.getName() + "\" + String.valueOf(idx), anX);");
                     }
                     else {
                         marshalType = marshalTypes.getProperty(anAttribute.getType());
 
                         if(marshalType == null) { // It's a class
-                            pw.println("        map.put(\"" + anAttribute.getName() + "\" + String.valueOf(idx), " + anAttribute.getType() + ".fromBufferToMap(byteBuffer));");
+                            pw.println("            map.put(\"" + anAttribute.getName() + "\" + String.valueOf(idx), " + anAttribute.getType() + ".fromBufferToMap(byteBuffer));");
                         }
                         else { // It's a primitive  // should be unnecessary now w/ refactor
                             throw new RuntimeException("Objectlist with a primitive type, illegal.");

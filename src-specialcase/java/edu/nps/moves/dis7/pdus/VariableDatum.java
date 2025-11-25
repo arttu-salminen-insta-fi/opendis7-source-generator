@@ -8,8 +8,6 @@ import edu.nps.moves.dis7.enumerations.*;
 
 import java.io.*;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -322,7 +320,7 @@ public class VariableDatum extends Object implements Serializable {
         ((VariableRecordType) map.get("variableDatumID")).marshal(byteBuffer);
         byteBuffer.putInt(((Number) map.get("variableDatumLength")).intValue());
         byteBuffer.put((byte[]) map.get("variableDatumValue"));
-        byte[] padding = new byte[Align.to64bits(byteBuffer)];
+        Align.to64bits(byteBuffer);
     }
 
     /**

@@ -4,9 +4,6 @@ package %s;
 
 import edu.nps.moves.dis7.pdus.*;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 /**
  * Generated from XML,
  * %s %s, marshal size %s,

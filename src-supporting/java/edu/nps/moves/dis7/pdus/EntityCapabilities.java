@@ -5,11 +5,7 @@
 
 package edu.nps.moves.dis7.pdus;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.nio.ByteBuffer;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * EntityCapabilities is a marker interface to polymorphize Entity Capabilities (uid 55).
@@ -31,20 +27,15 @@ public interface EntityCapabilities extends Marshaller
      * @return marshalled serialized size in bytes
      * @throws Exception ByteBuffer-generated exception
      */
-    static PduMap fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception
+    static PduMap fromBufferToMap(ByteBuffer byteBuffer) throws Exception
     {
         PduMap map = new PduMap();
-        try
-        {
-            // This is so dirty
-            GenericCapabilityBitSet capabilities = new GenericCapabilityBitSet();
-            capabilities.unmarshal(byteBuffer);
-            map.put("entityCapabilities", capabilities);
-        }
-        catch (java.nio.BufferUnderflowException bue)
-        {
-            System.err.println("*** buffer underflow error while unmarshalling EntityCapabilities data.");
-        }
+
+        // This is so dirty
+        GenericCapabilityBitSet capabilities = new GenericCapabilityBitSet();
+        capabilities.unmarshal(byteBuffer);
+        map.put("entityCapabilities", capabilities);
+
         return map;
     }
 
@@ -56,7 +47,7 @@ public interface EntityCapabilities extends Marshaller
      * @param byteBuffer The ByteBuffer at the position to begin writing
      * @throws Exception ByteBuffer-generated exception
      */
-    static void fromMapToBuffer(PduMap map, java.nio.ByteBuffer byteBuffer) throws Exception
+    static void fromMapToBuffer(PduMap map, ByteBuffer byteBuffer) throws Exception
     {
         ((EntityCapabilities) map.get("entityCapabilities")).marshal(byteBuffer);
     }

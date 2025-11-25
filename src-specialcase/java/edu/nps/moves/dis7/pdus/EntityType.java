@@ -344,37 +344,33 @@ public synchronized int unmarshal(java.nio.ByteBuffer byteBuffer) throws Excepti
      */
     public static PduMap fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception {
         PduMap map = new PduMap();
-        try {
-            // attribute entityKind marked as not serialized
-            map.put("entityKind", EntityKind.unmarshalEnum(byteBuffer));
 
-            // Fix to enable the use of different domain enumerations
-            Domain domain = Domain.inst(PlatformDomain.OTHER);
-            if (map.get("entityKind") == EntityKind.MUNITION) {
-                domain = Domain.inst(MunitionDomain.OTHER);
-            }
-            else if(map.get("entityKind") == EntityKind.SUPPLY) {
-                domain = Domain.inst(SupplyDomain.NOT_USED);
-            }
-            domain.unmarshal(byteBuffer);
-            // attribute domain marked as not serialized
-            map.put("domain", domain);
+        // attribute entityKind marked as not serialized
+        map.put("entityKind", EntityKind.unmarshalEnum(byteBuffer));
 
-            // attribute country marked as not serialized
-            map.put("country", Country.unmarshalEnum(byteBuffer));
-            // attribute category marked as not serialized
-            map.put("category", (byte)(byteBuffer.get() & 0xFF));
-            // attribute subCategory marked as not serialized
-            map.put("subCategory", (byte)(byteBuffer.get() & 0xFF));
-            // attribute specific marked as not serialized
-            map.put("specific", (byte)(byteBuffer.get() & 0xFF));
-            // attribute extra marked as not serialized
-            map.put("extra", (byte)(byteBuffer.get() & 0xFF));
+        // Fix to enable the use of different domain enumerations
+        Domain domain = Domain.inst(PlatformDomain.OTHER);
+        if (map.get("entityKind") == EntityKind.MUNITION) {
+            domain = Domain.inst(MunitionDomain.OTHER);
         }
-        catch (java.nio.BufferUnderflowException bue)
-        {
-            System.err.println("*** buffer underflow error while unmarshalling EntityType data.");
+        else if(map.get("entityKind") == EntityKind.SUPPLY) {
+            domain = Domain.inst(SupplyDomain.NOT_USED);
         }
+        domain.unmarshal(byteBuffer);
+        // attribute domain marked as not serialized
+        map.put("domain", domain);
+
+        // attribute country marked as not serialized
+        map.put("country", Country.unmarshalEnum(byteBuffer));
+        // attribute category marked as not serialized
+        map.put("category", (byte)(byteBuffer.get() & 0xFF));
+        // attribute subCategory marked as not serialized
+        map.put("subCategory", (byte)(byteBuffer.get() & 0xFF));
+        // attribute specific marked as not serialized
+        map.put("specific", (byte)(byteBuffer.get() & 0xFF));
+        // attribute extra marked as not serialized
+        map.put("extra", (byte)(byteBuffer.get() & 0xFF));
+
         return map;
     }
 

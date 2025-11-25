@@ -8,8 +8,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * PduStatus.java, section 6.2.67
@@ -195,14 +193,7 @@ public class PduStatus
   public static PduMap fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception
   {
     PduMap map = new PduMap();
-    try
-    {
-      map.put("value", byteBuffer.get());
-    }
-    catch (java.nio.BufferUnderflowException bue)
-    {
-      System.err.println("*** buffer underflow error while unmarshalling PduStatus data.");
-    }
+    map.put("value", byteBuffer.get());
     return map;
   }
 

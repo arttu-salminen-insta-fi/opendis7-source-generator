@@ -78,6 +78,21 @@ public class GeneratedClassAttribute // TODO consider refactor renaming as Gener
      * to unmarshal. This is the name of the field that contains that count.
      */
     protected String countFieldName;
+
+    /**
+     * For dynamic sized primitive lists: count field may define:
+     * 1. number of instances
+     * 2. number of octets
+     * 3. number of bits
+     *
+     * With 2 & 3, this may include e.g. record type & length, which should be subtracted from what will be parsed to
+     * the primitive list containing the payload. Setting one of these to >= 0 indicates that the count field specifies
+     * the count in either 2 or 3 style, which will be taken into account in unmarshalling generation.
+     *
+     * Only one, if any, of the following should be set to > -1 for attribute.
+     */
+    protected int extraOctets = -1;
+    protected int extraBits = -1;
     
     /** 
      * Which of list or array is it
@@ -289,7 +304,55 @@ public class GeneratedClassAttribute // TODO consider refactor renaming as Gener
     {
         countFieldName = pFieldName;
     }
-    
+
+    /**
+     * Use with primitive lists when {@link #getCountFieldName()} is set: how many, if any, octets should be redacted
+     * for parsing the attribute value from what is indicated by {@link #getCountFieldName()}.
+     *
+     * @return
+     */
+    public int getExtraOctets() {
+        return extraOctets;
+    }
+
+    /**
+     * Set when some number of octets should be redacted from parsing the attribute value to primitive list, when
+     * {@link #getCountFieldName()} is set.
+     *
+     * @param pExtraOctets
+     */
+    public void setExtraOctets(int pExtraOctets) {
+        extraOctets = pExtraOctets;
+    }
+
+    public boolean isCountFieldInOctets() {
+        return getCountFieldName() != null && extraOctets > -1;
+    }
+
+    /**
+     * Use with primitive lists when {@link #getCountFieldName()} is set: how many, if any, bits should be redacted
+     * for parsing the attribute value from what is indicated by {@link #getCountFieldName()}.
+     *
+     * @return
+     */
+    public int getExtraBits() {
+        return extraBits;
+    }
+
+    /**
+     * Set when some number of bits should be redacted from parsing the attribute value to primitive list, when
+     * {@link #getCountFieldName()} is set.
+     *
+     * @param pExtraBits
+     */
+    public void setExtraBits(int pExtraBits) {
+        extraBits = pExtraBits;
+    }
+
+    public boolean isCountFieldInBits() {
+        return getCountFieldName() != null && extraBits > -1;
+    }
+
     /** 
      * Returns true if 1) this is a list,  either fixed or variable, and 2) contains a class
      * @return whether list contains a class

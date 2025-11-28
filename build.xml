@@ -739,7 +739,10 @@ POSSIBILITY OF SUCH DAMAGE.
         <delete verbose="true" file="src-generated\java\edu\nps\moves\dis7\pdus\SignalPdu.java"/>
         <delete verbose="true" file="src-generated\java\edu\nps\moves\dis7\pdus\IntercomSignalPdu.java"/>
         <delete verbose="true" file="src-generated\java\edu\nps\moves\dis7\pdus\EntityType.java"/>
-        
+        <delete verbose="true" file="src-generated\java\edu\nps\moves\dis7\pdus\RecordSpecificationElement.java"/>
+        <delete verbose="true" file="src-generated\java\edu\nps\moves\dis7\pdus\GridData.java"/>
+        <delete verbose="true" file="src-generated\java\edu\nps\moves\dis7\pdus\GridAxisDescriptor.java"/>
+
         <javac destdir="build/classes"
                 debug="true"
                 debuglevel="lines,vars,source"

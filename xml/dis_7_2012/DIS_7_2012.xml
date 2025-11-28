@@ -296,8 +296,8 @@ dB and RPM)"/>
             <primitive type="uint16"/>
         </attribute>
 
-        <attribute name="recordSpecificFields" comment="The attribute data format conforming to that specified by the record type. K bytes long">
-            <primitivelist length="0" countFieldName="recordLength">
+        <attribute name="recordSpecificFields" comment="Current implementation also holds the padding bits after unmarshall: K + P!">
+            <primitivelist length="0" countFieldName="recordLength" extraOctets="6">
                 <primitive type="uint8"/>
             </primitivelist>
         </attribute>
@@ -1149,8 +1149,8 @@ dB and RPM)"/>
             <primitive type="uint8"/>
         </attribute>
     
-        <attribute name="geometry" comment="Geometry or state record">
-            <primitivelist length="0">
+        <attribute name="geometry" comment="Geometry or state record. Current implementation also holds the padding bits after unmarshall!">
+            <primitivelist length="0" countFieldName="length" extraBits="64">
                 <primitive type="uint8"/>
             </primitivelist>
         </attribute>
@@ -1386,10 +1386,18 @@ dB and RPM)"/>
         <attribute name="axisType" comment="type of grid axis">
             <sisoenum type="GridAxisDescriptorAxisType" comment="uid 377"/>
         </attribute>
+
+        <attribute name="fixedData">
+            <classRef name="GridAxisDescriptorFixed"/>
+        </attribute>
+
+        <attribute name="variableData">
+            <classRef name="GridAxisDescriptorVariable"/>
+        </attribute>
         
     </class>
     
-    <class name="GridAxisDescriptorFixed" inheritsFrom="GridAxisDescriptor" comment="Grid axis record for fixed data. Section 6.2.41">
+    <class name="GridAxisDescriptorFixed" comment="Grid axis record for fixed data. Section 6.2.41">
         <attribute name="numberOfPointsOnXiAxis" comment="Number of grid locations along Xi axis">
             <primitive type="uint16"/>
         </attribute>
@@ -1400,8 +1408,7 @@ dB and RPM)"/>
     
     </class>
 
-    <class name="GridAxisDescriptorVariable" inheritsFrom="GridAxisDescriptor" 
-           comment="Grid axis descriptor fo variable spacing axis data.">
+    <class name="GridAxisDescriptorVariable" comment="Grid axis descriptor fo variable spacing axis data.">
         
         <attribute name="numberOfPointsOnXiAxis" comment="Number of grid locations along Xi axis">
             <primitive type="uint16"/>
@@ -1419,8 +1426,8 @@ dB and RPM)"/>
             <primitive type="float64" defaultValue="0.0"/>
         </attribute>
     
-        <attribute name="xiValues" comment="list of coordinates">
-            <primitivelist length="0">
+        <attribute name="xiValues" comment="list of coordinates. Current implementation also holds the padding bits after unmarshall!">
+            <primitivelist length="0" countFieldName="numberOfPointsOnXiAxis">
                 <primitive type="uint16"/>
             </primitivelist>
         </attribute>
@@ -1445,11 +1452,23 @@ dB and RPM)"/>
         
         <attribute name="dataRepresentation">
             <sisoenum type="GriddedDataDataRepresentation" comment="uid 247"/>
-        </attribute>  
+        </attribute>
+
+         <attribute name="type0Data">
+             <classRef name="GridDataType0"/>
+         </attribute>
+
+         <attribute name="type1Data">
+             <classRef name="GridDataType1"/>
+         </attribute>
+
+         <attribute name="type2Data">
+             <classRef name="GridDataType2"/>
+         </attribute>
         
      </class>
    
-    <class name="GridDataType0" inheritsFrom="GridData" comment="6.2.41, table 68">
+    <class name="GridDataType0" comment="6.2.41, table 68">
 
         <attribute name="numberOfBytes" hidden="true" >
             <primitive type="uint16"/>
@@ -1473,7 +1492,7 @@ dB and RPM)"/>
 
     </class>
     
-    <class name="GridDataType1" inheritsFrom="GridData" comment="6.2.41, table 69">
+    <class name="GridDataType1" comment="6.2.41, table 69">
         
         <attribute name="fieldScale">
             <primitive type="float32"/>
@@ -1505,7 +1524,7 @@ dB and RPM)"/>
 
     </class>
     
-    <class name="GridDataType2" inheritsFrom="GridData" comment="6.2.41, table 70">
+    <class name="GridDataType2" comment="6.2.41, table 70">
 
         <attribute name="numberOfValues" hidden="true" >
             <primitive type="uint16"/>
@@ -1627,8 +1646,8 @@ dB and RPM)"/>
             <primitive type="uint16"/>
         </attribute>
   
-        <attribute name="recordSpecificFields">
-            <primitivelist isDynamicListLengthField="true">
+        <attribute name="recordSpecificFields" comment="Current implementation also holds the padding bits after unmarshall!">
+            <primitivelist length="0" countFieldName="recordLength" extraOctets="6">
                 <primitive type="uint8"/>
             </primitivelist>        
         </attribute>
@@ -1705,7 +1724,7 @@ dB and RPM)"/>
         </attribute>
      
         <attribute name="recordSpecificField" comment="This is a placeholder.">
-            <primitivelist length="0">
+            <primitivelist length="0" countFieldName="recordLength">
                 <primitive type="uint8"/>
             </primitivelist>
         </attribute>
@@ -1920,27 +1939,6 @@ dB and RPM)"/>
             <primitive type="uint16"/>
         </attribute>
     
-    </class>
-
-    <class name="ModulationParameters" inheritsFrom="root" comment="Modulation parameters associated with a specific radio system.  6.2.58 ">
-        
-        <attribute name="recordSpecificFields">
-            <primitivelist length="0" >
-                <primitive type="uint8"/>
-            </primitivelist>
-        </attribute>
-        
-        <!--<atribute name="paddingTo64">
-            <primitivelist length="8" >
-                <primitive type="uint8"/>
-            </primitivelist>
-        </atribute> -->
-        
-        <attribute name="padding" comment="zero-filled array of padding bits for byte alignment and consistent sizing of PDU data">
-            <padtoboundary length="64"/>
-        </attribute>
-
-        
     </class>
 
     <class name="ModulationType" inheritsFrom="root" comment="Information about the type of modulation used for radio transmission. 6.2.59 ">
@@ -2226,7 +2224,7 @@ dB and RPM)"/>
             <primitive type= "uint32"/>
         </attribute>
         
-        <attribute name="padding" comment="zero-filled array of padding bits for byte alignment and consistent sizing of PDU data">
+        <attribute name="padding1" comment="zero-filled array of padding bits for byte alignment and consistent sizing of PDU data">
             <primitive type="uint32"/>
         </attribute>
 
@@ -2239,15 +2237,14 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="recordValues" comment="The concatenated records of the format specified by the Record ID field. The length of this field is the Record Length multiplied by the Record Count, in units of bits.">
-            <primitivelist length="0">
+            <!-- TODO implement multiplyCountWith, currently results in incorrect parsing -> moved to SpecialCase -->
+            <primitivelist length="0" countFieldName="recordCount" multiplyCountWith="recordLength" extraBits="0">
                 <primitive type="uint8"/>
             </primitivelist>
         </attribute>
-        
-        <attribute name="padTo64" comment="used if required to make entire record size an even multiple of 8 bytes">
-            <primitivelist length="0">
-                <primitive type="uint8"/>
-            </primitivelist>
+
+        <attribute name="padding2" comment="zero-filled array of padding bits for byte alignment and consistent sizing of PDU data">
+            <padtoboundary length="64"/>
         </attribute>
     </class>
 
@@ -2400,7 +2397,7 @@ dB and RPM)"/>
     </class>
 
      <class name="StandardVariableSpecification" inheritsFrom="root"
-           comment="Does not work, and causes failure in anything it is embedded in. Section 6.2.83">
+           comment="Variable records holder for 0 or more Standard Variable records. Section 6.2.83">
            
         <attribute name="numberOfStandardVariableRecords" comment="Number of static variable records">
             <primitive type="uint16"/>
@@ -2424,8 +2421,8 @@ dB and RPM)"/>
             <primitive type="uint16"/>
         </attribute>
         
-        <attribute name="recordSpecificFields">
-            <primitivelist length="0" countFieldName="recordLength">
+        <attribute name="recordSpecificFields" comment="Current implementation also holds the padding bits after unmarshall!">
+            <primitivelist length="0" countFieldName="recordLength" extraOctets="6">
                 <primitive type="uint8"/> 
             </primitivelist>        
         </attribute>
@@ -2630,7 +2627,7 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="variableDatumValue" comment="This can be any number of bits long, depending on the datum.">
-            <primitivelist length="0" bitCountFieldName="variableDatumLength">
+            <primitivelist length="0" countFieldName="variableDatumLength" extraBits="0">
                 <primitive type="uint8"/>
             </primitivelist>
         </attribute>
@@ -2815,8 +2812,8 @@ dB and RPM)"/>
             <primitive type="uint16"/>
         </attribute>
         
-        <attribute name="recordSpecificFields">
-            <primitivelist length="0">
+        <attribute name="recordSpecificFields" comment="Current implementation also holds the padding bits after unmarshall!">
+            <primitivelist length="0" countFieldName="recordLength" extraOctets="6">
                 <primitive type="uint8"/>
             </primitivelist>
         </attribute>

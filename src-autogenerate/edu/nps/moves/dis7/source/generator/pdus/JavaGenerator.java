@@ -1526,58 +1526,66 @@ public class JavaGenerator extends AbstractGenerator
             switch (anAttribute.getAttributeKind()) {
                 case PRIMITIVE:
                     // primitive cannot be null, no checking required
-                    pw.print("   marshalSize += ");
+                    pw.print("    marshalSize += ");
                     pw.println(primitiveSizes.get(anAttribute.getType()) + ";  // " + anAttribute.getName());
                     break;
 
                 case SISO_ENUM:
-                    pw.println("   marshalSize += ((" + anAttribute.getType() + ") map.get(\"" + anAttribute.getName() + "\")).getMarshalledSize();");
+                    pw.println("    marshalSize += ((" + anAttribute.getType() + ") map.get(\"" + anAttribute.getName() + "\")).getMarshalledSize();");
                     break;
 
                 case CLASSREF:
                 case SISO_BITFIELD:
                     if (anAttribute.getName().startsWith("iFFPduLayer")) {
-                        pw.println("   if (map.containsKey(\"" + anAttribute.getName() + "\"))");
-                        pw.println("       marshalSize += " + anAttribute.getType() + ".getMarshalledSize((PduMap) map.get(\"" + anAttribute.getName() + "\"));");
+                        pw.println("    if (map.containsKey(\"" + anAttribute.getName() + "\"))");
+                        pw.println("        marshalSize += " + anAttribute.getType() + ".getMarshalledSize((PduMap) map.get(\"" + anAttribute.getName() + "\"));");
                     }
                     else {
-                        pw.println("   marshalSize += " + anAttribute.getType() + ".getMarshalledSize((PduMap) map.get(\"" + anAttribute.getName() + "\"));");
+                        pw.println("    marshalSize += " + anAttribute.getType() + ".getMarshalledSize((PduMap) map.get(\"" + anAttribute.getName() + "\"));");
                     }
                     break;
 
                 case PRIMITIVE_LIST:
                     if (anAttribute.getCountFieldName() != null) {
-                        pw.println("   for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
+                        if (anAttribute.isCountFieldInOctets()) {
+                            pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraOctets() + "; idx++)");
+                        }
+                        else if (anAttribute.isCountFieldInBits()) {
+                            pw.println("    for (int idx = 0; idx < (((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraBits() + " + 7) / 8; idx++)");
+                        }
+                        else {
+                            pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
+                        }
                     }
                     // FIXME there are errors in unmarshalling the same PDUs where this is set to 0.
                     // FIXME implement some proper fix
                     else {
-                        pw.println("   for (int idx = 0; idx < " + anAttribute.getListLength() + "; idx++)");
+                        pw.println("    for (int idx = 0; idx < " + anAttribute.getListLength() + "; idx++)");
                     }
-                    pw.println("      marshalSize += " + primitiveSizes.get(anAttribute.getType()) + ";");
+                    pw.println("        marshalSize += " + primitiveSizes.get(anAttribute.getType()) + ";");
                     break;
 
                 case OBJECT_LIST:
-                    pw.println("   for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
+                    pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
                     if(anAttribute.getUnderlyingTypeIsPrimitive()) {
-                        pw.println("      marshalSize += " + primitiveSizes.get(anAttribute.getType()) + ";");
+                        pw.println("        marshalSize += " + primitiveSizes.get(anAttribute.getType()) + ";");
                     } else if (anAttribute.getUnderlyingTypeIsEnum()) {
-                        pw.println("      marshalSize += ((" + anAttribute.getType() +") map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx))).getMarshalledSize();");
+                        pw.println("        marshalSize += ((" + anAttribute.getType() +") map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx))).getMarshalledSize();");
                     }
                     else {
-                        pw.println("      marshalSize += " + anAttribute.getType() + ".getMarshalledSize((PduMap) map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)));");
+                        pw.println("        marshalSize += " + anAttribute.getType() + ".getMarshalledSize((PduMap) map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)));");
                     }
                     break;
 
                 case PADTO16:
                 case PADTO32:
                 case PADTO64:
-                    pw.println("   marshalSize += ((byte[]) map.get(\"" + anAttribute.getName() + "\")).length;");
+                    pw.println("    marshalSize += ((byte[]) map.get(\"" + anAttribute.getName() + "\")).length;");
                     break;
             }
         }
         pw.println();
-        pw.println("   return marshalSize;");
+        pw.println("    return marshalSize;");
         pw.println("}");
         pw.println();
     }
@@ -2077,7 +2085,23 @@ public class JavaGenerator extends AbstractGenerator
                     break;
                     
                 case PRIMITIVE_LIST:
-                    pw.println("        for (int idx = 0; idx < " + attributeName + ".length; idx++)");
+                    if (anAttribute.getCountFieldName() != null) {
+                        if (anAttribute.isCountFieldInOctets()) {
+                            pw.println("        " + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[" + anAttribute.getCountFieldName() + " - " + anAttribute.getExtraOctets() + "];");
+                            pw.println("        for (int idx = 0; idx < " + anAttribute.getCountFieldName() + " - " + anAttribute.getExtraOctets() + "; idx++)");
+                        }
+                        else if (anAttribute.isCountFieldInBits()) {
+                            pw.println("        " + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[(" + anAttribute.getCountFieldName() + " - " + anAttribute.getExtraBits() + " + 7) / 8];");
+                            pw.println("        for (int idx = 0; idx < (" + anAttribute.getCountFieldName() + " - " + anAttribute.getExtraBits() + " + 7) / 8; idx++)");
+                        }
+                        else {
+                            pw.println("        " + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[" + anAttribute.getCountFieldName() + "];");
+                            pw.println("        for (int idx = 0; idx < " + anAttribute.getCountFieldName() + "; idx++)");
+                        }
+                    }
+                    else {
+                        pw.println("        for (int idx = 0; idx < " + anAttribute.getName() + ".length; idx++)");
+                    }
 
                     // This is some sleaze. We're an array, but an array of what? We could be either a
                     // primitive or a class. We need to figure out which. This is done via the expedient
@@ -2315,7 +2339,6 @@ public class JavaGenerator extends AbstractGenerator
                  pw.println("        // attribute " + anAttribute.getName() + " marked as not serialized");
                  continue;
             }
-            pw.println("        // attribute " + anAttribute.getName() + " marked as not serialized");
             String marshalType;
             String capped;
             switch(anAttribute.getAttributeKind()) {
@@ -2354,7 +2377,23 @@ public class JavaGenerator extends AbstractGenerator
                     break;
 
                 case PRIMITIVE_LIST:
-                    pw.println("        for (int idx = 0; idx < " + anAttribute.getName() + ".length; idx++)");
+                    if (anAttribute.getCountFieldName() != null) {
+                        if (anAttribute.isCountFieldInOctets()) {
+                            pw.println("        " + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[" + anAttribute.getCountFieldName() + " - " + anAttribute.getExtraOctets() + "];");
+                            pw.println("        for (int idx = 0; idx < " + anAttribute.getCountFieldName() + " - " + anAttribute.getExtraOctets() + "; idx++)");
+                        }
+                        else if (anAttribute.isCountFieldInBits()) {
+                            pw.println("        " + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[(" + anAttribute.getCountFieldName() + " - " + anAttribute.getExtraBits() + " + 7) / 8];");
+                            pw.println("        for (int idx = 0; idx < (" + anAttribute.getCountFieldName() + " - " + anAttribute.getExtraBits() + " + 7) / 8; idx++)");
+                        }
+                        else {
+                            pw.println("        " + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[" + anAttribute.getCountFieldName() + "];");
+                            pw.println("        for (int idx = 0; idx < " + anAttribute.getCountFieldName() + "; idx++)");
+                        }
+                    }
+                    else {
+                        pw.println("        for (int idx = 0; idx < " + anAttribute.getName() + ".length; idx++)");
+                    }
 
                     marshalType = marshalTypes.getProperty(anAttribute.getType());
 
@@ -2384,15 +2423,15 @@ public class JavaGenerator extends AbstractGenerator
                         marshalType = marshalTypes.getProperty(anAttribute.getType());
 
                         if(marshalType == null) { // It's a class
-                            pw.println("        " + anAttribute.getType() + " anX = new " + anAttribute.getType() + "();");                           
-                            pw.println("        anX.unmarshal(byteBuffer);");
-                            pw.println("        " + anAttribute.getName() + ".add(anX);");
+                            pw.println("            " + anAttribute.getType() + " anX = new " + anAttribute.getType() + "();");
+                            pw.println("            anX.unmarshal(byteBuffer);");
+                            pw.println("            " + anAttribute.getName() + ".add(anX);");
                         }
                         else { // It's a primitive  // should be unnecessary now w/ refactor
                             capped = this.initialCapital(marshalType);
                             if( capped.equals("Byte") )
                                 capped = "";
-                            pw.println("        byteBuffer.get" + capped + "(" + anAttribute.getName() + ");");
+                            pw.println("            byteBuffer.get" + capped + "(" + anAttribute.getName() + ");");
                         }
                     }
                     pw.println("        }");
@@ -2457,7 +2496,6 @@ public class JavaGenerator extends AbstractGenerator
                 pw.println("        // attribute " + anAttribute.getName() + " marked as not serialized");
                 continue;
             }
-            pw.println("        // attribute " + anAttribute.getName() + " marked as not serialized");
             String marshalType;
             String capped;
             switch(anAttribute.getAttributeKind()) {
@@ -2497,19 +2535,33 @@ public class JavaGenerator extends AbstractGenerator
 
                 case PRIMITIVE_LIST:
                     if (anAttribute.getCountFieldName() != null) {
-                        pw.println("        for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
+                        if (anAttribute.isCountFieldInOctets()) {
+                            pw.println("        // Valid primitive list varying length with octets");
+                            pw.println("        for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraOctets() + "; idx++)");
+                        }
+                        else if (anAttribute.isCountFieldInBits()) {
+                            pw.println("        // Valid primitive list varying length with bits");
+                            pw.println("        for (int idx = 0; idx < (((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraBits() + " + 7) / 8; idx++)");
+                        }
+                        else {
+                            pw.println("        // Valid primitive list varying length");
+                            pw.println("        for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
+                        }
                     }
 
                     // FIXME there are errors un unmarshalling the same PDUs where this is set to 0.
                     // FIXME implement some proper fix
-//                    else if (anAttribute.getListLength() > 0) {
-                    else {
+                    else if (anAttribute.getListLength() > 0) {
+//                    else {
+                        pw.println("        // Valid (> 0) primitive list fixed length");
                         pw.println("        for (int idx = 0; idx < " + anAttribute.getListLength() + "; idx++)");
                     }
+
 //                    }
-//                    else {
-//                        throw new RuntimeException("Figure out actual list size!");
-//                    }
+                    else {
+                        pw.println("        // Invalid primitive list fixed length!!");
+                        pw.println("        for (int idx = 0; idx < " + anAttribute.getListLength() + "; idx++)");
+                    }
 
                     marshalType = marshalTypes.getProperty(anAttribute.getType());
 
@@ -2524,8 +2576,12 @@ public class JavaGenerator extends AbstractGenerator
                     break;
 
                 case OBJECT_LIST:
+                    if (anAttribute.getCountFieldName() == null) {
+                        pw.println("        // Invalid object list length!!");
+                    }
                     pw.println("        for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
                     pw.println("        {");
+
 
                     if(anAttribute.getUnderlyingTypeIsEnum()) {
                         pw.println("        " +anAttribute.getType() + " anX = "+anAttribute.getType() + ".unmarshalEnum(byteBuffer);");
@@ -2614,22 +2670,22 @@ public class JavaGenerator extends AbstractGenerator
 //                    else if(anAttribute.getIsPrimitiveListLengthField())
 //                        pw.println("   byteBuffer.put" + capped + "( (" + marshalType + ")" + anAttribute.getDynamicListClassAttribute().getName() + ".length);");
 //                    else
-                    pw.println("   byteBuffer.put" + capped + "(((Number) map.get(\"" + anAttribute.getName() + "\"))." + marshalType + "Value());");
+                    pw.println("    byteBuffer.put" + capped + "(((Number) map.get(\"" + anAttribute.getName() + "\"))." + marshalType + "Value());");
 
                     break;
 
                 case SISO_ENUM:
-                    pw.println("   ((" + anAttribute.getType() + ") map.get(\"" + anAttribute.getName() + "\")).marshal(byteBuffer);");
+                    pw.println("    ((" + anAttribute.getType() + ") map.get(\"" + anAttribute.getName() + "\")).marshal(byteBuffer);");
                     break;
 
                 case SISO_BITFIELD:
                 case CLASSREF:
                     if (anAttribute.getName().startsWith("iFFPduLayer")) {
-                        pw.println("   if (map.containsKey(\"" + anAttribute.getName() + "\"))");
+                        pw.println("    if (map.containsKey(\"" + anAttribute.getName() + "\"))");
                         pw.println("       " + anAttribute.getType() + ".fromMapToBuffer((PduMap) map.get(\"" + anAttribute.getName() + "\"), byteBuffer);" );
                     }
                     else {
-                        pw.println("   " + anAttribute.getType() + ".fromMapToBuffer((PduMap) map.get(\"" + anAttribute.getName() + "\"), byteBuffer);" );
+                        pw.println("    " + anAttribute.getType() + ".fromMapToBuffer((PduMap) map.get(\"" + anAttribute.getName() + "\"), byteBuffer);" );
                     }
 
                     break;
@@ -2638,7 +2694,15 @@ public class JavaGenerator extends AbstractGenerator
                     pw.println();
 
                     if (anAttribute.getCountFieldName() != null) {
-                        pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
+                        if (anAttribute.isCountFieldInOctets()) {
+                            pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraOctets() + "; idx++)");
+                        }
+                        else if (anAttribute.isCountFieldInBits()) {
+                            pw.println("    for (int idx = 0; idx < (((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraBits() + " + 7) / 8; idx++)");
+                        }
+                        else {
+                            pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
+                        }
                     }
 
                     // FIXME there are errors un unmarshalling the same PDUs where this is set to 0.
@@ -2677,7 +2741,7 @@ public class JavaGenerator extends AbstractGenerator
                             capped = "";    // ByteBuffer just uses put() for bytes
                         }
                         //pw.println("           dos.write" + capped + "(" + anAttribute.getName() + ");");
-                        pw.println("       byteBuffer.put" + capped + "(((Number) map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)))." + marshalType + "Value());");
+                        pw.println("        byteBuffer.put" + capped + "(((Number) map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)))." + marshalType + "Value());");
                     }
                     else if(anAttribute.getUnderlyingTypeIsEnum()) {
                         pw.println("        ((" + anAttribute.getType() + ") map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx))).marshal(byteBuffer);");
@@ -2687,18 +2751,18 @@ public class JavaGenerator extends AbstractGenerator
                         pw.println("        " + anAttribute.getType() + ".fromMapToBuffer((PduMap) map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)), byteBuffer);");
                     }
 
-                    pw.println("   }");
+                    pw.println("    }");
                     pw.println();
                     break;
 
                 case PADTO16:
-                    pw.println("   byte[] "+anAttribute.getName()+" = new byte[Align.to16bits(byteBuffer)];");
+                    pw.println("    byte[] "+anAttribute.getName()+" = new byte[Align.to16bits(byteBuffer)];");
                     break;
                 case PADTO32:
-                    pw.println("   byte[] "+anAttribute.getName()+" = new byte[Align.to32bits(byteBuffer)];");
+                    pw.println("    byte[] "+anAttribute.getName()+" = new byte[Align.to32bits(byteBuffer)];");
                     break;
                 case PADTO64:
-                    pw.println("   byte[] "+anAttribute.getName()+" = new byte[Align.to64bits(byteBuffer)];");
+                    pw.println("    byte[] "+anAttribute.getName()+" = new byte[Align.to64bits(byteBuffer)];");
                     break;
             }
         } // End of loop through the ivars for a marshal method

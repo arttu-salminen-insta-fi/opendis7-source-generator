@@ -719,8 +719,7 @@
    </xs:element>
    <xs:element name="DirectedEnergyFirePdu">
       <xs:annotation>
-         <xs:appinfo>7.3.4 Used to communicate the firing of a directed energy weapon. (length of list
-            found in field numberOfDERecords)
+         <xs:appinfo>7.3.4 Used to communicate the firing of a directed energy weapon.
             <xs:attribute name="id" type="xs:integer" fixed="68"/>
          </xs:appinfo>
       </xs:annotation>
@@ -750,20 +749,12 @@
                         <xs:appinfo>Field shall identify the location of the DE weapon aperture/emitter, Section 7.3.4</xs:appinfo>
                      </xs:annotation>
                   </xs:element>
-                  <!--Attribute (as element) DirectedEnergyFirePdu dERecords with objectlist classRef name=StandardVariableSpecification, type=StandardVariableSpecificationType-->
-                  <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                  <xs:element name="dERecords" type="StandardVariableSpecificationType">
                      <xs:annotation>
-                        <xs:appinfo>Number of elements is determined by size fieldnumberOfDERecords and can be 0 or greater.
-                           Ensure that the total PDU size does not exceed maximums allowed in IEEE DIS Specification.</xs:appinfo>
-                        <xs:documentation>numberOfDERecords</xs:documentation>
+                        <xs:appinfo>May contain 0 or more DE records, records shall conform to the variable record format
+                           (Section6.2.82), Section 7.3.4</xs:appinfo>
                      </xs:annotation>
-                     <xs:element name="StandardVariableSpecification" type="StandardVariableSpecificationType">
-                        <xs:annotation>
-                           <xs:appinfo>Fields shall contain one or more DE records, records shall conform to the variable
-                              record format (Section6.2.82), Section 7.3.4 (length of list found in field numberOfDERecords)</xs:appinfo>
-                        </xs:annotation>
-                     </xs:element>
-                  </xs:sequence>
+                  </xs:element>
                </xs:sequence>
                <!-- ========== debug: divider between elements and attributes ========== -->
                <xs:attribute name="family" fixed="WarfareFamilyPduType"/>
@@ -805,11 +796,6 @@
                <xs:attribute name="pad2" type="xs:unsignedByte"/>
                <xs:attribute name="pad3" type="xs:unsignedLong"/>
                <xs:attribute name="pad4" type="xs:unsignedShort"/>
-               <xs:attribute name="numberOfDERecords" type="xs:unsignedShort">
-                  <xs:annotation>
-                     <xs:appinfo>Field shall specify the number of DE records, Section 7.3.4</xs:appinfo>
-                  </xs:annotation>
-               </xs:attribute>
             </xs:extension>
          </xs:complexContent>
       </xs:complexType>
@@ -2097,7 +2083,7 @@
    </xs:complexType>
    <xs:complexType name="IFFPduLayer3TransponderFormatDataType"><!--debug: another class, providing Pdu types-->
       <xs:annotation>
-         <xs:appinfo>7.6.5.4.3 Layer 3 Mode 5 transponder format (length of list found in field numberOfIFFFundamentalParameterDataRecordsParameters)
+         <xs:appinfo>7.6.5.4.3 Layer 3 Mode 5 transponder format
             <xs:attribute name="id" type="xs:integer" fixed="73"/>
          </xs:appinfo>
       </xs:annotation>
@@ -2114,19 +2100,11 @@
                      <xs:appinfo>Mode 5 transponder basic data</xs:appinfo>
                   </xs:annotation>
                </xs:element>
-               <!--Attribute (as element) IFFPduLayer3TransponderFormatData IFFFundamentalParameterDataRecord with objectlist classRef name=IFFDataSpecification, type=IFFDataSpecificationType-->
-               <xs:sequence minOccurs="0" maxOccurs="unbounded">
+               <xs:element name="IFFFundamentalParameterDataRecord" type="IFFDataSpecificationType">
                   <xs:annotation>
-                     <xs:appinfo>Number of elements is determined by size fieldnumberOfIFFFundamentalParameterDataRecordsParameters and can be 0 or greater.
-                        Ensure that the total PDU size does not exceed maximums allowed in IEEE DIS Specification.</xs:appinfo>
-                     <xs:documentation>numberOfIFFFundamentalParameterDataRecordsParameters</xs:documentation>
+                     <xs:appinfo>Variable length list of fundamental parameters.</xs:appinfo>
                   </xs:annotation>
-                  <xs:element name="IFFDataSpecification" type="IFFDataSpecificationType">
-                     <xs:annotation>
-                        <xs:appinfo>Variable length list of fundamental parameters. (length of list found in field numberOfIFFFundamentalParameterDataRecordsParameters)</xs:appinfo>
-                     </xs:annotation>
-                  </xs:element>
-               </xs:sequence>
+               </xs:element>
             </xs:sequence>
             <!-- ========== debug: divider between elements and attributes ========== -->
             <xs:attribute name="family" fixed="DistributedEmissionsRegenerationFamilyPduType"/>
@@ -2145,7 +2123,6 @@
                   <xs:appinfo>Padding</xs:appinfo>
                </xs:annotation>
             </xs:attribute>
-            <xs:attribute name="numberOfIFFFundamentalParameterDataRecordsParameters" type="xs:unsignedShort"/>
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
@@ -2209,7 +2186,7 @@
    </xs:complexType>
    <xs:complexType name="IFFPduLayer3InterrogatorFormatDataType"><!--debug: another class, providing Pdu types-->
       <xs:annotation>
-         <xs:appinfo>7.6.5.4.2 Layer 3 Mode 5 interrogator format (length of list found in field numberOfIFFFundamentalParameterDataRecordsParameters)
+         <xs:appinfo>7.6.5.4.2 Layer 3 Mode 5 interrogator format
             <xs:attribute name="id" type="xs:integer" fixed="75"/>
          </xs:appinfo>
       </xs:annotation>
@@ -2226,19 +2203,11 @@
                      <xs:appinfo>Mode 5 interrogator basic data</xs:appinfo>
                   </xs:annotation>
                </xs:element>
-               <!--Attribute (as element) IFFPduLayer3InterrogatorFormatData IFFFundamentalParameterDataRecord with objectlist classRef name=IFFDataSpecification, type=IFFDataSpecificationType-->
-               <xs:sequence minOccurs="0" maxOccurs="unbounded">
+               <xs:element name="IFFFundamentalParameterDataRecord" type="IFFDataSpecificationType">
                   <xs:annotation>
-                     <xs:appinfo>Number of elements is determined by size fieldnumberOfIFFFundamentalParameterDataRecordsParameters and can be 0 or greater.
-                        Ensure that the total PDU size does not exceed maximums allowed in IEEE DIS Specification.</xs:appinfo>
-                     <xs:documentation>numberOfIFFFundamentalParameterDataRecordsParameters</xs:documentation>
+                     <xs:appinfo>Variable length list of fundamental parameters.</xs:appinfo>
                   </xs:annotation>
-                  <xs:element name="IFFDataSpecification" type="IFFDataSpecificationType">
-                     <xs:annotation>
-                        <xs:appinfo>Variable length list of fundamental parameters. (length of list found in field numberOfIFFFundamentalParameterDataRecordsParameters)</xs:appinfo>
-                     </xs:annotation>
-                  </xs:element>
-               </xs:sequence>
+               </xs:element>
             </xs:sequence>
             <!-- ========== debug: divider between elements and attributes ========== -->
             <xs:attribute name="family" fixed="DistributedEmissionsRegenerationFamilyPduType"/>
@@ -2257,7 +2226,6 @@
                   <xs:appinfo>Padding</xs:appinfo>
                </xs:annotation>
             </xs:attribute>
-            <xs:attribute name="numberOfIFFFundamentalParameterDataRecordsParameters" type="xs:unsignedShort"/>
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
@@ -2308,7 +2276,7 @@
    </xs:complexType>
    <xs:complexType name="IFFPduLayer4InterrogatorFormatDataType"><!--debug: another class, providing Pdu types-->
       <xs:annotation>
-         <xs:appinfo>7.6.5.5.2 Layer 4 Mode S interrogator format (length of list found in field numberOfIFFFundamentalParameterDataRecordsParameters)
+         <xs:appinfo>7.6.5.5.2 Layer 4 Mode S interrogator format
             <xs:attribute name="id" type="xs:integer" fixed="78"/>
          </xs:appinfo>
       </xs:annotation>
@@ -2325,19 +2293,11 @@
                      <xs:appinfo>Mode S interrogator basic data</xs:appinfo>
                   </xs:annotation>
                </xs:element>
-               <!--Attribute (as element) IFFPduLayer4InterrogatorFormatData IFFFundamentalParameterDataRecord with objectlist classRef name=IFFDataSpecification, type=IFFDataSpecificationType-->
-               <xs:sequence minOccurs="0" maxOccurs="unbounded">
+               <xs:element name="IFFFundamentalParameterDataRecord" type="IFFDataSpecificationType">
                   <xs:annotation>
-                     <xs:appinfo>Number of elements is determined by size fieldnumberOfIFFFundamentalParameterDataRecordsParameters and can be 0 or greater.
-                        Ensure that the total PDU size does not exceed maximums allowed in IEEE DIS Specification.</xs:appinfo>
-                     <xs:documentation>numberOfIFFFundamentalParameterDataRecordsParameters</xs:documentation>
+                     <xs:appinfo>Variable length list of fundamental parameters.</xs:appinfo>
                   </xs:annotation>
-                  <xs:element name="IFFDataSpecification" type="IFFDataSpecificationType">
-                     <xs:annotation>
-                        <xs:appinfo>Variable length list of fundamental parameters. (length of list found in field numberOfIFFFundamentalParameterDataRecordsParameters)</xs:appinfo>
-                     </xs:annotation>
-                  </xs:element>
-               </xs:sequence>
+               </xs:element>
             </xs:sequence>
             <!-- ========== debug: divider between elements and attributes ========== -->
             <xs:attribute name="family" fixed="DistributedEmissionsRegenerationFamilyPduType"/>
@@ -2356,7 +2316,6 @@
                   <xs:appinfo>Padding</xs:appinfo>
                </xs:annotation>
             </xs:attribute>
-            <xs:attribute name="numberOfIFFFundamentalParameterDataRecordsParameters" type="xs:unsignedShort"/>
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
@@ -2419,7 +2378,7 @@
    </xs:complexType>
    <xs:complexType name="IFFPduLayer4TransponderFormatDataType"><!--debug: another class, providing Pdu types-->
       <xs:annotation>
-         <xs:appinfo>7.6.5.5.3 Layer 4 Mode S transponder format (length of list found in field numberOfIFFFundamentalParameterDataRecordsParameters)
+         <xs:appinfo>7.6.5.5.3 Layer 4 Mode S transponder format
             <xs:attribute name="id" type="xs:integer" fixed="83"/>
          </xs:appinfo>
       </xs:annotation>
@@ -2436,19 +2395,11 @@
                      <xs:appinfo>Mode S transponder basic data</xs:appinfo>
                   </xs:annotation>
                </xs:element>
-               <!--Attribute (as element) IFFPduLayer4TransponderFormatData IFFFundamentalParameterDataRecord with objectlist classRef name=IFFDataSpecification, type=IFFDataSpecificationType-->
-               <xs:sequence minOccurs="0" maxOccurs="unbounded">
+               <xs:element name="IFFFundamentalParameterDataRecord" type="IFFDataSpecificationType">
                   <xs:annotation>
-                     <xs:appinfo>Number of elements is determined by size fieldnumberOfIFFFundamentalParameterDataRecordsParameters and can be 0 or greater.
-                        Ensure that the total PDU size does not exceed maximums allowed in IEEE DIS Specification.</xs:appinfo>
-                     <xs:documentation>numberOfIFFFundamentalParameterDataRecordsParameters</xs:documentation>
+                     <xs:appinfo>Variable length list of fundamental parameters.</xs:appinfo>
                   </xs:annotation>
-                  <xs:element name="IFFDataSpecification" type="IFFDataSpecificationType">
-                     <xs:annotation>
-                        <xs:appinfo>Variable length list of fundamental parameters. (length of list found in field numberOfIFFFundamentalParameterDataRecordsParameters)</xs:appinfo>
-                     </xs:annotation>
-                  </xs:element>
-               </xs:sequence>
+               </xs:element>
             </xs:sequence>
             <!-- ========== debug: divider between elements and attributes ========== -->
             <xs:attribute name="family" fixed="DistributedEmissionsRegenerationFamilyPduType"/>
@@ -2467,7 +2418,6 @@
                   <xs:appinfo>Padding</xs:appinfo>
                </xs:annotation>
             </xs:attribute>
-            <xs:attribute name="numberOfIFFFundamentalParameterDataRecordsParameters" type="xs:unsignedShort"/>
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
@@ -2542,7 +2492,7 @@
    </xs:complexType>
    <xs:complexType name="IFFPduLayer5DataType"><!--debug: another class, providing Pdu types-->
       <xs:annotation>
-         <xs:appinfo>7.6.5.6. Layer 5 data communications (length of list found in field numberOfIFFFundamentalParameterDataRecordsParameters)
+         <xs:appinfo>7.6.5.6. Layer 5 data communications
             <xs:attribute name="id" type="xs:integer" fixed="85"/>
          </xs:appinfo>
       </xs:annotation>
@@ -2554,19 +2504,11 @@
                      <xs:appinfo>Layer header</xs:appinfo>
                   </xs:annotation>
                </xs:element>
-               <!--Attribute (as element) IFFPduLayer5Data IFFFundamentalParameterDataRecord with objectlist classRef name=IFFDataSpecification, type=IFFDataSpecificationType-->
-               <xs:sequence minOccurs="0" maxOccurs="unbounded">
+               <xs:element name="IFFFundamentalParameterDataRecord" type="IFFDataSpecificationType">
                   <xs:annotation>
-                     <xs:appinfo>Number of elements is determined by size fieldnumberOfIFFFundamentalParameterDataRecordsParameters and can be 0 or greater.
-                        Ensure that the total PDU size does not exceed maximums allowed in IEEE DIS Specification.</xs:appinfo>
-                     <xs:documentation>numberOfIFFFundamentalParameterDataRecordsParameters</xs:documentation>
+                     <xs:appinfo>Variable length list of fundamental parameters.</xs:appinfo>
                   </xs:annotation>
-                  <xs:element name="IFFDataSpecification" type="IFFDataSpecificationType">
-                     <xs:annotation>
-                        <xs:appinfo>Variable length list of fundamental parameters. (length of list found in field numberOfIFFFundamentalParameterDataRecordsParameters)</xs:appinfo>
-                     </xs:annotation>
-                  </xs:element>
-               </xs:sequence>
+               </xs:element>
             </xs:sequence>
             <!-- ========== debug: divider between elements and attributes ========== -->
             <xs:attribute name="family" fixed="DistributedEmissionsRegenerationFamilyPduType"/>
@@ -2600,7 +2542,6 @@
                   <xs:appinfo>Padding</xs:appinfo>
                </xs:annotation>
             </xs:attribute>
-            <xs:attribute name="numberOfIFFFundamentalParameterDataRecordsParameters" type="xs:unsignedShort"/>
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
@@ -3100,8 +3041,7 @@
    <xs:element name="IntercomControlPdu">
       <xs:annotation>
          <xs:appinfo>5.8.7 Communicates the state of a particular intercom device, request an action of
-            another intercom device, or respond to an action request. (length of list found in
-            field intercomParametersLength)
+            another intercom device, or respond to an action request.
             <xs:attribute name="id" type="xs:integer" fixed="32"/>
          </xs:appinfo>
       </xs:annotation>
@@ -3119,19 +3059,7 @@
                         <xs:appinfo>eid of the entity that has created this intercom channel, same comments as sourceEntityId</xs:appinfo>
                      </xs:annotation>
                   </xs:element>
-                  <!--Attribute (as element) IntercomControlPdu intercomParameters with objectlist classRef name=IntercomCommunicationsParameters, type=IntercomCommunicationsParametersType-->
-                  <xs:sequence minOccurs="0" maxOccurs="unbounded">
-                     <xs:annotation>
-                        <xs:appinfo>Number of elements is determined by size fieldintercomParametersLength and can be 0 or greater.
-                           Ensure that the total PDU size does not exceed maximums allowed in IEEE DIS Specification.</xs:appinfo>
-                        <xs:documentation>intercomParametersLength</xs:documentation>
-                     </xs:annotation>
-                     <xs:element name="IntercomCommunicationsParameters" type="IntercomCommunicationsParametersType">
-                        <xs:annotation>
-                           <xs:appinfo>(length of list found in field intercomParametersLength)</xs:appinfo>
-                        </xs:annotation>
-                     </xs:element>
-                  </xs:sequence>
+                  <xs:element name="intercomParameters" type="IntercomCommunicationsParametersType"/>
                </xs:sequence>
                <!-- ========== debug: divider between elements and attributes ========== -->
                <xs:attribute name="family" fixed="RadioCommunicationsFamilyPduType"/>
@@ -3318,7 +3246,7 @@
    <xs:element name="SignalPdu">
       <xs:annotation>
          <xs:appinfo>5.8.4 Conveys the audio or digital data carried by the simulated radio or intercom
-            transmission.
+            transmission. (length of list found in field dataLength)
             <xs:attribute name="id" type="xs:integer" fixed="26"/>
          </xs:appinfo>
       </xs:annotation>
@@ -3357,8 +3285,19 @@
                </xs:attribute>
                <xs:attribute name="data">
                   <xs:annotation>
-                     <xs:appinfo>list of eight bit values</xs:appinfo>
+                     <xs:appinfo>list of eight bit values (length of list found in field dataLength)</xs:appinfo>
                   </xs:annotation>
+                  <xs:simpleType>
+                     <xs:annotation>
+                        <xs:appinfo>Attribute dataLength determines the length of this list.</xs:appinfo>
+                     </xs:annotation>
+                     <xs:restriction>
+                        <xs:simpleType>
+                           <xs:list itemType="xs:unsignedByte"/>
+                        </xs:simpleType>
+                        <xs:length value="0" fixed="false"/>
+                     </xs:restriction>
+                  </xs:simpleType>
                </xs:attribute>
                <xs:attribute name="padTo32" type="xs:unsignedLong">
                   <xs:annotation>
@@ -3373,7 +3312,7 @@
    <xs:element name="TransmitterPdu">
       <xs:annotation>
          <xs:appinfo>5.8.3 Communicates the state of a particular radio transmitter or simple intercom.
-            (length of list found in field modulationParameterCount antennaPatternCount)
+            (length of list found in field modulationParameterOctets antennaPatternOctets variableTransmitterParameterCount)
             <xs:attribute name="id" type="xs:integer" fixed="25"/>
          </xs:appinfo>
       </xs:annotation>
@@ -3402,29 +3341,16 @@
                         <xs:appinfo>modulation</xs:appinfo>
                      </xs:annotation>
                   </xs:element>
-                  <!--Attribute (as element) TransmitterPdu modulationParametersList with objectlist classRef name=ModulationParameters, type=ModulationParametersType-->
+                  <!--Attribute (as element) TransmitterPdu variableTransmitterParameterRecordsList with objectlist classRef name=VariableTransmitterParameters, type=VariableTransmitterParametersType-->
                   <xs:sequence minOccurs="0" maxOccurs="unbounded">
                      <xs:annotation>
-                        <xs:appinfo>Number of elements is determined by size fieldmodulationParameterCount and can be 0 or greater.
+                        <xs:appinfo>Number of elements is determined by size fieldvariableTransmitterParameterCount and can be 0 or greater.
                            Ensure that the total PDU size does not exceed maximums allowed in IEEE DIS Specification.</xs:appinfo>
-                        <xs:documentation>modulationParameterCount</xs:documentation>
-                     </xs:annotation>
-                     <xs:element name="ModulationParameters" type="ModulationParametersType">
-                        <xs:annotation>
-                           <xs:appinfo>variable length list of modulation parameters (length of list found in field modulationParameterCount)</xs:appinfo>
-                        </xs:annotation>
-                     </xs:element>
-                  </xs:sequence>
-                  <!--Attribute (as element) TransmitterPdu antennaPatternList with objectlist classRef name=VariableTransmitterParameters, type=VariableTransmitterParametersType-->
-                  <xs:sequence minOccurs="0" maxOccurs="unbounded">
-                     <xs:annotation>
-                        <xs:appinfo>Number of elements is determined by size fieldantennaPatternCount and can be 0 or greater.
-                           Ensure that the total PDU size does not exceed maximums allowed in IEEE DIS Specification.</xs:appinfo>
-                        <xs:documentation>antennaPatternCount</xs:documentation>
+                        <xs:documentation>variableTransmitterParameterCount</xs:documentation>
                      </xs:annotation>
                      <xs:element name="VariableTransmitterParameters" type="VariableTransmitterParametersType">
                         <xs:annotation>
-                           <xs:appinfo>variable length list of antenna pattern records (length of list found in field antennaPatternCount)</xs:appinfo>
+                           <xs:appinfo>variable length list of antenna pattern records (length of list found in field variableTransmitterParameterCount)</xs:appinfo>
                         </xs:annotation>
                      </xs:element>
                   </xs:sequence>
@@ -3451,9 +3377,9 @@
                      <xs:appinfo>antenna pattern type (SISO enumeration TransmitterAntennaPatternType uid 167)</xs:appinfo>
                   </xs:annotation>
                </xs:attribute>
-               <xs:attribute name="antennaPatternCount" type="xs:unsignedShort">
+               <xs:attribute name="antennaPatternOctets" type="xs:unsignedShort">
                   <xs:annotation>
-                     <xs:appinfo>atenna pattern length</xs:appinfo>
+                     <xs:appinfo>antenna pattern record length in octets</xs:appinfo>
                   </xs:annotation>
                </xs:attribute>
                <xs:attribute name="frequency" type="xs:unsignedInt">
@@ -3481,13 +3407,45 @@
                      <xs:appinfo>crypto system key identifer</xs:appinfo>
                   </xs:annotation>
                </xs:attribute>
-               <xs:attribute name="modulationParameterCount" type="xs:unsignedByte">
+               <xs:attribute name="modulationParameterOctets" type="xs:unsignedByte">
                   <xs:annotation>
                      <xs:appinfo>how many modulation parameters we have</xs:appinfo>
                   </xs:annotation>
                </xs:attribute>
                <xs:attribute name="padding1" type="xs:unsignedByte"/>
                <xs:attribute name="padding2" type="xs:unsignedShort"/>
+               <xs:attribute name="modulationParametersList">
+                  <xs:annotation>
+                     <xs:appinfo>variable length list of modulation parameters (length of list found in field modulationParameterOctets)</xs:appinfo>
+                  </xs:annotation>
+                  <xs:simpleType>
+                     <xs:annotation>
+                        <xs:appinfo>Attribute modulationParameterOctets determines the length of this list.</xs:appinfo>
+                     </xs:annotation>
+                     <xs:restriction>
+                        <xs:simpleType>
+                           <xs:list itemType="xs:unsignedByte"/>
+                        </xs:simpleType>
+                        <xs:length value="0" fixed="false"/>
+                     </xs:restriction>
+                  </xs:simpleType>
+               </xs:attribute>
+               <xs:attribute name="antennaPatternList">
+                  <xs:annotation>
+                     <xs:appinfo>variable length list of antenna pattern records (length of list found in field antennaPatternOctets)</xs:appinfo>
+                  </xs:annotation>
+                  <xs:simpleType>
+                     <xs:annotation>
+                        <xs:appinfo>Attribute antennaPatternOctets determines the length of this list.</xs:appinfo>
+                     </xs:annotation>
+                     <xs:restriction>
+                        <xs:simpleType>
+                           <xs:list itemType="xs:unsignedByte"/>
+                        </xs:simpleType>
+                        <xs:length value="0" fixed="false"/>
+                     </xs:restriction>
+                  </xs:simpleType>
+               </xs:attribute>
             </xs:extension>
          </xs:complexContent>
       </xs:complexType>
@@ -3497,7 +3455,7 @@
       <xs:annotation>
          <xs:appinfo>5.9.2.2 The Aggregate State PDU shall be used to communicate the state and other pertinent
             information about an aggregated unit. (length of list found in field numberOfDisAggregates
-            numberOfDisEntities numberOfSilentAggregateTypes numberOfSilentEntityTypes numberOfVariableDatumRecords)
+            numberOfDisEntities numberOfSilentAggregateTypes numberOfSilentEntitySystems numberOfVariableDatumRecords)
             <xs:attribute name="id" type="xs:integer" fixed="33"/>
          </xs:appinfo>
       </xs:annotation>
@@ -3556,9 +3514,9 @@
                   <!--Attribute (as element) AggregateStatePdu entityIDList with objectlist classRef name=EntityID, type=EntityIDType-->
                   <xs:sequence minOccurs="0" maxOccurs="unbounded">
                      <xs:annotation>
-                        <xs:appinfo>Number of elements is determined by size fieldnumberOfDisEntities + numberOfSilentAggregateTypes + numberOfSilentEntityTypes and can be 0 or greater.
+                        <xs:appinfo>Number of elements is determined by size fieldnumberOfDisEntities + numberOfSilentAggregateTypes + numberOfSilentEntitySystems and can be 0 or greater.
                            Ensure that the total PDU size does not exceed maximums allowed in IEEE DIS Specification.</xs:appinfo>
-                        <xs:documentation>numberOfDisEntities + numberOfSilentAggregateTypes + numberOfSilentEntityTypes</xs:documentation>
+                        <xs:documentation>numberOfDisEntities + numberOfSilentAggregateTypes + numberOfSilentEntitySystems</xs:documentation>
                      </xs:annotation>
                      <xs:element name="EntityID" type="EntityIDType">
                         <xs:annotation>
@@ -3566,7 +3524,7 @@
                         </xs:annotation>
                      </xs:element>
                   </xs:sequence>
-                  <!--Attribute (as element) AggregateStatePdu silentAggregateSystemList with objectlist classRef name=EntityType, type=EntityTypeType--><!--Attribute (as element) AggregateStatePdu silentEntitySystemList with objectlist classRef name=EntityType, type=EntityTypeType--><!--Attribute (as element) AggregateStatePdu variableDatumList with objectlist classRef name=VariableDatum, type=VariableDatumType-->
+                  <!--Attribute (as element) AggregateStatePdu silentAggregateSystemList with objectlist classRef name=EntityType, type=EntityTypeType--><!--Attribute (as element) AggregateStatePdu silentEntitySystemList with objectlist classRef name=SilentEntitySystem, type=SilentEntitySystemType--><!--Attribute (as element) AggregateStatePdu variableDatumList with objectlist classRef name=VariableDatum, type=VariableDatumType-->
                   <xs:sequence minOccurs="0" maxOccurs="unbounded">
                      <xs:annotation>
                         <xs:appinfo>Number of elements is determined by size fieldnumberOfVariableDatumRecords and can be 0 or greater.
@@ -3612,9 +3570,9 @@
                      <xs:appinfo>number of silent aggregate types</xs:appinfo>
                   </xs:annotation>
                </xs:attribute>
-               <xs:attribute name="numberOfSilentEntityTypes" type="xs:unsignedShort">
+               <xs:attribute name="numberOfSilentEntitySystems" type="xs:unsignedShort">
                   <xs:annotation>
-                     <xs:appinfo>Number of silent entity types, handled automatically by marshaller at run time (and
+                     <xs:appinfo>Number of silent entity systems, handled automatically by marshaller at run time (and
                         not modifiable by end-user programmers)</xs:appinfo>
                   </xs:annotation>
                </xs:attribute>
@@ -4231,6 +4189,12 @@
                         </xs:simpleType>
                      </xs:restriction>
                   </xs:simpleType>
+               </xs:attribute>
+               <xs:attribute name="padding" type="xs:unsignedLong">
+                  <xs:annotation>
+                     <xs:appinfo>zero-filled array of padding bits for byte alignment and consistent sizing of PDU
+                        data</xs:appinfo>
+                  </xs:annotation>
                </xs:attribute>
             </xs:extension>
          </xs:complexContent>
@@ -5438,27 +5402,19 @@
          <xs:appinfo>5.12.4.16 Used to respond to a Record Query-R PDU or a Set Record-R PDU. It is used
             to provide information requested in a Record Query-R PDU, to confirm the information
             received in a Set Record-R PDU, and to confirm the receipt of a periodic or unsolicited
-            Record-R PDU when the acknowledged service level is used. (length of list found in
-            field numberOfRecordSets)
+            Record-R PDU when the acknowledged service level is used.
             <xs:attribute name="id" type="xs:integer" fixed="63"/>
          </xs:appinfo>
       </xs:annotation>
       <xs:complexType>
          <xs:complexContent>
             <xs:extension base="SimulationManagementWithReliabilityFamilyPduType">
-               <xs:sequence><!--Attribute (as element) RecordRPdu recordSets with objectlist classRef name=RecordSpecification, type=RecordSpecificationType-->
-                  <xs:sequence minOccurs="0" maxOccurs="unbounded">
+               <xs:sequence>
+                  <xs:element name="recordSets" type="RecordSpecificationType">
                      <xs:annotation>
-                        <xs:appinfo>Number of elements is determined by size fieldnumberOfRecordSets and can be 0 or greater.
-                           Ensure that the total PDU size does not exceed maximums allowed in IEEE DIS Specification.</xs:appinfo>
-                        <xs:documentation>numberOfRecordSets</xs:documentation>
+                        <xs:appinfo>record sets</xs:appinfo>
                      </xs:annotation>
-                     <xs:element name="RecordSpecification" type="RecordSpecificationType">
-                        <xs:annotation>
-                           <xs:appinfo>record sets (length of list found in field numberOfRecordSets)</xs:appinfo>
-                        </xs:annotation>
-                     </xs:element>
-                  </xs:sequence>
+                  </xs:element>
                </xs:sequence>
                <!-- ========== debug: divider between elements and attributes ========== -->
                <xs:attribute name="family" fixed="SimulationManagementWithReliabilityFamilyPduType"/>
@@ -5477,11 +5433,6 @@
                <xs:attribute name="eventType" type="xs:string">
                   <xs:annotation>
                      <xs:appinfo>(SISO enumeration RecordREventType uid 333)</xs:appinfo>
-                  </xs:annotation>
-               </xs:attribute>
-               <xs:attribute name="numberOfRecordSets" type="xs:unsignedLong">
-                  <xs:annotation>
-                     <xs:appinfo>Number of record sets in list</xs:appinfo>
                   </xs:annotation>
                </xs:attribute>
             </xs:extension>
@@ -5640,26 +5591,19 @@
       <xs:annotation>
          <xs:appinfo>5.12.4.15 Used to set or change certain parameter values. These parameter values are
             contained within a record format as compared to the datum format used in the Set Data-R
-            PDU. (length of list found in field numberOfRecordSets)
+            PDU.
             <xs:attribute name="id" type="xs:integer" fixed="64"/>
          </xs:appinfo>
       </xs:annotation>
       <xs:complexType>
          <xs:complexContent>
             <xs:extension base="SimulationManagementWithReliabilityFamilyPduType">
-               <xs:sequence><!--Attribute (as element) SetRecordRPdu recordSets with objectlist classRef name=RecordSpecification, type=RecordSpecificationType-->
-                  <xs:sequence minOccurs="0" maxOccurs="unbounded">
+               <xs:sequence>
+                  <xs:element name="recordSets" type="RecordSpecificationType">
                      <xs:annotation>
-                        <xs:appinfo>Number of elements is determined by size fieldnumberOfRecordSets and can be 0 or greater.
-                           Ensure that the total PDU size does not exceed maximums allowed in IEEE DIS Specification.</xs:appinfo>
-                        <xs:documentation>numberOfRecordSets</xs:documentation>
+                        <xs:appinfo>record sets</xs:appinfo>
                      </xs:annotation>
-                     <xs:element name="RecordSpecification" type="RecordSpecificationType">
-                        <xs:annotation>
-                           <xs:appinfo>record sets (length of list found in field numberOfRecordSets)</xs:appinfo>
-                        </xs:annotation>
-                     </xs:element>
-                  </xs:sequence>
+                  </xs:element>
                </xs:sequence>
                <!-- ========== debug: divider between elements and attributes ========== -->
                <xs:attribute name="family" fixed="SimulationManagementWithReliabilityFamilyPduType"/>
@@ -5677,11 +5621,6 @@
                <xs:attribute name="pad1" type="xs:unsignedByte"/>
                <xs:attribute name="pad2" type="xs:unsignedShort"/>
                <xs:attribute name="pad3" type="xs:unsignedLong"/>
-               <xs:attribute name="numberOfRecordSets" type="xs:unsignedLong">
-                  <xs:annotation>
-                     <xs:appinfo>Number of record sets in list</xs:appinfo>
-                  </xs:annotation>
-               </xs:attribute>
             </xs:extension>
          </xs:complexContent>
       </xs:complexType>
@@ -6679,8 +6618,8 @@
             </xs:attribute>
             <xs:attribute name="recordSpecificFields">
                <xs:annotation>
-                  <xs:appinfo>The attribute data format conforming to that specified by the record type. K bytes
-                     long (length of list found in field recordLength)</xs:appinfo>
+                  <xs:appinfo>Current implementation also holds the padding bits after unmarshall: K + P! (length
+                     of list found in field recordLength)</xs:appinfo>
                </xs:annotation>
                <xs:simpleType>
                   <xs:annotation>
@@ -7806,7 +7745,7 @@
       <xs:annotation>
          <xs:appinfo>Information about a geometry, a state associated with a geometry, a bounding volume,
             or an associated entity ID. 6.2.31, not fully defined. 'The current definitions can
-            be found in DIS PCR 240'</xs:appinfo>
+            be found in DIS PCR 240' (length of list found in field length)</xs:appinfo>
       </xs:annotation>
       <xs:complexContent>
          <xs:extension base="rootType">
@@ -7832,8 +7771,20 @@
             </xs:attribute>
             <xs:attribute name="geometry">
                <xs:annotation>
-                  <xs:appinfo>Geometry or state record</xs:appinfo>
+                  <xs:appinfo>Geometry or state record. Current implementation also holds the padding bits after
+                     unmarshall! (length of list found in field length)</xs:appinfo>
                </xs:annotation>
+               <xs:simpleType>
+                  <xs:annotation>
+                     <xs:appinfo>Attribute length determines the length of this list.</xs:appinfo>
+                  </xs:annotation>
+                  <xs:restriction>
+                     <xs:simpleType>
+                        <xs:list itemType="xs:unsignedByte"/>
+                     </xs:simpleType>
+                     <xs:length value="0" fixed="false"/>
+                  </xs:restriction>
+               </xs:simpleType>
             </xs:attribute>
             <xs:attribute name="padding2" type="xs:unsignedInt"/>
          </xs:extension>
@@ -8176,6 +8127,11 @@
       </xs:annotation>
       <xs:complexContent>
          <xs:extension base="rootType">
+            <xs:sequence>
+               <xs:element name="fixedData" type="GridAxisDescriptorFixedType"/>
+               <xs:element name="variableData" type="GridAxisDescriptorVariableType"/>
+            </xs:sequence>
+            <!-- ========== debug: divider between elements and attributes ========== -->
             <xs:attribute name="domainInitialXi" type="xs:double">
                <xs:annotation>
                   <xs:appinfo>coordinate of the grid origin or initial value</xs:appinfo>
@@ -8204,12 +8160,12 @@
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   <xs:complexType name="GridAxisDescriptorFixedType" abstract="false"><!--abstract='false' base='GridAxisDescriptorType'-->
+   <xs:complexType name="GridAxisDescriptorFixedType" abstract="false"><!--abstract='false' base='base value not found'-->
       <xs:annotation>
          <xs:appinfo>Grid axis record for fixed data. Section 6.2.41</xs:appinfo>
       </xs:annotation>
       <xs:complexContent>
-         <xs:extension base="GridAxisDescriptorType">
+         <xs:extension base="base value not found">
             <xs:attribute name="numberOfPointsOnXiAxis" type="xs:unsignedShort">
                <xs:annotation>
                   <xs:appinfo>Number of grid locations along Xi axis</xs:appinfo>
@@ -8223,12 +8179,13 @@
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   <xs:complexType name="GridAxisDescriptorVariableType" abstract="false"><!--abstract='false' base='GridAxisDescriptorType'-->
+   <xs:complexType name="GridAxisDescriptorVariableType" abstract="false"><!--abstract='false' base='base value not found'-->
       <xs:annotation>
-         <xs:appinfo>Grid axis descriptor fo variable spacing axis data.</xs:appinfo>
+         <xs:appinfo>Grid axis descriptor fo variable spacing axis data. (length of list found in field
+            numberOfPointsOnXiAxis)</xs:appinfo>
       </xs:annotation>
       <xs:complexContent>
-         <xs:extension base="GridAxisDescriptorType">
+         <xs:extension base="base value not found">
             <xs:attribute name="numberOfPointsOnXiAxis" type="xs:unsignedShort">
                <xs:annotation>
                   <xs:appinfo>Number of grid locations along Xi axis</xs:appinfo>
@@ -8251,8 +8208,20 @@
             </xs:attribute>
             <xs:attribute name="xiValues">
                <xs:annotation>
-                  <xs:appinfo>list of coordinates</xs:appinfo>
+                  <xs:appinfo>list of coordinates. Current implementation also holds the padding bits after unmarshall!
+                     (length of list found in field numberOfPointsOnXiAxis)</xs:appinfo>
                </xs:annotation>
+               <xs:simpleType>
+                  <xs:annotation>
+                     <xs:appinfo>Attribute numberOfPointsOnXiAxis determines the length of this list.</xs:appinfo>
+                  </xs:annotation>
+                  <xs:restriction>
+                     <xs:simpleType>
+                        <xs:list itemType="xs:unsignedShort"/>
+                     </xs:simpleType>
+                     <xs:length value="0" fixed="false"/>
+                  </xs:restriction>
+               </xs:simpleType>
             </xs:attribute>
             <xs:attribute name="padding" type="xs:unsignedInt">
                <xs:annotation>
@@ -8269,6 +8238,12 @@
       </xs:annotation>
       <xs:complexContent>
          <xs:extension base="rootType">
+            <xs:sequence>
+               <xs:element name="type0Data" type="GridDataType0Type"/>
+               <xs:element name="type1Data" type="GridDataType1Type"/>
+               <xs:element name="type2Data" type="GridDataType2Type"/>
+            </xs:sequence>
+            <!-- ========== debug: divider between elements and attributes ========== -->
             <xs:attribute name="sampleType" type="xs:string">
                <xs:annotation>
                   <xs:appinfo>(SISO enumeration GriddedDataSampleType uid 246)</xs:appinfo>
@@ -8282,12 +8257,12 @@
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   <xs:complexType name="GridDataType0Type" abstract="false"><!--abstract='false' base='GridDataType'-->
+   <xs:complexType name="GridDataType0Type" abstract="false"><!--abstract='false' base='base value not found'-->
       <xs:annotation>
          <xs:appinfo>6.2.41, table 68 (length of list found in field numberOfBytes)</xs:appinfo>
       </xs:annotation>
       <xs:complexContent>
-         <xs:extension base="GridDataType">
+         <xs:extension base="base value not found">
             <xs:attribute name="numberOfBytes" type="xs:unsignedShort"/>
             <xs:attribute name="dataValues">
                <xs:annotation>
@@ -8313,12 +8288,12 @@
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   <xs:complexType name="GridDataType1Type" abstract="false"><!--abstract='false' base='GridDataType'-->
+   <xs:complexType name="GridDataType1Type" abstract="false"><!--abstract='false' base='base value not found'-->
       <xs:annotation>
          <xs:appinfo>6.2.41, table 69 (length of list found in field numberOfValues)</xs:appinfo>
       </xs:annotation>
       <xs:complexContent>
-         <xs:extension base="GridDataType">
+         <xs:extension base="base value not found">
             <xs:attribute name="fieldScale" type="xs:float"/>
             <xs:attribute name="fieldOffset" type="xs:float"/>
             <xs:attribute name="numberOfValues" type="xs:unsignedShort"/>
@@ -8346,12 +8321,12 @@
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   <xs:complexType name="GridDataType2Type" abstract="false"><!--abstract='false' base='GridDataType'-->
+   <xs:complexType name="GridDataType2Type" abstract="false"><!--abstract='false' base='base value not found'-->
       <xs:annotation>
          <xs:appinfo>6.2.41, table 70 (length of list found in field numberOfValues)</xs:appinfo>
       </xs:annotation>
       <xs:complexContent>
-         <xs:extension base="GridDataType">
+         <xs:extension base="base value not found">
             <xs:attribute name="numberOfValues" type="xs:unsignedShort"/>
             <xs:attribute name="padding" type="xs:unsignedShort">
                <xs:annotation>
@@ -8402,7 +8377,8 @@
    </xs:complexType>
    <xs:complexType name="IFFDataType" abstract="false"><!--abstract='false' base='rootType'-->
       <xs:annotation>
-         <xs:appinfo>repeating element in IFF Data specification record</xs:appinfo>
+         <xs:appinfo>repeating element in IFF Data specification record (length of list found in field
+            recordLength)</xs:appinfo>
       </xs:annotation>
       <xs:complexContent>
          <xs:extension base="rootType">
@@ -8417,7 +8393,23 @@
                   <xs:appinfo>length of record, including padding</xs:appinfo>
                </xs:annotation>
             </xs:attribute>
-            <xs:attribute name="recordSpecificFields"/>
+            <xs:attribute name="recordSpecificFields">
+               <xs:annotation>
+                  <xs:appinfo>Current implementation also holds the padding bits after unmarshall! (length of list
+                     found in field recordLength)</xs:appinfo>
+               </xs:annotation>
+               <xs:simpleType>
+                  <xs:annotation>
+                     <xs:appinfo>Attribute recordLength determines the length of this list.</xs:appinfo>
+                  </xs:annotation>
+                  <xs:restriction>
+                     <xs:simpleType>
+                        <xs:list itemType="xs:unsignedByte"/>
+                     </xs:simpleType>
+                     <xs:length value="0" fixed="false"/>
+                  </xs:restriction>
+               </xs:simpleType>
+            </xs:attribute>
             <xs:attribute name="padding" type="xs:unsignedLong">
                <xs:annotation>
                   <xs:appinfo>zero-filled array of padding bits for byte alignment and consistent sizing of PDU
@@ -8585,7 +8577,8 @@
    </xs:complexType>
    <xs:complexType name="IntercomCommunicationsParametersType" abstract="false"><!--abstract='false' base='rootType'-->
       <xs:annotation>
-         <xs:appinfo>Intercom communications parameters. Section 6.2.46</xs:appinfo>
+         <xs:appinfo>Intercom communications parameters. Section 6.2.46 (length of list found in field
+            recordLength)</xs:appinfo>
       </xs:annotation>
       <xs:complexContent>
          <xs:extension base="rootType">
@@ -8602,8 +8595,19 @@
             </xs:attribute>
             <xs:attribute name="recordSpecificField">
                <xs:annotation>
-                  <xs:appinfo>This is a placeholder.</xs:appinfo>
+                  <xs:appinfo>This is a placeholder. (length of list found in field recordLength)</xs:appinfo>
                </xs:annotation>
+               <xs:simpleType>
+                  <xs:annotation>
+                     <xs:appinfo>Attribute recordLength determines the length of this list.</xs:appinfo>
+                  </xs:annotation>
+                  <xs:restriction>
+                     <xs:simpleType>
+                        <xs:list itemType="xs:unsignedByte"/>
+                     </xs:simpleType>
+                     <xs:length value="0" fixed="false"/>
+                  </xs:restriction>
+               </xs:simpleType>
             </xs:attribute>
             <xs:attribute name="padding" type="xs:unsignedLong">
                <xs:annotation>
@@ -8966,22 +8970,6 @@
             <xs:attribute name="sensorType" type="xs:unsignedShort">
                <xs:annotation>
                   <xs:appinfo>sensor type. bit fields 0-3 are the type category, 4-15 are teh subcategory</xs:appinfo>
-               </xs:annotation>
-            </xs:attribute>
-         </xs:extension>
-      </xs:complexContent>
-   </xs:complexType>
-   <xs:complexType name="ModulationParametersType" abstract="false"><!--abstract='false' base='rootType'-->
-      <xs:annotation>
-         <xs:appinfo>Modulation parameters associated with a specific radio system. 6.2.58</xs:appinfo>
-      </xs:annotation>
-      <xs:complexContent>
-         <xs:extension base="rootType">
-            <xs:attribute name="recordSpecificFields"/>
-            <xs:attribute name="padding" type="xs:unsignedInt">
-               <xs:annotation>
-                  <xs:appinfo>zero-filled array of padding bits for byte alignment and consistent sizing of PDU
-                     data</xs:appinfo>
                </xs:annotation>
             </xs:attribute>
          </xs:extension>
@@ -9470,7 +9458,7 @@
       <xs:annotation>
          <xs:appinfo>Synthetic record, made up from section 6.2.73. This is used to achieve a repeating
             variable list element.&lt;p&gt;recordLength, recordCount and recordValues must be set by
-            hand so the.</xs:appinfo>
+            hand so the. (length of list found in field recordCount)</xs:appinfo>
       </xs:annotation>
       <xs:complexContent>
          <xs:extension base="rootType">
@@ -9485,7 +9473,7 @@
                   <xs:appinfo>The serial number of the first record in the block of records</xs:appinfo>
                </xs:annotation>
             </xs:attribute>
-            <xs:attribute name="padding" type="xs:unsignedLong">
+            <xs:attribute name="padding1" type="xs:unsignedLong">
                <xs:annotation>
                   <xs:appinfo>zero-filled array of padding bits for byte alignment and consistent sizing of PDU
                      data</xs:appinfo>
@@ -9504,12 +9492,25 @@
             <xs:attribute name="recordValues">
                <xs:annotation>
                   <xs:appinfo>The concatenated records of the format specified by the Record ID field. The length
-                     of this field is the Record Length multiplied by the Record Count, in units of bits.</xs:appinfo>
+                     of this field is the Record Length multiplied by the Record Count, in units of bits.
+                     (length of list found in field recordCount)</xs:appinfo>
                </xs:annotation>
+               <xs:simpleType>
+                  <xs:annotation>
+                     <xs:appinfo>Attribute recordCount determines the length of this list.</xs:appinfo>
+                  </xs:annotation>
+                  <xs:restriction>
+                     <xs:simpleType>
+                        <xs:list itemType="xs:unsignedByte"/>
+                     </xs:simpleType>
+                     <xs:length value="0" fixed="false"/>
+                  </xs:restriction>
+               </xs:simpleType>
             </xs:attribute>
-            <xs:attribute name="padTo64">
+            <xs:attribute name="padding2" type="xs:unsignedInt">
                <xs:annotation>
-                  <xs:appinfo>used if required to make entire record size an even multiple of 8 bytes</xs:appinfo>
+                  <xs:appinfo>zero-filled array of padding bits for byte alignment and consistent sizing of PDU
+                     data</xs:appinfo>
                </xs:annotation>
             </xs:attribute>
          </xs:extension>
@@ -9793,7 +9794,8 @@
             <xs:attribute name="recordLength" type="xs:unsignedShort"/>
             <xs:attribute name="recordSpecificFields">
                <xs:annotation>
-                  <xs:appinfo>(length of list found in field recordLength)</xs:appinfo>
+                  <xs:appinfo>Current implementation also holds the padding bits after unmarshall! (length of list
+                     found in field recordLength)</xs:appinfo>
                </xs:annotation>
                <xs:simpleType>
                   <xs:annotation>
@@ -9818,7 +9820,7 @@
    </xs:complexType>
    <xs:complexType name="StandardVariableSpecificationType" abstract="false"><!--abstract='false' base='rootType'-->
       <xs:annotation>
-         <xs:appinfo>Does not work, and causes failure in anything it is embedded in. Section 6.2.83 (length
+         <xs:appinfo>Variable records holder for 0 or more Standard Variable records. Section 6.2.83 (length
             of list found in field numberOfStandardVariableRecords)</xs:appinfo>
       </xs:annotation>
       <xs:complexContent>
@@ -10139,7 +10141,7 @@
    <xs:complexType name="VariableDatumType" abstract="false"><!--abstract='false' base='rootType'-->
       <xs:annotation>
          <xs:appinfo>The variable datum type, the datum length, and the value for that variable datum type.
-            Section 6.2.93</xs:appinfo>
+            Section 6.2.93 (length of list found in field variableDatumLength)</xs:appinfo>
       </xs:annotation>
       <xs:complexContent>
          <xs:extension base="rootType">
@@ -10157,8 +10159,20 @@
             </xs:attribute>
             <xs:attribute name="variableDatumValue">
                <xs:annotation>
-                  <xs:appinfo>This can be any number of bits long, depending on the datum.</xs:appinfo>
+                  <xs:appinfo>This can be any number of bits long, depending on the datum. (length of list found
+                     in field variableDatumLength)</xs:appinfo>
                </xs:annotation>
+               <xs:simpleType>
+                  <xs:annotation>
+                     <xs:appinfo>Attribute variableDatumLength determines the length of this list.</xs:appinfo>
+                  </xs:annotation>
+                  <xs:restriction>
+                     <xs:simpleType>
+                        <xs:list itemType="xs:unsignedByte"/>
+                     </xs:simpleType>
+                     <xs:length value="0" fixed="false"/>
+                  </xs:restriction>
+               </xs:simpleType>
             </xs:attribute>
             <xs:attribute name="padding" type="xs:unsignedInt">
                <xs:annotation>
@@ -10191,7 +10205,7 @@
    </xs:complexType>
    <xs:complexType name="VariableTransmitterParametersType" abstract="false"><!--abstract='false' base='rootType'-->
       <xs:annotation>
-         <xs:appinfo>Relates to radios. Section 6.2.95</xs:appinfo>
+         <xs:appinfo>Relates to radios. Section 6.2.95 (length of list found in field recordLength)</xs:appinfo>
       </xs:annotation>
       <xs:complexContent>
          <xs:extension base="rootType">
@@ -10206,7 +10220,23 @@
                   <xs:appinfo>Length, in bytes</xs:appinfo>
                </xs:annotation>
             </xs:attribute>
-            <xs:attribute name="recordSpecificFields"/>
+            <xs:attribute name="recordSpecificFields">
+               <xs:annotation>
+                  <xs:appinfo>Current implementation also holds the padding bits after unmarshall! (length of list
+                     found in field recordLength)</xs:appinfo>
+               </xs:annotation>
+               <xs:simpleType>
+                  <xs:annotation>
+                     <xs:appinfo>Attribute recordLength determines the length of this list.</xs:appinfo>
+                  </xs:annotation>
+                  <xs:restriction>
+                     <xs:simpleType>
+                        <xs:list itemType="xs:unsignedByte"/>
+                     </xs:simpleType>
+                     <xs:length value="0" fixed="false"/>
+                  </xs:restriction>
+               </xs:simpleType>
+            </xs:attribute>
             <xs:attribute name="padding" type="xs:unsignedInt">
                <xs:annotation>
                   <xs:appinfo>zero-filled array of padding bits for byte alignment and consistent sizing of PDU

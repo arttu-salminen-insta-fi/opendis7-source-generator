@@ -113,8 +113,6 @@
         </attribute>
     </class>
 
-    <!-- Special cased because of the dataLength fields which are a bit length 
-    -->
     <class name="SignalPdu" id="26" inheritsFrom="RadioCommunicationsFamilyPdu"
            comment="5.8.4 Conveys the audio or digital data carried by the simulated radio or intercom transmission.">
     
@@ -145,7 +143,7 @@
         </attribute>
   
         <attribute name="data" comment="list of eight bit values">
-            <primitivelist length="0">
+            <primitivelist length="0" countFieldName="dataLength" extraBits="0">
                 <primitive type="uint8"/>
             </primitivelist>
         </attribute>
@@ -189,7 +187,7 @@
         </attribute>
  
         <attribute name="data" comment="data bytes">
-            <primitivelist length="0" countFieldName="dataLength">
+            <primitivelist length="0" countFieldName="dataLength" extraBits="0">
                 <primitive type="uint8"/>
             </primitivelist> 
         </attribute>

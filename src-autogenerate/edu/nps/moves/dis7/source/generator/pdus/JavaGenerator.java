@@ -1510,16 +1510,14 @@ public class JavaGenerator extends AbstractGenerator
                         "   * @return serialized size in bytes\n" +
                         "   * @throws Exception" +
                         "   */");
-//        if (aClass.getName().endsWith("Pdu"))
-//        pw.println("@Override");
         pw.println("public static int getMarshalledSize(PduMap map) throws Exception");
         pw.println("{");
-        pw.println("   int marshalSize = 0; ");
+        pw.println("    int marshalSize = 0; ");
         pw.println();
 
         // Size of superclass is the starting point
         if (!aClass.getParentClass().equalsIgnoreCase("root")) {
-            pw.println("   marshalSize += " + aClass.getParentClass() + ".getMarshalledSize(map);");
+            pw.println("    marshalSize += " + aClass.getParentClass() + ".getMarshalledSize(map);");
         }
 
         for (GeneratedClassAttribute anAttribute : aClass.getClassAttributes()) {
@@ -1557,8 +1555,9 @@ public class JavaGenerator extends AbstractGenerator
                             pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
                         }
                     }
-                    // FIXME there are errors in unmarshalling the same PDUs where this is set to 0.
-                    // FIXME implement some proper fix
+                    else if (anAttribute.getListLength() <= 0) {
+                        throw new IllegalArgumentException(String.format("Primitive list length was 0 and no count field was defined! \nGenerated class: %s\nGenerated attribute: %s", aClass, anAttribute));
+                    }
                     else {
                         pw.println("    for (int idx = 0; idx < " + anAttribute.getListLength() + "; idx++)");
                     }
@@ -2463,7 +2462,7 @@ public class JavaGenerator extends AbstractGenerator
     private void writeFromBufferToMap(PrintWriter pw, GeneratedClass aClass) {
         pw.println();
         pw.println("/**");
-        pw.println(" * Unpacks a Pdu into a map from the underlying data.");
+        pw.println(" * Unpacks a Pdu into a PduMap from the underlying data.");
         pw.println(" * @throws java.nio.BufferUnderflowException if byteBuffer is too small");
         pw.println(" * @see java.nio.ByteBuffer");
         pw.println(" * @see <a href=\"https://en.wikipedia.org/wiki/Marshalling_(computer_science)\" target=\"_blank\">https://en.wikipedia.org/wiki/Marshalling_(computer_science)</a>");
@@ -2472,8 +2471,6 @@ public class JavaGenerator extends AbstractGenerator
         pw.println(" * @throws Exception ByteBuffer-generated exception");
         pw.println(" */");
 
-//        if (aClass.getName().endsWith("Pdu"))
-//        pw.println("@Override");
         pw.println("public static PduMap fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception"); // throws EnumNotFoundException");
         pw.println("{");
 
@@ -2485,15 +2482,10 @@ public class JavaGenerator extends AbstractGenerator
             pw.println("    map = new PduMap();\n");
         }
 
-
-
-//        pw.println("    try");
-        pw.println("    {");
-
         // Loop through the class attributes, generating the output for each.
         for (GeneratedClassAttribute anAttribute : aClass.getClassAttributes()) {
             if(anAttribute.shouldSerialize == false) {
-                pw.println("        // attribute " + anAttribute.getName() + " marked as not serialized");
+                pw.println("    // attribute " + anAttribute.getName() + " marked as not serialized");
                 continue;
             }
             String marshalType;
@@ -2506,61 +2498,54 @@ public class JavaGenerator extends AbstractGenerator
                         capped = "";
 
                     if(marshalType.equalsIgnoreCase("UnsignedByte"))
-                        pw.println("        map.put(\"" + anAttribute.getName() + "\", (byte)(byteBuffer.get() & 0xFF));");
+                        pw.println("    map.put(\"" + anAttribute.getName() + "\", (byte)(byteBuffer.get() & 0xFF));");
                     else if (marshalType.equalsIgnoreCase("UnsignedShort"))
-                        pw.println("        map.put(\"" + anAttribute.getName() + "\", (short)(byteBuffer.getShort() & 0xFFFF));");
+                        pw.println("    map.put(\"" + anAttribute.getName() + "\", (short)(byteBuffer.getShort() & 0xFFFF));");
                     else
-                        pw.println("        map.put(\"" + anAttribute.getName() + "\", byteBuffer.get" + capped + "());");
+                        pw.println("    map.put(\"" + anAttribute.getName() + "\", byteBuffer.get" + capped + "());");
 
                     break;
 
                 case SISO_ENUM:
-                    pw.println("        map.put(\"" + anAttribute.getName() + "\", "+anAttribute.getType()+".unmarshalEnum(byteBuffer));");
+                    pw.println("    map.put(\"" + anAttribute.getName() + "\", "+anAttribute.getType()+".unmarshalEnum(byteBuffer));");
                     break;
 
                 case SISO_BITFIELD:
                 case CLASSREF:
                     if (anAttribute.getName().startsWith("iFFPduLayer")) {
-                        pw.println("        if (map.containsKey(\"" + anAttribute.getName() + "\"))");
-                        pw.println("            map.put(\"" + anAttribute.getName() + "\", " + anAttribute.getType() + ".fromBufferToMap(byteBuffer));" );
-                    }
-                    else {
+                        pw.println("    if (map.containsKey(\"" + anAttribute.getName() + "\"))");
                         pw.println("        map.put(\"" + anAttribute.getName() + "\", " + anAttribute.getType() + ".fromBufferToMap(byteBuffer));" );
                     }
+                    else {
+                        pw.println("    map.put(\"" + anAttribute.getName() + "\", " + anAttribute.getType() + ".fromBufferToMap(byteBuffer));" );
+                    }
                     if (aClass.getName().equals("IFFPdu") && anAttribute.getName().equals("fundamentalParameters")) {
-                        pw.println("        if (((Number) ((PduMap) map.get(\"fundamentalParameters\")).get(\"informationLayers\")).byteValue() != 0)");
-                        pw.println("            initLayerKeys(map);");
+                        pw.println("    if (((Number) ((PduMap) map.get(\"fundamentalParameters\")).get(\"informationLayers\")).byteValue() != 0)");
+                        pw.println("        initLayerKeys(map);");
                     }
                     break;
 
                 case PRIMITIVE_LIST:
                     if (anAttribute.getCountFieldName() != null) {
                         if (anAttribute.isCountFieldInOctets()) {
-                            pw.println("        // Valid primitive list varying length with octets");
-                            pw.println("        for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraOctets() + "; idx++)");
+                            pw.println("    // Valid primitive list varying length with octets");
+                            pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraOctets() + "; idx++)");
                         }
                         else if (anAttribute.isCountFieldInBits()) {
-                            pw.println("        // Valid primitive list varying length with bits");
-                            pw.println("        for (int idx = 0; idx < (((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraBits() + " + 7) / 8; idx++)");
+                            pw.println("    // Valid primitive list varying length with bits");
+                            pw.println("    for (int idx = 0; idx < (((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraBits() + " + 7) / 8; idx++)");
                         }
                         else {
-                            pw.println("        // Valid primitive list varying length");
-                            pw.println("        for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
+                            pw.println("    // Valid primitive list varying length");
+                            pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
                         }
                     }
-
-                    // FIXME there are errors un unmarshalling the same PDUs where this is set to 0.
-                    // FIXME implement some proper fix
                     else if (anAttribute.getListLength() > 0) {
-//                    else {
-                        pw.println("        // Valid (> 0) primitive list fixed length");
-                        pw.println("        for (int idx = 0; idx < " + anAttribute.getListLength() + "; idx++)");
+                        pw.println("    // Valid (> 0) primitive list fixed length");
+                        pw.println("    for (int idx = 0; idx < " + anAttribute.getListLength() + "; idx++)");
                     }
-
-//                    }
                     else {
-                        pw.println("        // Invalid primitive list fixed length!!");
-                        pw.println("        for (int idx = 0; idx < " + anAttribute.getListLength() + "; idx++)");
+                        throw new IllegalArgumentException(String.format("Primitive list length was 0 and no count field was defined! \nGenerated class: %s\nGenerated attribute: %s", aClass, anAttribute));
                     }
 
                     marshalType = marshalTypes.getProperty(anAttribute.getType());
@@ -2571,16 +2556,16 @@ public class JavaGenerator extends AbstractGenerator
                         capped = this.initialCapital(marshalType);
                         if( capped.equals("Byte") )
                             capped = "";
-                        pw.println("            map.put(\"" +  anAttribute.getName() + "\" + String.valueOf(idx), byteBuffer.get" + capped + "());");
+                        pw.println("        map.put(\"" +  anAttribute.getName() + "\" + String.valueOf(idx), byteBuffer.get" + capped + "());");
                     }
                     break;
 
                 case OBJECT_LIST:
                     if (anAttribute.getCountFieldName() == null) {
-                        pw.println("        // Invalid object list length!!");
+                        pw.println("    // Invalid object list length!!");
                     }
-                    pw.println("        for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
-                    pw.println("        {");
+                    pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
+                    pw.println("    {");
 
 
                     if(anAttribute.getUnderlyingTypeIsEnum()) {
@@ -2591,30 +2576,29 @@ public class JavaGenerator extends AbstractGenerator
                         marshalType = marshalTypes.getProperty(anAttribute.getType());
 
                         if(marshalType == null) { // It's a class
-                            pw.println("            map.put(\"" + anAttribute.getName() + "\" + String.valueOf(idx), " + anAttribute.getType() + ".fromBufferToMap(byteBuffer));");
+                            pw.println("        map.put(\"" + anAttribute.getName() + "\" + String.valueOf(idx), " + anAttribute.getType() + ".fromBufferToMap(byteBuffer));");
                         }
                         else { // It's a primitive  // should be unnecessary now w/ refactor
                             throw new RuntimeException("Objectlist with a primitive type, illegal.");
                         }
                     }
-                    pw.println("        }");
+                    pw.println("    }");
                     pw.println();
                     break;
 
 
                 case PADTO16:
-                    pw.println("        map.put(\"" + anAttribute.getName() + "\", new byte[Align.from16bits(byteBuffer)]);");
+                    pw.println("    map.put(\"" + anAttribute.getName() + "\", new byte[Align.from16bits(byteBuffer)]);");
                     break;
                 case PADTO32:
-                    pw.println("        map.put(\""+anAttribute.getName() + "\", new byte[Align.from32bits(byteBuffer)]);");
+                    pw.println("    map.put(\""+anAttribute.getName() + "\", new byte[Align.from32bits(byteBuffer)]);");
                     break;
                 case PADTO64:
-                    pw.println("        map.put(\""+anAttribute.getName() + "\", new byte[Align.from64bits(byteBuffer)]);");
+                    pw.println("    map.put(\""+anAttribute.getName() + "\", new byte[Align.from64bits(byteBuffer)]);");
                     break;
             }
         } // End of loop through ivars for writing the unmarshal method
 
-        pw.println("    }");
 //        pw.println("    catch (java.nio.BufferUnderflowException bue)");
 //        pw.println("    {");
 //        pw.println("        System.err.println(\"*** buffer underflow error while unmarshalling " + aClass.getName() + " data.\");");
@@ -2632,18 +2616,13 @@ public class JavaGenerator extends AbstractGenerator
         pw.println(" * @param byteBuffer The ByteBuffer at the position to begin writing");
         pw.println(" * @throws Exception ByteBuffer-generated exception");
         pw.println(" */");
-//        if (aClass.getName().endsWith("Pdu"))
-//        pw.println("@Override");
         pw.println("public static void fromMapToBuffer(PduMap map, java.nio.ByteBuffer byteBuffer) throws Exception");
         pw.println("{");
 
         // If we're a sublcass of another class, we should first call super
         // to make sure the superclass's ivars are marshaled out.
-
         if(!(aClass.getParentClass().equalsIgnoreCase("root")))
-            pw.println("   " + aClass.getParentClass() + ".fromMapToBuffer(map, byteBuffer);");
-
-        //pw.println("    try \n    {");
+            pw.println("    " + aClass.getParentClass() + ".fromMapToBuffer(map, byteBuffer);");
 
         // Loop through the class attributes, generating the output for each.
         for (GeneratedClassAttribute anAttribute: aClass.getClassAttributes())
@@ -2661,17 +2640,7 @@ public class JavaGenerator extends AbstractGenerator
                     capped = this.initialCapital(marshalType);
                     if( capped.equals("Byte") )
                         capped = "";    // ByteBuffer just has put() for bytes
-
-                    // If we're a normal primitivetype, marshal out directly; otherwise, marshall out
-                    // the list length.
-                    // NOTE we use the value directly in the map
-//                    if(anAttribute.getIsDynamicListLengthField())
-//                        pw.println("   byteBuffer.put" + capped + "( (" + marshalType + ")" + anAttribute.getDynamicListClassAttribute().getName() + ".size());");
-//                    else if(anAttribute.getIsPrimitiveListLengthField())
-//                        pw.println("   byteBuffer.put" + capped + "( (" + marshalType + ")" + anAttribute.getDynamicListClassAttribute().getName() + ".length);");
-//                    else
                     pw.println("    byteBuffer.put" + capped + "(((Number) map.get(\"" + anAttribute.getName() + "\"))." + marshalType + "Value());");
-
                     break;
 
                 case SISO_ENUM:
@@ -2704,16 +2673,14 @@ public class JavaGenerator extends AbstractGenerator
                             pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
                         }
                     }
-
-                    // FIXME there are errors un unmarshalling the same PDUs where this is set to 0.
-                    // FIXME implement some proper fix
-//                    else if (anAttribute.getListLength() > 0) {
-                    else {
+                    else if (anAttribute.getListLength() > 0) {
                         pw.println("    for (int idx = 0; idx < " + anAttribute.getListLength() + "; idx++)");
+                    }
+                    else {
+                        throw new IllegalArgumentException(String.format("Primitive list length was 0 and no count field was defined! \nGenerated class: %s\nGenerated attribute: %s", aClass, anAttribute));
                     }
 
                     marshalType = marshalTypes.getProperty(anAttribute.getType());
-
                     if(anAttribute.getUnderlyingTypeIsPrimitive())
                     {
                         capped = this.initialCapital(marshalType);
@@ -2740,7 +2707,6 @@ public class JavaGenerator extends AbstractGenerator
                         if( capped.equals("Byte") ){
                             capped = "";    // ByteBuffer just uses put() for bytes
                         }
-                        //pw.println("           dos.write" + capped + "(" + anAttribute.getName() + ");");
                         pw.println("        byteBuffer.put" + capped + "(((Number) map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)))." + marshalType + "Value());");
                     }
                     else if(anAttribute.getUnderlyingTypeIsEnum()) {

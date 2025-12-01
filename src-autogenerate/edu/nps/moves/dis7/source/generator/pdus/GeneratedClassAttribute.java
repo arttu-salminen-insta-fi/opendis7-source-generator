@@ -534,5 +534,33 @@ public class GeneratedClassAttribute // TODO consider refactor renaming as Gener
     {
         this.enumMarshalSize = enumMarshalSize;
     }
-    
+
+    @Override
+    public String toString() {
+        return "GeneratedClassAttribute{" +
+                "name='" + name + '\'' +
+                ", attributeKind=" + attributeKind +
+                ", type='" + type + '\'' +
+                ", initialClass='" + initialClass + '\'' +
+                ", comment='" + comment + '\'' +
+                ", hidden=" + hidden +
+                ", listLength=" + listLength +
+                ", fixedLength=" + fixedLength +
+                ", countFieldName='" + countFieldName + '\'' +
+                ", extraOctets=" + extraOctets +
+                ", extraBits=" + extraBits +
+                ", isPrimitiveListLengthField=" + isPrimitiveListLengthField +
+                ", isDynamicListLengthField=" + isDynamicListLengthField +
+                ", dynamicListClassAttribute=" + dynamicListClassAttribute +
+                ", defaultValue='" + defaultValue + '\'' +
+                ", underlyingTypeIsPrimitive=" + underlyingTypeIsPrimitive +
+                ", underlyingTypeIsClass=" + underlyingTypeIsClass +
+                ", underlyingTypeIsEnum=" + underlyingTypeIsEnum +
+                ", couldBeString=" + couldBeString +
+                ", isBitField=" + isBitField +
+                ", bitFieldList=" + bitFieldList +
+                ", shouldSerialize=" + shouldSerialize +
+                ", enumMarshalSize='" + enumMarshalSize + '\'' +
+                '}';
+    }
 }

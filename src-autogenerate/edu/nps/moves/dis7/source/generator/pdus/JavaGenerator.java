@@ -2098,6 +2098,9 @@ public class JavaGenerator extends AbstractGenerator
                             pw.println("        for (int idx = 0; idx < " + anAttribute.getCountFieldName() + "; idx++)");
                         }
                     }
+                    else if (anAttribute.getListLength() <= 0) {
+                        throw new IllegalArgumentException(String.format("Primitive list length was 0 and no count field was defined! \nGenerated class: %s\nGenerated attribute: %s", aClass, anAttribute));
+                    }
                     else {
                         pw.println("        for (int idx = 0; idx < " + anAttribute.getName() + ".length; idx++)");
                     }
@@ -2389,6 +2392,9 @@ public class JavaGenerator extends AbstractGenerator
                             pw.println("        " + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[" + anAttribute.getCountFieldName() + "];");
                             pw.println("        for (int idx = 0; idx < " + anAttribute.getCountFieldName() + "; idx++)");
                         }
+                    }
+                    else if (anAttribute.getListLength() <= 0) {
+                        throw new IllegalArgumentException(String.format("Primitive list length was 0 and no count field was defined! \nGenerated class: %s\nGenerated attribute: %s", aClass, anAttribute));
                     }
                     else {
                         pw.println("        for (int idx = 0; idx < " + anAttribute.getName() + ".length; idx++)");

@@ -1544,23 +1544,9 @@ public class JavaGenerator extends AbstractGenerator
                     break;
 
                 case PRIMITIVE_LIST:
-                    if (anAttribute.getCountFieldName() != null) {
-                        if (anAttribute.isCountFieldInOctets()) {
-                            pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraOctets() + "; idx++)");
-                        }
-                        else if (anAttribute.isCountFieldInBits()) {
-                            pw.println("    for (int idx = 0; idx < (((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraBits() + " + 7) / 8; idx++)");
-                        }
-                        else {
-                            pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
-                        }
-                    }
-                    else if (anAttribute.getListLength() <= 0) {
-                        throw new IllegalArgumentException(String.format("Primitive list length was 0 and no count field was defined! \nGenerated class: %s\nGenerated attribute: %s", aClass, anAttribute));
-                    }
-                    else {
-                        pw.println("    for (int idx = 0; idx < " + anAttribute.getListLength() + "; idx++)");
-                    }
+                    String marshalType = marshalTypes.getProperty(anAttribute.getType());
+                    pw.println("    " + marshalType + "[] " + anAttribute.getName() + " = (" + marshalType + "[]) map.get(\"" + anAttribute.getName() + "\");");
+                    pw.println("    for (int idx = 0; idx < " + anAttribute.getName() + ".length; idx++)");
                     pw.println("        marshalSize += " + primitiveSizes.get(anAttribute.getType()) + ";");
                     break;
 
@@ -2535,19 +2521,24 @@ public class JavaGenerator extends AbstractGenerator
                     if (anAttribute.getCountFieldName() != null) {
                         if (anAttribute.isCountFieldInOctets()) {
                             pw.println("    // Valid primitive list varying length with octets");
+
+                            pw.println("    " + types.getProperty(anAttribute.getType()) + "[] " + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraOctets() + "];");
                             pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraOctets() + "; idx++)");
                         }
                         else if (anAttribute.isCountFieldInBits()) {
                             pw.println("    // Valid primitive list varying length with bits");
+                            pw.println("    " + types.getProperty(anAttribute.getType()) + "[] "  + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[(((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraBits() + " + 7) / 8];");
                             pw.println("    for (int idx = 0; idx < (((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraBits() + " + 7) / 8; idx++)");
                         }
                         else {
                             pw.println("    // Valid primitive list varying length");
+                            pw.println("    " + types.getProperty(anAttribute.getType()) + "[] "  + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue()];");
                             pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
                         }
                     }
                     else if (anAttribute.getListLength() > 0) {
                         pw.println("    // Valid (> 0) primitive list fixed length");
+                        pw.println("    " + types.getProperty(anAttribute.getType()) + "[] "  + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[" + anAttribute.getListLength() + "];");
                         pw.println("    for (int idx = 0; idx < " + anAttribute.getListLength() + "; idx++)");
                     }
                     else {
@@ -2562,8 +2553,9 @@ public class JavaGenerator extends AbstractGenerator
                         capped = this.initialCapital(marshalType);
                         if( capped.equals("Byte") )
                             capped = "";
-                        pw.println("        map.put(\"" +  anAttribute.getName() + "\" + String.valueOf(idx), byteBuffer.get" + capped + "());");
+                        pw.println("        " + anAttribute.getName() + "[idx] = byteBuffer.get" + capped + "();");
                     }
+                    pw.println("    map.put(\"" + anAttribute.getName() + "\", " + anAttribute.getName() + ");");
                     break;
 
                 case OBJECT_LIST:
@@ -2668,35 +2660,19 @@ public class JavaGenerator extends AbstractGenerator
                 case PRIMITIVE_LIST:
                     pw.println();
 
-                    if (anAttribute.getCountFieldName() != null) {
-                        if (anAttribute.isCountFieldInOctets()) {
-                            pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraOctets() + "; idx++)");
-                        }
-                        else if (anAttribute.isCountFieldInBits()) {
-                            pw.println("    for (int idx = 0; idx < (((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraBits() + " + 7) / 8; idx++)");
-                        }
-                        else {
-                            pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
-                        }
-                    }
-                    else if (anAttribute.getListLength() > 0) {
-                        pw.println("    for (int idx = 0; idx < " + anAttribute.getListLength() + "; idx++)");
-                    }
-                    else {
-                        throw new IllegalArgumentException(String.format("Primitive list length was 0 and no count field was defined! \nGenerated class: %s\nGenerated attribute: %s", aClass, anAttribute));
-                    }
-
                     marshalType = marshalTypes.getProperty(anAttribute.getType());
                     if(anAttribute.getUnderlyingTypeIsPrimitive())
                     {
                         capped = this.initialCapital(marshalType);
                         if( capped.equals("Byte") )
                             capped = "";    // ByteBuffer just has put() for bytes
-                        pw.println("       byteBuffer.put" + capped + "(((Number) map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)))." + marshalType + "Value());");
+                        pw.println("    " + marshalType + "[] " + anAttribute.getName() + " = ("+ marshalType + "[]) map.get(\"" + anAttribute.getName() + "\");");
+                        pw.println("    for (int idx = 0; idx < " + anAttribute.getName() + ".length; idx++)");
+                        pw.println("        byteBuffer.put" + capped + "("+ anAttribute.getName() + "[idx]);");
                     }
-                    else
-                        pw.println("       " + anAttribute.getType() +".fromMapToBuffer(map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)), byteBuffer);" ); //"[idx].marshal(dos);" )
-
+                    else {
+                        throw new IllegalArgumentException("Primitive list with non primitive underlying type???");
+                    }
                     pw.println();
                     break;
 

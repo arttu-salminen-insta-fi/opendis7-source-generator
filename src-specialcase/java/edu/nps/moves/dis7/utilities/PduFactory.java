@@ -573,7 +573,7 @@ public class PduFactory
       VariableDatum vardat = new VariableDatum();
       vardat.setVariableDatumID(typ);
       vardat.setVariableDatumValue(s.getBytes());
-      vardat.setVariableDatumLengthInBytes(s.getBytes().length);
+      vardat.setVariableDatumLength(s.getBytes().length * 8);
       list.add(vardat);
     });
 
@@ -1285,7 +1285,7 @@ public class PduFactory
       VariableDatum vardat = new VariableDatum();
       vardat.setVariableDatumID(typ);
       vardat.setVariableDatumValue(s.getBytes());
-      vardat.setVariableDatumLengthInBytes(s.getBytes().length);
+      vardat.setVariableDatumLength(s.getBytes().length * 8);
       list.add(vardat);
     });
 

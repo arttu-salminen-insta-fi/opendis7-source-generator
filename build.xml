@@ -242,7 +242,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
         <antcall target="jar.enumerations.classes"/>
         <antcall target="jar.enumerations.source"/>
-        <antcall target="jar.enumerations.javadoc"/>
+        <!-- antcall target="jar.enumerations.javadoc"/ -->
         <antcall target="copy-generated-jars-to-opendis7-java"/>
     </target>
    
@@ -275,7 +275,7 @@ POSSIBILITY OF SUCH DAMAGE.
                update="true"
             zip64Mode="as-needed"> <!-- if not default zip64Mode="as-needed" then NetBeans has problems looking into this jar -->
             <fileset dir="build/classes" defaultexcludes="yes">
-                <include name="edu/nps/moves/dis7/entities/**/*.class"/>
+                <!-- include name="edu/nps/moves/dis7/entities/**/*.class"/ -->
                 <include name="edu/nps/moves/dis7/enumerations/**/*.class"/>
                 <include name="edu/nps/moves/dis7/jammers/**/*.class"/>
                 <include name="edu/nps/moves/dis7/objectTypes/**/*.class"/>
@@ -299,9 +299,9 @@ POSSIBILITY OF SUCH DAMAGE.
                 <section name="edu/nps/moves/dis7/">
                     <attribute name="Sealed" value="true"/>
                 </section>
-                <section name="edu/nps/moves/dis7/entities/">
+                <!-- section name="edu/nps/moves/dis7/entities/">
                     <attribute name="Sealed" value="true"/>
-                </section>
+                </section -->
                 <section name="edu/nps/moves/dis7/jammers/">
                     <attribute name="Sealed" value="true"/>
                 </section>
@@ -693,7 +693,7 @@ POSSIBILITY OF SUCH DAMAGE.
         
         <echo message="=================================================================================="/>
         <echo message="generate-source-code-java stage 2 make pdus,         edu.nps.moves.dis7.source.generator.pdus.GeneratePdusForGivenLanguage"/>
-        <java classname="edu.nps.moves.dis7.source.generator.pdus.GeneratePdusForGivenLanguage">
+        <java fork="true" classname="edu.nps.moves.dis7.source.generator.pdus.GeneratePdusForGivenLanguage">
             <arg value="xml/dis_7_2012/DIS_7_2012.xml"/>
             <arg value="java"/>
             <jvmarg value="-Dxmlpg.generatedSourceDir=src-generated/java"/>
@@ -757,16 +757,17 @@ POSSIBILITY OF SUCH DAMAGE.
         </javac>
         <!-- must compile to gain access to necessary classes for generate-source-code-java stage 5 -->
         
-        <echo message="=================================================================================="/>
-        <echo message="generate-source-code-java stage 5 make entities,     edu.nps.moves.dis7.source.generator.entityTypes.GenerateEntityTypes"/>
-        <java classname="edu.nps.moves.dis7.source.generator.entityTypes.GenerateEntityTypes">
-            <arg value="xml/SISO/${SISO-REF-010.xml}"/>
-            <arg value="src-generated/java/edu/nps/moves/dis7/entities"/>
-            <arg value="edu.nps.moves.dis7.entities"/>
-            <classpath>
-                <pathelement path="build/classes"/>
-            </classpath>
-        </java>
+        <!-- echo message="=================================================================================="/ -->
+        <!-- echo message="generate-source-code-java stage 5 make entities,     edu.nps.moves.dis7.source.generator.entityTypes.GenerateEntityTypes"/ -->
+        <!-- java classname="edu.nps.moves.dis7.source.generator.entityTypes.GenerateEntityTypes" -->
+             <!-- arg value="xml/SISO/${SISO-REF-010.xml}"/ -->
+             <!-- arg value="src-generated/java/edu/nps/moves/dis7/entities"/ -->
+             <!-- arg value="edu.nps.moves.dis7.entities"/ -->
+             <!-- classpath -->
+                 <!-- pathelement path="build/classes"/ -->
+             <!-- /classpath -->
+        <!-- /java -->
+        
         <echo message="generate-source-code-java complete"/>
         <echo message="=================================================================================="/>
     </target>
@@ -802,9 +803,9 @@ POSSIBILITY OF SUCH DAMAGE.
                 <section name="edu/nps/moves/dis7/">
                     <attribute name="Sealed" value="true"/>
                 </section>
-                <section name="edu/nps/moves/dis7/entities/">
+                <!-- section name="edu/nps/moves/dis7/entities/">
                     <attribute name="Sealed" value="true"/>
-                </section>
+                </section -->
                 <section name="edu/nps/moves/dis7/jammers/">
                     <attribute name="Sealed" value="true"/>
                 </section>

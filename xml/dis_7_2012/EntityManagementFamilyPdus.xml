@@ -62,7 +62,7 @@
             <primitive type= "uint16"/>
         </attribute>
       
-        <attribute name="numberOfSilentEntityTypes" hidden="true" comment="Number of silent entity types, handled automatically by marshaller at run time (and not modifiable by end-user programmers)">
+        <attribute name="numberOfSilentEntitySystems" hidden="true" comment="Number of silent entity systems, handled automatically by marshaller at run time (and not modifiable by end-user programmers)">
             <primitive type= "uint16"/>
         </attribute>
       
@@ -89,8 +89,8 @@
         </attribute>
         
         <attribute name="silentEntitySystemList" comment="silent entity types">
-            <objectlist countFieldName="numberOfSilentEntityTypes">
-                <classRef name="EntityType"/>
+            <objectlist countFieldName="numberOfSilentEntitySystems">
+                <classRef name="SilentEntitySystem"/>
             </objectlist> 
         </attribute>
         

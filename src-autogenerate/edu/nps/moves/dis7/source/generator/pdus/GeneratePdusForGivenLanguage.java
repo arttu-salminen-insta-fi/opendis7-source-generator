@@ -52,6 +52,8 @@ public class GeneratePdusForGivenLanguage  // TODO rename? perhaps GeneratePdusB
     /** String constant */ public static final String NAME = "name";
     /** String constant */ public static final String CLASSREF = "classref";
     /** String constant */ public static final String COUNTFIELDNAME = "countfieldname";
+    /** String constant */ public static final String EXTRAOCTETS = "extraoctets";
+    /** String constant */ public static final String EXTRABITS = "extrabits";
     /** String constant */ public static final String TYPE = "type";
     /** String constant */ public static final String DEFAULTVALUE = "defaultvalue";
     /** String constant */ public static final String PRIMITIVE = "primitive";
@@ -868,6 +870,14 @@ public class GeneratePdusForGivenLanguage  // TODO rename? perhaps GeneratePdusB
                 case COUNTFIELDNAME:
                     currentClassAttribute.setCountFieldName(attributes.getValue(idx));
                     backReferenceCountField(attributes, currentGeneratedClass.getClassAttributes(), idx, currentClassAttribute.getAttributeKind());
+                    break;
+
+                case EXTRAOCTETS:
+                    currentClassAttribute.setExtraOctets(Integer.parseInt(attributes.getValue(idx)));
+                    break;
+
+                case EXTRABITS:
+                    currentClassAttribute.setExtraBits(Integer.parseInt(attributes.getValue(idx)));
                     break;
 
                 default:

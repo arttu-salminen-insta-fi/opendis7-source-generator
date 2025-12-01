@@ -54,7 +54,7 @@
             <sisoenum type="TransmitterAntennaPatternType" comment="uid 167"/>
         </attribute>
   
-        <attribute name="antennaPatternCount" hidden="true" comment="atenna pattern length">
+        <attribute name="antennaPatternOctets" hidden="true" comment="antenna pattern record length in octets">
             <primitive type= "uint16"/>
         </attribute>
   
@@ -82,7 +82,7 @@
             <primitive type="uint16"/>
         </attribute>
   
-        <attribute name="modulationParameterCount" hidden="true" comment="how many modulation parameters we have">
+        <attribute name="modulationParameterOctets" hidden="true" comment="how many modulation parameters we have">
             <primitive type="uint8"/>
         </attribute>
   
@@ -95,20 +95,24 @@
         </attribute>
   
         <attribute name="modulationParametersList" comment="variable length list of modulation parameters">
-            <objectlist countFieldName="modulationParameterCount">
-                <classRef name="ModulationParameters"/>
-            </objectlist> 
+            <primitivelist length="0" countFieldName="modulationParameterOctets">
+                <primitive type="uint8"/>
+            </primitivelist> 
         </attribute>
   
         <attribute name="antennaPatternList" comment="variable length list of antenna pattern records">
-            <objectlist countFieldName="antennaPatternCount">
+            <primitivelist length="0" countFieldName="antennaPatternOctets">
+                <primitive type="uint8"/>
+            </primitivelist>
+        </attribute>
+
+        <attribute name="variableTransmitterParameterRecordsList" comment="variable length list of antenna pattern records">
+            <objectlist countFieldName="variableTransmitterParameterCount">
                 <classRef name="VariableTransmitterParameters"/>
-            </objectlist> 
-        </attribute>       
+            </objectlist>
+        </attribute>
     </class>
 
-    <!-- Special cased because of the dataLength fields which are a bit length 
-    -->
     <class name="SignalPdu" id="26" inheritsFrom="RadioCommunicationsFamilyPdu"
            comment="5.8.4 Conveys the audio or digital data carried by the simulated radio or intercom transmission.">
     
@@ -139,7 +143,7 @@
         </attribute>
   
         <attribute name="data" comment="list of eight bit values">
-            <primitivelist length="0">
+            <primitivelist length="0" countFieldName="dataLength" extraBits="0">
                 <primitive type="uint8"/>
             </primitivelist>
         </attribute>
@@ -183,7 +187,7 @@
         </attribute>
  
         <attribute name="data" comment="data bytes">
-            <primitivelist length="0" countFieldName="dataLength">
+            <primitivelist length="0" countFieldName="dataLength" extraBits="0">
                 <primitive type="uint8"/>
             </primitivelist> 
         </attribute>
@@ -295,9 +299,7 @@
         </attribute>
   
         <attribute name="intercomParameters">
-            <objectlist countFieldName="intercomParametersLength">
-                <classRef name="IntercomCommunicationsParameters"/>
-            </objectlist> 
+            <classRef name="IntercomCommunicationsParameters"/>
         </attribute>
     </class>
 

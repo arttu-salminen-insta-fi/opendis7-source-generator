@@ -174,14 +174,8 @@
             <primitive type="uint16"/>
         </attribute>
 
-        <attribute name="numberOfDERecords" hidden="true" comment="Field shall specify the number of DE records, Section 7.3.4 ">
-            <primitive type="uint16"/>
-        </attribute>
-
-        <attribute name="dERecords" comment="Fields shall contain one or more DE records, records shall conform to the variable record format (Section6.2.82), Section 7.3.4">
-            <objectlist countFieldName="numberOfDERecords">
-                <classRef name="StandardVariableSpecification"/>
-            </objectlist>
+        <attribute name="dERecords" comment="May contain 0 or more DE records, records shall conform to the variable record format (Section6.2.82), Section 7.3.4">
+            <classRef name="StandardVariableSpecification"/>
         </attribute>
     </class>
 

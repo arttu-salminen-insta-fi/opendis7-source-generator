@@ -305,6 +305,10 @@
                 <primitive type="uint8"/>
             </primitivelist> 
         </attribute>
+
+        <attribute name="padding" comment="zero-filled array of padding bits for byte alignment and consistent sizing of PDU data">
+            <padtoboundary length="32"/>
+        </attribute>
     
     </class>
     

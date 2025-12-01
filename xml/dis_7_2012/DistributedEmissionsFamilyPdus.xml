@@ -343,14 +343,8 @@ This field defines the active  emission  parameter  index,  beam  scan  pattern,
             <primitive type="uint16"/>
         </attribute>
         
-        <attribute name="numberOfIFFFundamentalParameterDataRecordsParameters">
-            <primitive type="uint16"/>
-        </attribute>
-        
        <attribute name="IFFFundamentalParameterDataRecord" comment="Variable length list of fundamental parameters.">
-            <objectlist countFieldName="numberOfIFFFundamentalParameterDataRecordsParameters">
-                <classRef name="IFFDataSpecification"/>
-            </objectlist> 
+            <classRef name="IFFDataSpecification"/>
         </attribute>
 	
 	</class>
@@ -417,14 +411,8 @@ This field defines the active  emission  parameter  index,  beam  scan  pattern,
             <primitive type="uint16"/>
         </attribute>
         
-        <attribute name="numberOfIFFFundamentalParameterDataRecordsParameters">
-            <primitive type="uint16"/>
-        </attribute>
-        
        <attribute name="IFFFundamentalParameterDataRecord" comment="Variable length list of fundamental parameters.">
-            <objectlist countFieldName="numberOfIFFFundamentalParameterDataRecordsParameters">
-                <classRef name="IFFDataSpecification"/>
-            </objectlist> 
+            <classRef name="IFFDataSpecification"/>
         </attribute>
 	
 	</class>
@@ -540,14 +528,8 @@ This field defines the active  emission  parameter  index,  beam  scan  pattern,
             <primitive type="uint16"/>
         </attribute>
         
-        <attribute name="numberOfIFFFundamentalParameterDataRecordsParameters">
-            <primitive type="uint16"/>
-        </attribute>
-        
        <attribute name="IFFFundamentalParameterDataRecord" comment="Variable length list of fundamental parameters.">
-            <objectlist countFieldName="numberOfIFFFundamentalParameterDataRecordsParameters">
-                <classRef name="IFFDataSpecification"/>
-            </objectlist> 
+            <classRef name="IFFDataSpecification"/>
         </attribute>
 	
 	</class>
@@ -614,14 +596,8 @@ This field defines the active  emission  parameter  index,  beam  scan  pattern,
             <primitive type="uint16"/>
         </attribute>
         
-        <attribute name="numberOfIFFFundamentalParameterDataRecordsParameters">
-            <primitive type="uint16"/>
-        </attribute>
-        
        <attribute name="IFFFundamentalParameterDataRecord" comment="Variable length list of fundamental parameters.">
-            <objectlist countFieldName="numberOfIFFFundamentalParameterDataRecordsParameters">
-                <classRef name="IFFDataSpecification"/>
-            </objectlist> 
+            <classRef name="IFFDataSpecification"/>
         </attribute>
 	
 	</class>
@@ -704,14 +680,8 @@ This field defines the active  emission  parameter  index,  beam  scan  pattern,
             <primitive type="uint16"/>
         </attribute>
         
-        <attribute name="numberOfIFFFundamentalParameterDataRecordsParameters">
-            <primitive type="uint16"/>
-        </attribute>
-        
        <attribute name="IFFFundamentalParameterDataRecord" comment="Variable length list of fundamental parameters.">
-            <objectlist countFieldName="numberOfIFFFundamentalParameterDataRecordsParameters">
-                <classRef name="IFFDataSpecification"/>
-            </objectlist> 
+            <classRef name="IFFDataSpecification"/>
         </attribute>
 	
 	</class>

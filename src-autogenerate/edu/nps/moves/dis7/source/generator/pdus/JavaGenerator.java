@@ -1898,10 +1898,26 @@ public class JavaGenerator extends AbstractGenerator
                   GeneratedClassAttribute listAttribute = anAttribute.getDynamicListClassAttribute();
                   pw.println("       dos.write" + capped + "(" + listAttribute.getName() + ".size());");
                 }
-                
+
                 else if (anAttribute.getIsPrimitiveListLengthField()) {
                   GeneratedClassAttribute listAttribute = anAttribute.getDynamicListClassAttribute();
-                  pw.println("       dos.write" + capped + "(" + listAttribute.getName() + ".length);");
+
+                  if (listAttribute.isCountFieldInOctets()) {
+                      pw.println("       // Count in octets (fixed + data + padding)");
+                      pw.println("       int fixedAndVariableDataOctets = " + listAttribute.getExtraOctets() + " + " + listAttribute.getName() + ".length;");
+                      pw.println("       int padOctetsToInclude = " + (listAttribute.isCountContainsPaddingToBits() ? ("Align.padCountTo" + listAttribute.getCountContainsPaddingToBits() + "Bits(fixedAndVariableDataOctets);") : "0;"));
+                      pw.println("       dos.write" + capped + "(fixedAndVariableDataOctets + padOctetsToInclude);");
+                  }
+                  else if (listAttribute.isCountFieldInBits()) {
+                      pw.println("       // Count in bits (fixed + data + padding)");
+                      pw.println("       int fixedAndVariableDataBits = " + listAttribute.getExtraBits() + " + (" + listAttribute.getName() + ".length * 8);");
+                      pw.println("       int padBitsToInclude = " + (listAttribute.isCountContainsPaddingToBits() ? ("Align.padCountTo" + listAttribute.getCountContainsPaddingToBits() + "Bits((fixedAndVariableDataBits + 7) / 8) * 8;") : "0;"));
+                      pw.println("       dos.write" + capped + "(fixedAndVariableDataBits + padBitsToInclude);");
+                  }
+                  else {
+                      pw.println("       // Count in primitive instances");
+                      pw.println("       dos.write" + capped + "(" + listAttribute.getName() + ".length);");
+                  }
                 }
 
                 else {
@@ -2207,8 +2223,25 @@ public class JavaGenerator extends AbstractGenerator
                     // the list length.
                     if(anAttribute.getIsDynamicListLengthField())
                        pw.println("   byteBuffer.put" + capped + "( (" + marshalType + ")" + anAttribute.getDynamicListClassAttribute().getName() + ".size());");
-                    else if(anAttribute.getIsPrimitiveListLengthField())
-                       pw.println("   byteBuffer.put" + capped + "( (" + marshalType + ")" + anAttribute.getDynamicListClassAttribute().getName() + ".length);");
+                    else if(anAttribute.getIsPrimitiveListLengthField()) {
+                        GeneratedClassAttribute listAttribute = anAttribute.getDynamicListClassAttribute();
+                        if (listAttribute.isCountFieldInOctets()) {
+                            pw.println("   // Count in octets (fixed + data + padding)");
+                            pw.println("   int fixedAndVariableDataOctets = " + listAttribute.getExtraOctets() + " + " + listAttribute.getName() + ".length;");
+                            pw.println("   int padOctetsToInclude = " + (listAttribute.isCountContainsPaddingToBits() ? ("Align.padCountTo" + listAttribute.getCountContainsPaddingToBits() + "Bits(fixedAndVariableDataOctets);") : "0;"));
+                            pw.println("   byteBuffer.put" + capped + "((" + marshalType + ") (fixedAndVariableDataOctets + padOctetsToInclude));");
+                        }
+                        else if (listAttribute.isCountFieldInBits()) {
+                            pw.println("   // Count in bits (fixed + data + padding)");
+                            pw.println("   int fixedAndVariableDataBits = " + listAttribute.getExtraBits() + " + (" + listAttribute.getName() + ".length * 8);");
+                            pw.println("   int padBitsToInclude = " + (listAttribute.isCountContainsPaddingToBits() ? ("Align.padCountTo" + listAttribute.getCountContainsPaddingToBits() + "Bits((fixedAndVariableDataBits + 7) / 8) * 8;") : "0;"));
+                            pw.println("   byteBuffer.put" + capped + "((" + marshalType + ") (fixedAndVariableDataBits + padBitsToInclude));");
+                        }
+                        else {
+                            pw.println("   // Count in primitive instances");
+                            pw.println("   byteBuffer.put" + capped + "((" + marshalType + ") " + listAttribute.getName() + ".length);");
+                        }
+                    }
                     else
                        pw.println("   byteBuffer.put" + capped + "( (" + marshalType + ")" + anAttribute.getName() + ");");
 

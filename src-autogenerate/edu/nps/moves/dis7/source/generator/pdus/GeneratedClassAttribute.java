@@ -91,8 +91,13 @@ public class GeneratedClassAttribute // TODO consider refactor renaming as Gener
      *
      * Only one, if any, of the following should be set to > -1 for attribute.
      */
-    protected int extraOctets = -1;
-    protected int extraBits = -1;
+    protected int countHasExtraFixedOctets = -1;
+    protected int countHasExtraFixedBits = -1;
+
+    /**
+     * Indicate if count field value contains padding to certain number of bits
+     */
+    protected int countContainsPaddingToBits = 0;
     
     /** 
      * Which of list or array is it
@@ -312,7 +317,7 @@ public class GeneratedClassAttribute // TODO consider refactor renaming as Gener
      * @return
      */
     public int getExtraOctets() {
-        return extraOctets;
+        return countHasExtraFixedOctets;
     }
 
     /**
@@ -322,11 +327,11 @@ public class GeneratedClassAttribute // TODO consider refactor renaming as Gener
      * @param pExtraOctets
      */
     public void setExtraOctets(int pExtraOctets) {
-        extraOctets = pExtraOctets;
+        countHasExtraFixedOctets = pExtraOctets;
     }
 
     public boolean isCountFieldInOctets() {
-        return getCountFieldName() != null && extraOctets > -1;
+        return getCountFieldName() != null && countHasExtraFixedOctets > -1;
     }
 
     /**
@@ -336,7 +341,7 @@ public class GeneratedClassAttribute // TODO consider refactor renaming as Gener
      * @return
      */
     public int getExtraBits() {
-        return extraBits;
+        return countHasExtraFixedBits;
     }
 
     /**
@@ -346,11 +351,23 @@ public class GeneratedClassAttribute // TODO consider refactor renaming as Gener
      * @param pExtraBits
      */
     public void setExtraBits(int pExtraBits) {
-        extraBits = pExtraBits;
+        countHasExtraFixedBits = pExtraBits;
     }
 
     public boolean isCountFieldInBits() {
-        return getCountFieldName() != null && extraBits > -1;
+        return getCountFieldName() != null && countHasExtraFixedBits > -1;
+    }
+
+    public int getCountContainsPaddingToBits() {
+        return countContainsPaddingToBits;
+    }
+
+    public void setCountHasPaddingToBits(int pCountPaddingToBits) {
+        countContainsPaddingToBits = pCountPaddingToBits;
+    }
+
+    public boolean isCountContainsPaddingToBits() {
+        return countContainsPaddingToBits > 0;
     }
 
     /** 
@@ -547,8 +564,8 @@ public class GeneratedClassAttribute // TODO consider refactor renaming as Gener
                 ", listLength=" + listLength +
                 ", fixedLength=" + fixedLength +
                 ", countFieldName='" + countFieldName + '\'' +
-                ", extraOctets=" + extraOctets +
-                ", extraBits=" + extraBits +
+                ", countHasExtraFixedOctets=" + countHasExtraFixedOctets +
+                ", countHasExtraFixedBits=" + countHasExtraFixedBits +
                 ", isPrimitiveListLengthField=" + isPrimitiveListLengthField +
                 ", isDynamicListLengthField=" + isDynamicListLengthField +
                 ", dynamicListClassAttribute=" + dynamicListClassAttribute +

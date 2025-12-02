@@ -52,8 +52,9 @@ public class GeneratePdusForGivenLanguage  // TODO rename? perhaps GeneratePdusB
     /** String constant */ public static final String NAME = "name";
     /** String constant */ public static final String CLASSREF = "classref";
     /** String constant */ public static final String COUNTFIELDNAME = "countfieldname";
-    /** String constant */ public static final String EXTRAOCTETS = "extraoctets";
-    /** String constant */ public static final String EXTRABITS = "extrabits";
+    /** String constant */ public static final String EXTRAOCTETS = "counthasextrafixedoctets";
+    /** String constant */ public static final String EXTRABITS = "counthasextrafixedbits";
+    /** String constant */ public static final String COUNTHASPADDINGTOBITS = "counthaspaddingtobits";
     /** String constant */ public static final String TYPE = "type";
     /** String constant */ public static final String DEFAULTVALUE = "defaultvalue";
     /** String constant */ public static final String PRIMITIVE = "primitive";
@@ -878,6 +879,9 @@ public class GeneratePdusForGivenLanguage  // TODO rename? perhaps GeneratePdusB
 
                 case EXTRABITS:
                     currentClassAttribute.setExtraBits(Integer.parseInt(attributes.getValue(idx)));
+                    break;
+                case COUNTHASPADDINGTOBITS:
+                    currentClassAttribute.setCountHasPaddingToBits(Integer.parseInt(attributes.getValue(idx)));
                     break;
 
                 default:

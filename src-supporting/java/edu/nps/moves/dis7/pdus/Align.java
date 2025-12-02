@@ -159,6 +159,18 @@ public class Align
       return pad;
   }
 
+    static public int padCountTo16Bits(int count) {
+        return (2 - count % 2) % 2;
+    }
+
+    static public int padCountTo32Bits(int count) {
+        return (4 - count % 4) % 4;
+    }
+
+    static public int padCountTo64Bits(int count) {
+        return (8 - count % 8) % 8;
+    }
+
   static private void disRead(DataInputStream dis)
   {
       try {

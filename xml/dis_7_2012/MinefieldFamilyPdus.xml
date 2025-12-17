@@ -151,7 +151,7 @@
             <primitive type="uint8"/>
         </attribute>
    
-        <attribute name="padding" comment="zero-filled array of padding bits for byte alignment and consistent sizing of PDU data">
+        <attribute name="padding1" comment="zero-filled array of padding bits for byte alignment and consistent sizing of PDU data">
             <primitive type="uint8" defaultValue="0"/>
         </attribute>
    
@@ -169,7 +169,7 @@
             </objectlist> 
         </attribute>
    
-        <attribute name="padTo32">
+        <attribute name="padding2">
             <padtoboundary length="32"/>
         </attribute>
         
@@ -245,7 +245,7 @@
             </objectlist>
         </attribute>
         
-        <attribute name="padTo32_2">
+        <attribute name="padding3">
             <padtoboundary length="32"/>
         </attribute>
         
@@ -255,7 +255,7 @@
             </primitivelist> 
         </attribute>
         
-         <attribute name="padTo32_3">
+         <attribute name="padding4">
             <padtoboundary length="32"/>
         </attribute>
         

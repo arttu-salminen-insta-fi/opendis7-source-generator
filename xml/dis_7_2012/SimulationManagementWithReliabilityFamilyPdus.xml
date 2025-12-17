@@ -22,11 +22,11 @@
             <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
         </attribute>
    
-        <attribute name="pad1">
+        <attribute name="padding1">
             <primitive type="uint8"/>
         </attribute>
    
-        <attribute name="pad2">
+        <attribute name="padding2">
             <primitive type="uint16"/>
         </attribute>
    
@@ -46,11 +46,11 @@
             <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
         </attribute>
    
-        <attribute name="pad1">
+        <attribute name="padding1">
             <primitive type="uint8"/>
         </attribute>
    
-        <attribute name="pad2">
+        <attribute name="padding2">
             <primitive type="uint16"/>
         </attribute>
    
@@ -78,11 +78,11 @@
             <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
         </attribute>
    
-        <attribute name="pad1">
+        <attribute name="padding1">
             <primitive type="uint8"/>
         </attribute>
    
-        <attribute name="pad2">
+        <attribute name="padding2">
             <primitive type="uint16"/>
         </attribute>
    
@@ -114,7 +114,7 @@
             <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
         </attribute>
    
-        <attribute name="pad1" comment="padding">
+        <attribute name="padding1" comment="padding">
             <primitive type="uint8"/>
         </attribute>
 
@@ -156,11 +156,11 @@
             <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
         </attribute>
    
-        <attribute name="pad1" comment="padding">
+        <attribute name="padding1" comment="padding">
             <primitive type="uint8"/>
         </attribute>
    
-        <attribute name="pad2" comment="padding">
+        <attribute name="padding2" comment="padding">
             <primitive type="uint16"/>
         </attribute>
    
@@ -241,11 +241,11 @@
             <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
         </attribute>
    
-        <attribute name="pad1" comment="padding">
+        <attribute name="padding1" comment="padding">
             <primitive type="uint8"/>
         </attribute>
    
-        <attribute name="pad2" comment="padding">
+        <attribute name="padding2" comment="padding">
             <primitive type="uint16"/>
         </attribute>
    
@@ -290,11 +290,11 @@
             <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
         </attribute>
    
-        <attribute name="pad1" comment="padding">
+        <attribute name="padding1" comment="padding">
             <primitive type="uint8"/>
         </attribute>
    
-        <attribute name="pad2" comment="padding">
+        <attribute name="padding2" comment="padding">
             <primitive type="uint16"/>
         </attribute>
    
@@ -338,11 +338,11 @@
             <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
         </attribute>
 
-        <attribute name="pad1" comment="padding">
+        <attribute name="padding1" comment="padding">
             <primitive type="uint8"/>
         </attribute>
    
-        <attribute name="pad2" comment="padding">
+        <attribute name="padding2" comment="padding">
             <primitive type="uint16"/>
         </attribute>
    
@@ -379,7 +379,7 @@
             <sisoenum type="EventReportEventType" comment="uid 73"/>
         </attribute>
    
-        <attribute name="pad1" comment="padding">
+        <attribute name="padding1" comment="padding">
             <primitive type="uint32"/>
         </attribute>
    
@@ -442,7 +442,7 @@
             <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
         </attribute>
    
-        <attribute name="pad1" comment="padding">
+        <attribute name="padding1" comment="padding">
             <primitive type="uint8"/>
         </attribute>
    
@@ -481,15 +481,15 @@
             <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
         </attribute>
        
-        <attribute name="pad1">
+        <attribute name="padding1">
             <primitive type="uint8"/>
         </attribute>
        
-        <attribute name="pad2">
+        <attribute name="padding2">
             <primitive type="uint16"/>
         </attribute>
        
-        <attribute name="pad3">
+        <attribute name="padding3">
             <primitive type="uint32"/>
         </attribute>
         
@@ -513,7 +513,7 @@
             <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
         </attribute>
        
-        <attribute name="pad1">
+        <attribute name="padding1">
             <primitive type="uint8"/>
         </attribute>
        

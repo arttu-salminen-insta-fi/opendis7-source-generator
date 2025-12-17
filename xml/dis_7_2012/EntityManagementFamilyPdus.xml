@@ -78,7 +78,7 @@
             </objectlist> 
         </attribute>
         
-        <attribute name="padTo32">
+        <attribute name="padding">
             <padtoboundary length="32"/>
         </attribute>
         
@@ -123,7 +123,7 @@
             <primitive type= "uint8"/>
         </attribute>
       
-        <attribute name="pad" comment="padding">
+        <attribute name="padding" comment="padding">
             <primitive type= "uint32"/>
         </attribute>
       

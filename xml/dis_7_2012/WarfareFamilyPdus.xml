@@ -93,7 +93,7 @@
             <primitive type="uint8"/>
         </attribute>
 
-        <attribute name="pad" comment="padding">
+        <attribute name="padding" comment="padding">
             <primitive type="uint16"/>
         </attribute>
 
@@ -142,7 +142,7 @@
             <primitive type="float32"/>
         </attribute>
         
-        <attribute name="pad1">
+        <attribute name="padding1">
             <primitive type="uint32"/>
         </attribute>
         
@@ -162,15 +162,15 @@
             <sisoenum type="DEFirePulseShape" comment="uid 312"/>
         </attribute>
 
-        <attribute name="pad2">
+        <attribute name="padding2">
             <primitive type="uint8"/>
         </attribute>
 
-        <attribute name="pad3">
+        <attribute name="padding3">
             <primitive type="uint32"/>
         </attribute>
 
-        <attribute name="pad4">
+        <attribute name="padding4">
             <primitive type="uint16"/>
         </attribute>
 

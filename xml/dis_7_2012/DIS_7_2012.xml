@@ -3273,7 +3273,7 @@ dB and RPM)"/>
             <classRef name="PduStatus"/>
         </attribute>
 
-        <attribute name="padding"
+        <attribute name="paddingHeader"
                    comment="zero-filled array of padding bits for byte alignment and consistent sizing of PDU data">
             <primitive type="uint8" defaultValue="0"/>
         </attribute>

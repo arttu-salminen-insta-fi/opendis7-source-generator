@@ -260,7 +260,7 @@
             <sisoenum type="CollisionType" comment="uid 189"/>
         </attribute>
 
-        <attribute name="pad" comment="some padding">
+        <attribute name="padding" comment="some padding">
             <primitive type="uint8" defaultValue="0"/>
         </attribute>
 
@@ -294,7 +294,7 @@
             <classRef name="EventIdentifier"/>
         </attribute>
 
-        <attribute name="pad" comment="some padding">
+        <attribute name="padding" comment="some padding">
             <primitive type="uint16" defaultValue="0"/>
         </attribute>
 

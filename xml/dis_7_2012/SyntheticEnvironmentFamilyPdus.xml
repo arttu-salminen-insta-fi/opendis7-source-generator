@@ -174,7 +174,7 @@
             <classRef name="SimulationAddress"/>
         </attribute>
    
-        <attribute name="pad2" comment="padding">
+        <attribute name="padding2" comment="padding">
             <primitive type="uint32"/>
         </attribute>
    

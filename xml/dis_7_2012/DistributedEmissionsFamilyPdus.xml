@@ -190,7 +190,7 @@
             <sisoenum type= "UAStateChangeUpdateIndicator" comment="uid 143"/>
         </attribute>
   
-        <attribute name="pad" comment="padding">
+        <attribute name="padding" comment="padding">
             <primitive type= "uint8" default="0"/>
         </attribute>
   

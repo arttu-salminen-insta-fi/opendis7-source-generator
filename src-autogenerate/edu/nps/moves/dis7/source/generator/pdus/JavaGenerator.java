@@ -1566,7 +1566,7 @@ public class JavaGenerator extends AbstractGenerator
                     break;
 
                 case SISO_ENUM:
-                    pw.println("    marshalSize += ((" + anAttribute.getType() + ") map.get(\"" + anAttribute.getName() + "\")).getMarshalledSize();");
+                    pw.println("    marshalSize += " + anAttribute.getType() + ".getEnumForValue(((Number) map.get(\"" + anAttribute.getName() + "\")).intValue()).getMarshalledSize();");
                     break;
 
                 case CLASSREF:
@@ -2442,7 +2442,7 @@ public class JavaGenerator extends AbstractGenerator
                     break;
 
                 case SISO_ENUM:
-                    pw.println("    map.put(\"" + anAttribute.getName() + "\", "+anAttribute.getType()+".unmarshalEnum(byteBuffer));");
+                    pw.println("    map.put(\"" + anAttribute.getName() + "\", "+anAttribute.getType()+".unmarshalEnum(byteBuffer).getValue());");
                     break;
 
                 case SISO_BITFIELD:
@@ -2585,7 +2585,7 @@ public class JavaGenerator extends AbstractGenerator
                     break;
 
                 case SISO_ENUM:
-                    pw.println("    ((" + anAttribute.getType() + ") map.get(\"" + anAttribute.getName() + "\")).marshal(byteBuffer);");
+                    pw.println("    " + anAttribute.getType() + ".getEnumForValue(((Number) map.get(\"" + anAttribute.getName() + "\")).intValue()).marshal(byteBuffer);");
                     break;
 
                 case SISO_BITFIELD:

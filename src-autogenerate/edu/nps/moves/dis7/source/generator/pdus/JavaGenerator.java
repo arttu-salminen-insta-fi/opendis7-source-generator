@@ -1588,14 +1588,15 @@ public class JavaGenerator extends AbstractGenerator
                     break;
 
                 case OBJECT_LIST:
+                    pw.println("    List " + anAttribute.getName() + " = (List) map.get(\"" + anAttribute.getName() + "\");");
                     pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
                     if(anAttribute.getUnderlyingTypeIsPrimitive()) {
-                        pw.println("        marshalSize += " + primitiveSizes.get(anAttribute.getType()) + ";");
+                        throw new IllegalArgumentException("Object list has underlying primitive type, attribute: " + anAttribute.getName() + " , class: " + aClass.getName());
                     } else if (anAttribute.getUnderlyingTypeIsEnum()) {
-                        pw.println("        marshalSize += ((" + anAttribute.getType() +") map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx))).getMarshalledSize();");
+                        pw.println("        marshalSize += " + anAttribute.getType() + ".getEnumForValue(((Number) " + anAttribute.getName() + ".get(idx)).intValue()).getMarshalledSize();");
                     }
                     else {
-                        pw.println("        marshalSize += " + anAttribute.getType() + ".getMarshalledSize((PduMap) map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)));");
+                        pw.println("        marshalSize += " + anAttribute.getType() + ".getMarshalledSize((PduMap) " + anAttribute.getName() + ".get(idx));");
                     }
                     break;
 
@@ -2505,25 +2506,28 @@ public class JavaGenerator extends AbstractGenerator
                     if (anAttribute.getCountFieldName() == null) {
                         pw.println("    // Invalid object list length!!");
                     }
+
+                    pw.println("    List " + anAttribute.getName() + " = new ArrayList<>();");
                     pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
                     pw.println("    {");
 
 
                     if(anAttribute.getUnderlyingTypeIsEnum()) {
-                        pw.println("        " +anAttribute.getType() + " anX = "+anAttribute.getType() + ".unmarshalEnum(byteBuffer);");
-                        pw.println("            map.put(\"" + anAttribute.getName() + "\" + String.valueOf(idx), anX);");
+                        pw.println("        " + anAttribute.getName() + ".add(" + anAttribute.getType() + ".unmarshalEnum(byteBuffer).getValue());");
                     }
                     else {
                         marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
 
                         if(marshalType == null) { // It's a class
-                            pw.println("        map.put(\"" + anAttribute.getName() + "\" + String.valueOf(idx), " + anAttribute.getType() + ".fromBufferToMap(byteBuffer));");
+                            pw.println("        " + anAttribute.getName() + ".add(" + anAttribute.getType() + ".fromBufferToMap(byteBuffer));" );
+
                         }
                         else { // It's a primitive  // should be unnecessary now w/ refactor
                             throw new RuntimeException("Objectlist with a primitive type, illegal.");
                         }
                     }
                     pw.println("    }");
+                    pw.println("    map.put(\"" + anAttribute.getName() + "\", " + anAttribute.getName() + ");");
                     pw.println();
                     break;
 
@@ -2621,6 +2625,7 @@ public class JavaGenerator extends AbstractGenerator
 
                 case OBJECT_LIST:
                     pw.println();
+                    pw.println("    List " + anAttribute.getName() + " = (List) map.get(\"" + anAttribute.getName() + "\");");
                     pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
                     pw.println("    {");
 
@@ -2628,18 +2633,14 @@ public class JavaGenerator extends AbstractGenerator
 
                     if(anAttribute.getUnderlyingTypeIsPrimitive())
                     {
-                        capped = this.initialCapital(marshalType);
-                        if( capped.equals("Byte") ){
-                            capped = "";    // ByteBuffer just uses put() for bytes
-                        }
-                        pw.println("        byteBuffer.put" + capped + "(((Number) map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)))." + marshalType + "Value());");
+                        throw new IllegalArgumentException("Object list has underlying primitive type, attribute: " + anAttribute.getName() + " , class: " + aClass.getName());
                     }
                     else if(anAttribute.getUnderlyingTypeIsEnum()) {
-                        pw.println("        ((" + anAttribute.getType() + ") map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx))).marshal(byteBuffer);");
+                        pw.println("        " + anAttribute.getType() + ".getEnumForValue(((Number) " + anAttribute.getName() + ".get(idx)).intValue()).marshal(byteBuffer);");
                     }
                     else
                     {
-                        pw.println("        " + anAttribute.getType() + ".fromMapToBuffer((PduMap) map.get(\"" + anAttribute.getName() + "\" + String.valueOf(idx)), byteBuffer);");
+                        pw.println("        " + anAttribute.getType() + ".fromMapToBuffer((PduMap) " + anAttribute.getName() + ".get(idx), byteBuffer);");
                     }
 
                     pw.println("    }");

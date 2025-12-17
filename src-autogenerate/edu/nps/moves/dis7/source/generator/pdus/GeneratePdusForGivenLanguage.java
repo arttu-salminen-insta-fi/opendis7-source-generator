@@ -40,6 +40,7 @@ public class GeneratePdusForGivenLanguage  // TODO rename? perhaps GeneratePdusB
     // Elements and attributes we look for in our XML pdu description files:
 
     /** String constant */ public static final String INHERITSFROM = "inheritsFrom";
+    /** String constant */ public static final String OVERWRITESUPERMARSHALLING = "overwriteSuperMarshalling";
     /** String constant */ public static final String ALIASFOR = "aliasFor";
     /** String constant */ public static final String IMPLEMENTS = "implements";
     /** String constant */ public static final String XMLROOTELEMENT = "xmlRootElement";
@@ -594,7 +595,11 @@ public class GeneratePdusForGivenLanguage  // TODO rename? perhaps GeneratePdusB
                         //System.out.println("inherits from " + attributes.getValue(idx));
                         currentGeneratedClass.setParentClass(attributes.getValue(idx));
                         break;
-                        
+
+                    case OVERWRITESUPERMARSHALLING: // Class overwrites super class marshalling completely
+                        currentGeneratedClass.setOverwriteSuperMarshalling(attributes.getValue(idx));
+                        break;
+
                     case ALIASFOR: // write empty subclass
                         currentGeneratedClass.setAliasFor(attributes.getValue(idx));
                         break;

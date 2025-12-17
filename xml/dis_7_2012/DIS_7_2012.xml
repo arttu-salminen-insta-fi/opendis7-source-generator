@@ -549,8 +549,21 @@ dB and RPM)"/>
 
     </class>
 
+    <class name="Descriptor" inheritsFrom="root"
+           comment="Descriptor without specific type. PDUs default to this because specific type is not defined anywhere...">
+
+        <attribute name="entityType" comment="Related munition / explosion / expendable type, only used when Descriptor instance is used!">
+            <classRef name="EntityType"/>
+        </attribute>
+
+        <attribute name="descriptorRecordFields" comment="Descriptor specific fields, only used when Descriptor instance is used!">
+            <primitive type="uint64"/>
+        </attribute>
+    </class>
+
     <!-- Section 6.2.19.2 -->
-    <class name="MunitionDescriptor" inheritsFrom="root"
+    <class name="MunitionDescriptor" inheritsFrom="Descriptor"
+           overwriteSuperMarshalling="true"
            comment="Represents the firing or detonation of a munition. Section 6.2.19.2">
 
         <attribute name="munitionType" comment="What munition was used in the burst">
@@ -577,7 +590,8 @@ dB and RPM)"/>
 
     <!-- Section 6.2.19.3 -->
     <class name="ExplosionDescriptor"
-           inheritsFrom="root"
+           inheritsFrom="Descriptor"
+           overwriteSuperMarshalling="true"
            comment="Explosion of a non-munition. Section 6.2.19.3">
 
         <attribute name="explodingObject" comment="Type of the object that exploded. See 6.2.30">
@@ -602,7 +616,8 @@ dB and RPM)"/>
 
     <!-- Section 6.2.19.3 -->
     <class name="ExpendableDescriptor"
-           inheritsFrom="root"
+           inheritsFrom="Descriptor"
+           overwriteSuperMarshalling="true"
            comment="Burst of chaff or expendible device. Section 6.2.19.4">
 
         <attribute name="expendableType" comment="Type of the object that exploded">

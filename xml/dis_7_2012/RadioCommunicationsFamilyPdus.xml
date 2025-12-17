@@ -78,7 +78,7 @@
             <sisoenum type="TransmitterCryptoSystem" comment="uid 166"/>
         </attribute>
   
-        <attribute name="cryptoKeyId" comment="crypto system key identifer">
+        <attribute name="cryptoKeyId" comment="crypto system key identifer" nonBasicDataType="true">
             <primitive type="uint16"/>
         </attribute>
   
@@ -122,7 +122,7 @@
             <classRef name="RadioCommsHeader"/>
         </attribute> 
          
-        <attribute name="encodingScheme" comment="encoding scheme used, and enumeration">
+        <attribute name="encodingScheme" comment="encoding scheme used, and enumeration" nonBasicDataType="true">
             <primitive type="uint16"/>
         </attribute>
   

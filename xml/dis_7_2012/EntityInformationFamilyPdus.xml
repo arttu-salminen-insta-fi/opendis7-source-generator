@@ -43,7 +43,7 @@
         </attribute>
 
         <attribute name="entityAppearance" comment="a series of bit flags that are used to help draw the entity, such as smoking, on fire, etc.">
-            <primitive type="uint32"/>
+            <primitive type="uint32" encodedBy="entityType"/>
         </attribute>
 
         <attribute name="deadReckoningParameters" comment="parameters used for dead reckoning">
@@ -55,7 +55,7 @@
         </attribute>
  
         <attribute name="capabilities" comment="a series of bit flags">
-            <sisobitfield type="EntityCapabilities" defaultValue="new LandPlatformCapabilities()" size="32" comment="uid 55"/>
+            <sisobitfield type="EntityCapabilities" defaultValue="new LandPlatformCapabilities()" size="32" comment="uid 55" encodedBy="entityType"/>
         </attribute>
 
         <attribute name="variableParameters" comment="variable length list of variable parameters. In earlier DIS versions this was articulation parameters.">
@@ -373,7 +373,7 @@
         </attribute>
 
         <attribute name="entityAppearance" comment="This field shall specify the dynamic changes to the entity's appearance attributes. This field shall be represented by an Entity Appearance record (see 6.2.26).">
-            <primitive type="uint32"/>
+            <primitive type="uint32" encodedBy="entityType"/>
         </attribute>
 
         <attribute name="variableParameters" comment="This field shall specify the parameter values for each Variable Parameter record that is included (see 6.2.93 and Annex I).">

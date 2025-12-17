@@ -361,7 +361,7 @@ dB and RPM)"/>
     </class>
 
     <class name="ChangeOptions" inheritsFrom="root" comment="This is a bitfield. See section 6.2.13 aka B.2.41">
-        <attribute name="value">
+        <attribute name="value" nonBasicDataType="true">
             <primitive type="uint8"/>
         </attribute>
     </class>
@@ -557,7 +557,7 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="descriptorRecordFields" comment="Descriptor specific fields, only used when Descriptor instance is used!">
-            <primitive type="uint64"/>
+            <primitive type="uint64" encodedBy="?"/>
         </attribute>
     </class>
 
@@ -1410,7 +1410,7 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="fixedDatumValue" comment="Value for the fixed datum">
-            <primitive type="uint32"/>
+            <primitive type="uint32" encodedBy="fixedDatumID"/>
         </attribute>
 
     </class>
@@ -1418,12 +1418,12 @@ dB and RPM)"/>
     <class name="FundamentalOperationalData" inheritsFrom="root"
            comment="Basic operational data for IFF. Section 6.2.39">
 
-        <attribute name="systemStatus" comment="system status, IEEE DIS 7 defined">
+        <attribute name="systemStatus" comment="system status, IEEE DIS 7 defined" nonBasicDataType="true">
             <primitive type="uint8"/>
         </attribute>
 
         <attribute name="dataField1" comment="data field 1">
-            <primitive type="uint8"/>
+            <primitive type="uint8" encodedBy="systemType"/>
         </attribute>
 
         <attribute name="informationLayers" comment="eight boolean fields">
@@ -1431,31 +1431,31 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="dataField2" comment="enumeration">
-            <primitive type="uint8"/>
+            <primitive type="uint8" encodedBy="systemType"/>
         </attribute>
 
         <attribute name="parameter1" comment="parameter, enumeration">
-            <primitive type="uint16"/>
+            <primitive type="uint16" encodedBy="systemType"/>
         </attribute>
 
         <attribute name="parameter2" comment="parameter, enumeration">
-            <primitive type="uint16"/>
+            <primitive type="uint16" encodedBy="systemType"/>
         </attribute>
 
         <attribute name="parameter3" comment="parameter, enumeration">
-            <primitive type="uint16"/>
+            <primitive type="uint16" encodedBy="systemType"/>
         </attribute>
 
         <attribute name="parameter4" comment="parameter, enumeration">
-            <primitive type="uint16"/>
+            <primitive type="uint16" encodedBy="systemType"/>
         </attribute>
 
         <attribute name="parameter5" comment="parameter, enumeration">
-            <primitive type="uint16"/>
+            <primitive type="uint16" encodedBy="systemType"/>
         </attribute>
 
         <attribute name="parameter6" comment="parameter, enumeration">
-            <primitive type="uint16"/>
+            <primitive type="uint16" encodedBy="systemType"/>
         </attribute>
 
     </class>
@@ -1757,7 +1757,7 @@ dB and RPM)"/>
 
         <attribute name="recordSpecificFields"
                    comment="Current implementation also holds the padding bits after unmarshall!">
-            <primitivelist length="0" countFieldName="recordLength" countHasExtraFixedOctets="6" countHasPaddingToBits="32">
+            <primitivelist length="0" countFieldName="recordLength" countHasExtraFixedOctets="6" countHasPaddingToBits="32" encodedBy="recordType">
                 <primitive type="uint8"/>
             </primitivelist>
         </attribute>
@@ -1939,7 +1939,7 @@ dB and RPM)"/>
 
         <attribute name="layerSpecificInformation"
                    comment="field shall specify layer-specific information that varies by System Type (see 6.2.86) and Layer Number.">
-            <primitive type="uint8"/>
+            <primitive type="uint8" encodedBy="layerNumber"/>
         </attribute>
 
         <attribute name="length"
@@ -2808,7 +2808,7 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="variableDatumValue" comment="This can be any number of bits long, depending on the datum.">
-            <primitivelist length="0" countFieldName="variableDatumLength" countHasExtraFixedBits="0">
+            <primitivelist length="0" countFieldName="variableDatumLength" countHasExtraFixedBits="0" encodedBy="variableDatumID">
                 <primitive type="uint8"/>
             </primitivelist>
         </attribute>
@@ -3302,7 +3302,7 @@ dB and RPM)"/>
                     Intercom Attached Indicator (IAI), IFF Simulation Mode (ISM) and Active Interrogation Indicator (AII).">
 
         <attribute name="value" comment="PDU Status Record value containing bitmasked field">
-            <primitive type="uint8" defaultValue="0"/>
+            <primitive type="uint8" defaultValue="0" encodedBy="entityType"/>
         </attribute>
 
     </class>

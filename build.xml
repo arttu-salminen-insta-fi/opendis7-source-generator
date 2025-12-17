@@ -753,6 +753,7 @@ POSSIBILITY OF SUCH DAMAGE.
             </src>
             <classpath>
                 <pathelement path="build/classes"/>
+                <pathelement path="lib/guava-28.0-jre.jar"/>
             </classpath>
         </javac>
         <!-- must compile to gain access to necessary classes for generate-source-code-java stage 5 -->

@@ -11,6 +11,8 @@ package edu.nps.moves.dis7.pdus;
 
 import java.util.*;
 import java.io.*;
+
+import com.google.common.primitives.*;
 import edu.nps.moves.dis7.enumerations.*;
 
 /**
@@ -23,16 +25,16 @@ public class RecordSpecificationElement extends Object implements Serializable, 
     protected VariableRecordType recordID = VariableRecordType.values()[0];
 
     /** The serial number of the first record in the block of records */
-    protected int recordSetSerialNumber;
+    protected UnsignedInteger recordSetSerialNumber;
 
     /** zero-filled array of padding bits for byte alignment and consistent sizing of PDU data */
-    protected int padding1;
+    protected UnsignedInteger padding1;
 
     /**  the length, in bits, of the record. Note, bits, not bytes. */
-    protected short recordLength;
+    protected int recordLength;
 
     /**  the number of records included in the record set  */
-    protected short recordCount;
+    protected int recordCount;
 
     /** The concatenated records of the format specified by the Record ID field. The length of this field is the Record Length multiplied by the Record Count, in units of bits. */
     protected byte[]  recordValues = new byte[0];
@@ -90,14 +92,14 @@ public class RecordSpecificationElement extends Object implements Serializable, 
     /** Setter for {@link RecordSpecificationElement#recordSetSerialNumber}
      * @param pRecordSetSerialNumber new value of interest
      * @return same object to permit progressive setters */
-    public synchronized RecordSpecificationElement setRecordSetSerialNumber(int pRecordSetSerialNumber)
+    public synchronized RecordSpecificationElement setRecordSetSerialNumber(UnsignedInteger pRecordSetSerialNumber)
     {
         recordSetSerialNumber = pRecordSetSerialNumber;
         return this;
     }
     /** Getter for {@link RecordSpecificationElement#recordSetSerialNumber}
      * @return value of interest */
-    public int getRecordSetSerialNumber()
+    public UnsignedInteger getRecordSetSerialNumber()
     {
         return recordSetSerialNumber;
     }
@@ -105,58 +107,42 @@ public class RecordSpecificationElement extends Object implements Serializable, 
     /** Setter for {@link RecordSpecificationElement#padding1}
      * @param pPadding1 new value of interest
      * @return same object to permit progressive setters */
-    public synchronized RecordSpecificationElement setPadding1(int pPadding1)
+    public synchronized RecordSpecificationElement setPadding1(UnsignedInteger pPadding1)
     {
         padding1 = pPadding1;
         return this;
     }
     /** Getter for {@link RecordSpecificationElement#padding1}
      * @return value of interest */
-    public int getPadding1()
+    public UnsignedInteger getPadding1()
     {
         return padding1;
     }
 
-    /** Setter for {@link RecordSpecificationElement#recordLength}
-     * @param pRecordLength new value of interest
-     * @return same object to permit progressive setters */
-    public synchronized RecordSpecificationElement setRecordLength(short pRecordLength)
-    {
-        recordLength = pRecordLength;
-        return this;
-    }
     /** Utility setter for {@link RecordSpecificationElement#recordLength}
-     * @param pRecordLength new value of interest
+     * @param pRecordLength new value of interest. Value space uint16
      * @return same object to permit progressive setters */
     public synchronized RecordSpecificationElement setRecordLength(int pRecordLength){
-        recordLength = (short) pRecordLength;
+        recordLength = pRecordLength;
         return this;
     }
     /** Getter for {@link RecordSpecificationElement#recordLength}
      * @return value of interest */
-    public short getRecordLength()
+    public int getRecordLength()
     {
         return recordLength;
     }
 
-    /** Setter for {@link RecordSpecificationElement#recordCount}
-     * @param pRecordCount new value of interest
-     * @return same object to permit progressive setters */
-    public synchronized RecordSpecificationElement setRecordCount(short pRecordCount)
-    {
-        recordCount = pRecordCount;
-        return this;
-    }
     /** Utility setter for {@link RecordSpecificationElement#recordCount}
-     * @param pRecordCount new value of interest
+     * @param pRecordCount new value of interest. Value space uint16
      * @return same object to permit progressive setters */
     public synchronized RecordSpecificationElement setRecordCount(int pRecordCount){
-        recordCount = (short) pRecordCount;
+        recordCount = pRecordCount;
         return this;
     }
     /** Getter for {@link RecordSpecificationElement#recordCount}
      * @return value of interest */
-    public short getRecordCount()
+    public int getRecordCount()
     {
         return recordCount;
     }
@@ -188,10 +174,10 @@ public class RecordSpecificationElement extends Object implements Serializable, 
 
         {
             recordID.marshal(dos);
-            dos.writeInt(recordSetSerialNumber);
-            dos.writeInt(padding1);
-            dos.writeShort(recordLength);
-            dos.writeShort(recordValues.length);
+            dos.writeInt(recordSetSerialNumber.intValue());
+            dos.writeInt(padding1.intValue());
+            dos.writeShort((short) recordLength);
+            dos.writeShort((short) recordValues.length);
 
             for (int idx = 0; idx < recordValues.length; idx++)
                 dos.writeByte(recordValues[idx]);
@@ -216,13 +202,13 @@ public class RecordSpecificationElement extends Object implements Serializable, 
         {
             recordID = VariableRecordType.unmarshalEnum(dis);
             uPosition += recordID.getMarshalledSize();
-            recordSetSerialNumber = dis.readInt();
+            recordSetSerialNumber = UnsignedInteger.fromIntBits(dis.readInt());
             uPosition += 4;
-            padding1 = dis.readInt();
+            padding1 = UnsignedInteger.fromIntBits(dis.readInt());
             uPosition += 4;
-            recordLength = (short)dis.readUnsignedShort();
+            recordLength = Short.toUnsignedInt(dis.readShort());
             uPosition += 2;
-            recordCount = (short)dis.readUnsignedShort();
+            recordCount = Short.toUnsignedInt(dis.readShort());
             uPosition += 2;
             int bits = recordCount * recordLength;
             recordValues = new byte[(bits + 7) / 8];
@@ -247,10 +233,10 @@ public class RecordSpecificationElement extends Object implements Serializable, 
     public synchronized void marshal(java.nio.ByteBuffer byteBuffer) throws Exception
     {
         recordID.marshal(byteBuffer);
-        byteBuffer.putInt( (int)recordSetSerialNumber);
-        byteBuffer.putInt( (int)padding1);
-        byteBuffer.putShort( (short)recordLength);
-        byteBuffer.putShort( (short)recordValues.length);
+        byteBuffer.putInt(recordSetSerialNumber.intValue());
+        byteBuffer.putInt(padding1.intValue());
+        byteBuffer.putShort((short) recordLength);
+        byteBuffer.putShort((short) recordValues.length);
 
         for (int idx = 0; idx < recordValues.length; idx++)
             byteBuffer.put((byte)recordValues[idx]);
@@ -272,10 +258,10 @@ public class RecordSpecificationElement extends Object implements Serializable, 
     {
         {
             recordID = VariableRecordType.unmarshalEnum(byteBuffer);
-            recordSetSerialNumber = byteBuffer.getInt();
-            padding1 = byteBuffer.getInt();
-            recordLength = (short)(byteBuffer.getShort() & 0xFFFF);
-            recordCount = (short)(byteBuffer.getShort() & 0xFFFF);
+            recordSetSerialNumber = UnsignedInteger.fromIntBits(byteBuffer.getInt());
+            padding1 = UnsignedInteger.fromIntBits(byteBuffer.getInt());
+            recordLength = Short.toUnsignedInt(byteBuffer.getShort());
+            recordCount = Short.toUnsignedInt(byteBuffer.getShort());
             int bits = recordCount * recordLength;
             recordValues = new byte[(bits + 7) / 8];
             for (int idx = 0; idx < (bits + 7) / 8; idx++)
@@ -302,10 +288,10 @@ public class RecordSpecificationElement extends Object implements Serializable, 
 
         {
             map.put("recordID", VariableRecordType.unmarshalEnum(byteBuffer));
-            map.put("recordSetSerialNumber", byteBuffer.getInt());
-            map.put("padding1", byteBuffer.getInt());
-            map.put("recordLength", (short)(byteBuffer.getShort() & 0xFFFF));
-            map.put("recordCount", (short)(byteBuffer.getShort() & 0xFFFF));
+            map.put("recordSetSerialNumber", UnsignedInteger.fromIntBits(byteBuffer.getInt()));
+            map.put("padding1", UnsignedInteger.fromIntBits(byteBuffer.getInt()));
+            map.put("recordLength", Short.toUnsignedInt(byteBuffer.getShort()));
+            map.put("recordCount", Short.toUnsignedInt(byteBuffer.getShort()));
             int bits = ((Number) map.get("recordCount")).intValue() * ((Number) map.get("recordLength")).intValue();
             for (int idx = 0; idx < (bits + 7) / 8; idx++)
                 map.put("recordValues" + String.valueOf(idx), byteBuffer.get());

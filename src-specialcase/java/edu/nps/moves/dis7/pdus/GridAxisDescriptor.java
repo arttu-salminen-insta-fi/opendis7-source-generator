@@ -26,10 +26,10 @@ public class GridAxisDescriptor extends Object implements Serializable, Marshall
     protected double domainFinalXi;
 
     /** The number of grid points along the Xi domain axis for the enviornmental state data */
-    protected short domainPointsXi;
+    protected int domainPointsXi;
 
     /** interleaf factor along the domain axis. */
-    protected byte interleafFactor;
+    protected int interleafFactor;
 
     /** type of grid axis uid 377 */
     protected GridAxisDescriptorAxisType axisType = GridAxisDescriptorAxisType.values()[0];
@@ -101,46 +101,30 @@ public class GridAxisDescriptor extends Object implements Serializable, Marshall
         return domainFinalXi;
     }
 
-    /** Setter for {@link GridAxisDescriptor#domainPointsXi}
-     * @param pDomainPointsXi new value of interest
-     * @return same object to permit progressive setters */
-    public synchronized GridAxisDescriptor setDomainPointsXi(short pDomainPointsXi)
-    {
-        domainPointsXi = pDomainPointsXi;
-        return this;
-    }
     /** Utility setter for {@link GridAxisDescriptor#domainPointsXi}
-     * @param pDomainPointsXi new value of interest
+     * @param pDomainPointsXi new value of interest. Value space uint16
      * @return same object to permit progressive setters */
     public synchronized GridAxisDescriptor setDomainPointsXi(int pDomainPointsXi){
-        domainPointsXi = (short) pDomainPointsXi;
+        domainPointsXi = pDomainPointsXi;
         return this;
     }
     /** Getter for {@link GridAxisDescriptor#domainPointsXi}
      * @return value of interest */
-    public short getDomainPointsXi()
+    public int getDomainPointsXi()
     {
         return domainPointsXi;
     }
 
-    /** Setter for {@link GridAxisDescriptor#interleafFactor}
-     * @param pInterleafFactor new value of interest
-     * @return same object to permit progressive setters */
-    public synchronized GridAxisDescriptor setInterleafFactor(byte pInterleafFactor)
-    {
-        interleafFactor = pInterleafFactor;
-        return this;
-    }
     /** Utility setter for {@link GridAxisDescriptor#interleafFactor}
-     * @param pInterleafFactor new value of interest
+     * @param pInterleafFactor new value of interest. Value space uint8
      * @return same object to permit progressive setters */
     public synchronized GridAxisDescriptor setInterleafFactor(int pInterleafFactor){
-        interleafFactor = (byte) pInterleafFactor;
+        interleafFactor = pInterleafFactor;
         return this;
     }
     /** Getter for {@link GridAxisDescriptor#interleafFactor}
      * @return value of interest */
-    public byte getInterleafFactor()
+    public int getInterleafFactor()
     {
         return interleafFactor;
     }
@@ -207,8 +191,8 @@ public class GridAxisDescriptor extends Object implements Serializable, Marshall
         {
             dos.writeDouble(domainInitialXi);
             dos.writeDouble(domainFinalXi);
-            dos.writeShort(domainPointsXi);
-            dos.writeByte(interleafFactor);
+            dos.writeShort((short) domainPointsXi);
+            dos.writeByte((byte) interleafFactor);
             axisType.marshal(dos);
             if (fixedData != null)
                 fixedData.marshal(dos);
@@ -235,9 +219,9 @@ public class GridAxisDescriptor extends Object implements Serializable, Marshall
             uPosition += 4;
             domainFinalXi = dis.readDouble();
             uPosition += 4;
-            domainPointsXi = (short)dis.readUnsignedShort();
+            domainPointsXi = Short.toUnsignedInt(dis.readShort());
             uPosition += 2;
-            interleafFactor = (byte)dis.readUnsignedByte();
+            interleafFactor = Byte.toUnsignedInt(dis.readByte());
             uPosition += 1;
             axisType = GridAxisDescriptorAxisType.unmarshalEnum(dis);
             uPosition += axisType.getMarshalledSize();
@@ -294,8 +278,8 @@ public class GridAxisDescriptor extends Object implements Serializable, Marshall
         {
             domainInitialXi = byteBuffer.getDouble();
             domainFinalXi = byteBuffer.getDouble();
-            domainPointsXi = (short)(byteBuffer.getShort() & 0xFFFF);
-            interleafFactor = (byte)(byteBuffer.get() & 0xFF);
+            domainPointsXi = Short.toUnsignedInt(byteBuffer.getShort());
+            interleafFactor = Byte.toUnsignedInt(byteBuffer.get());
             axisType = GridAxisDescriptorAxisType.unmarshalEnum(byteBuffer);
             switch (axisType) {
                 case REGULAR_AXIS -> {
@@ -331,8 +315,8 @@ public class GridAxisDescriptor extends Object implements Serializable, Marshall
         {
             map.put("domainInitialXi", byteBuffer.getDouble());
             map.put("domainFinalXi", byteBuffer.getDouble());
-            map.put("domainPointsXi", (short)(byteBuffer.getShort() & 0xFFFF));
-            map.put("interleafFactor", (byte)(byteBuffer.get() & 0xFF));
+            map.put("domainPointsXi", Short.toUnsignedInt(byteBuffer.getShort()));
+            map.put("interleafFactor", Byte.toUnsignedInt(byteBuffer.get()));
             map.put("axisType", GridAxisDescriptorAxisType.unmarshalEnum(byteBuffer));
             switch ((GridAxisDescriptorAxisType) map.get("axisType")) {
                 case REGULAR_AXIS -> map.put("fixedData", GridAxisDescriptorFixed.fromBufferToMap(byteBuffer));

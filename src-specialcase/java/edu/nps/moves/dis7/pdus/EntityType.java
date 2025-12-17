@@ -29,16 +29,16 @@ public class EntityType extends Object implements Marshaller, Serializable
    protected Country country = Country.values()[0];
 
    /** category of entity */
-   protected byte category;
+   protected int category;
 
    /** subcategory based on category */
-   protected byte subCategory;
+   protected int subCategory;
 
    /** specific info based on subcategory */
-   protected byte specific;
+   protected int specific;
 
    /** extra is an undescribed parameter... */
-   protected byte extra;
+   protected int extra;
 
 
 /** Constructor creates and configures a new instance object */
@@ -116,90 +116,58 @@ public Country getCountry()
     return country;
 }
 
-/** Setter for {@link EntityType#category}
-  * @param pCategory new value of interest
-  * @return same object to permit progressive setters */
-public synchronized EntityType setCategory(byte pCategory)
-{
-    category = pCategory;
-    return this;
-}
 /** Utility setter for {@link EntityType#category}
-  * @param pCategory new value of interest
+  * @param pCategory new value of interest. Value space uint8
   * @return same object to permit progressive setters */
 public synchronized EntityType setCategory(int pCategory){
-    category = (byte) pCategory;
+    category = pCategory;
     return this;
 }
 /** Getter for {@link EntityType#category}
   * @return value of interest */
-public byte getCategory()
+public int getCategory()
 {
     return category;
 }
 
-/** Setter for {@link EntityType#subCategory}
-  * @param pSubCategory new value of interest
-  * @return same object to permit progressive setters */
-public synchronized EntityType setSubCategory(byte pSubCategory)
-{
-    subCategory = pSubCategory;
-    return this;
-}
 /** Utility setter for {@link EntityType#subCategory}
-  * @param pSubCategory new value of interest
+  * @param pSubCategory new value of interest. Value space uint8
   * @return same object to permit progressive setters */
 public synchronized EntityType setSubCategory(int pSubCategory){
-    subCategory = (byte) pSubCategory;
+    subCategory = pSubCategory;
     return this;
 }
 /** Getter for {@link EntityType#subCategory}
   * @return value of interest */
-public byte getSubCategory()
+public int getSubCategory()
 {
     return subCategory;
 }
 
-/** Setter for {@link EntityType#specific}
-  * @param pSpecific new value of interest
-  * @return same object to permit progressive setters */
-public synchronized EntityType setSpecific(byte pSpecific)
-{
-    specific = pSpecific;
-    return this;
-}
 /** Utility setter for {@link EntityType#specific}
-  * @param pSpecific new value of interest
+  * @param pSpecific new value of interest. Value space uint8
   * @return same object to permit progressive setters */
 public synchronized EntityType setSpecific(int pSpecific){
-    specific = (byte) pSpecific;
+    specific = pSpecific;
     return this;
 }
 /** Getter for {@link EntityType#specific}
   * @return value of interest */
-public byte getSpecific()
+public int getSpecific()
 {
     return specific;
 }
 
-/** Setter for {@link EntityType#extra}
-  * @param pExtra new value of interest
-  * @return same object to permit progressive setters */
-public synchronized EntityType setExtra(byte pExtra)
-{
-    extra = pExtra;
-    return this;
-}
 /** Utility setter for {@link EntityType#extra}
-  * @param pExtra new value of interest
+  * @param pExtra new value of interest. Value space uint8
   * @return same object to permit progressive setters */
 public synchronized EntityType setExtra(int pExtra){
-    extra = (byte) pExtra;
+    extra = pExtra;
     return this;
 }
 /** Getter for {@link EntityType#extra}
   * @return value of interest */
-public byte getExtra()
+public int getExtra()
 {
     return extra;
 }
@@ -217,10 +185,10 @@ public synchronized void marshal(DataOutputStream dos) throws Exception
        entityKind.marshal(dos);
        domain.marshal(dos);
        country.marshal(dos);
-       dos.writeByte(category);
-       dos.writeByte(subCategory);
-       dos.writeByte(specific);
-       dos.writeByte(extra);
+       dos.writeByte((byte) category);
+       dos.writeByte((byte) subCategory);
+       dos.writeByte((byte) specific);
+       dos.writeByte((byte) extra);
     }
     catch(Exception e)
     {
@@ -254,13 +222,13 @@ public synchronized int unmarshal(DataInputStream dis) throws Exception
         uPosition += domain.unmarshal(dis);
         country = Country.unmarshalEnum(dis);
         uPosition += country.getMarshalledSize();
-        category = (byte)dis.readUnsignedByte();
+        category = Byte.toUnsignedInt(dis.readByte());
         uPosition += 1;
-        subCategory = (byte)dis.readUnsignedByte();
+        subCategory = Byte.toUnsignedInt(dis.readByte());
         uPosition += 1;
-        specific = (byte)dis.readUnsignedByte();
+        specific = Byte.toUnsignedInt(dis.readByte());
         uPosition += 1;
-        extra = (byte)dis.readUnsignedByte();
+        extra = Byte.toUnsignedInt(dis.readByte());
         uPosition += 1;
     }
     catch(Exception e)
@@ -283,10 +251,10 @@ public synchronized void marshal(java.nio.ByteBuffer byteBuffer) throws Exceptio
    entityKind.marshal(byteBuffer);
    domain.marshal(byteBuffer);
    country.marshal(byteBuffer);
-   byteBuffer.put( (byte)category);
-   byteBuffer.put( (byte)subCategory);
-   byteBuffer.put( (byte)specific);
-   byteBuffer.put( (byte)extra);
+   byteBuffer.put((byte) category);
+   byteBuffer.put((byte) subCategory);
+   byteBuffer.put((byte) specific);
+   byteBuffer.put((byte) extra);
 }
 
 /**
@@ -318,13 +286,13 @@ public synchronized int unmarshal(java.nio.ByteBuffer byteBuffer) throws Excepti
         // attribute country marked as not serialized
         country = Country.unmarshalEnum(byteBuffer);
         // attribute category marked as not serialized
-        category = (byte)(byteBuffer.get() & 0xFF);
+        category = Byte.toUnsignedInt(byteBuffer.get());
         // attribute subCategory marked as not serialized
-        subCategory = (byte)(byteBuffer.get() & 0xFF);
+        subCategory = Byte.toUnsignedInt(byteBuffer.get());
         // attribute specific marked as not serialized
-        specific = (byte)(byteBuffer.get() & 0xFF);
+        specific = Byte.toUnsignedInt(byteBuffer.get());
         // attribute extra marked as not serialized
-        extra = (byte)(byteBuffer.get() & 0xFF);
+        extra = Byte.toUnsignedInt(byteBuffer.get());
     }
     catch (java.nio.BufferUnderflowException bue)
     {
@@ -348,28 +316,19 @@ public synchronized int unmarshal(java.nio.ByteBuffer byteBuffer) throws Excepti
         // attribute entityKind marked as not serialized
         map.put("entityKind", EntityKind.unmarshalEnum(byteBuffer));
 
-        // Fix to enable the use of different domain enumerations
-        Domain domain = Domain.inst(PlatformDomain.OTHER);
-        if (map.get("entityKind") == EntityKind.MUNITION) {
-            domain = Domain.inst(MunitionDomain.OTHER);
-        }
-        else if(map.get("entityKind") == EntityKind.SUPPLY) {
-            domain = Domain.inst(SupplyDomain.NOT_USED);
-        }
-        domain.unmarshal(byteBuffer);
         // attribute domain marked as not serialized
-        map.put("domain", domain);
+        map.put("domain", Domain.fromBufferToMap(byteBuffer));
 
         // attribute country marked as not serialized
         map.put("country", Country.unmarshalEnum(byteBuffer));
         // attribute category marked as not serialized
-        map.put("category", (byte)(byteBuffer.get() & 0xFF));
+        map.put("category", Byte.toUnsignedInt(byteBuffer.get()));
         // attribute subCategory marked as not serialized
-        map.put("subCategory", (byte)(byteBuffer.get() & 0xFF));
+        map.put("subCategory", Byte.toUnsignedInt(byteBuffer.get()));
         // attribute specific marked as not serialized
-        map.put("specific", (byte)(byteBuffer.get() & 0xFF));
+        map.put("specific", Byte.toUnsignedInt(byteBuffer.get()));
         // attribute extra marked as not serialized
-        map.put("extra", (byte)(byteBuffer.get() & 0xFF));
+        map.put("extra", Byte.toUnsignedInt(byteBuffer.get()));
 
         return map;
     }
@@ -385,7 +344,7 @@ public synchronized int unmarshal(java.nio.ByteBuffer byteBuffer) throws Excepti
     public static void fromMapToBuffer(PduMap map, java.nio.ByteBuffer byteBuffer) throws Exception
     {
         ((EntityKind) map.get("entityKind")).marshal(byteBuffer);
-        ((Domain) map.get("domain")).marshal(byteBuffer);
+        Domain.fromMapToBuffer((PduMap) map.get("domain"), byteBuffer);
         ((Country) map.get("country")).marshal(byteBuffer);
         byteBuffer.put(((Number) map.get("category")).byteValue());
         byteBuffer.put(((Number) map.get("subCategory")).byteValue());
@@ -398,12 +357,12 @@ public synchronized int unmarshal(java.nio.ByteBuffer byteBuffer) throws Excepti
      * @see <a href="https://en.wikipedia.org/wiki/Marshalling_(computer_science)" target="_blank">https://en.wikipedia.org/wiki/Marshalling_(computer_science)</a>
      * @return serialized size in bytes
      */
-    public static int getMarshalledSize(PduMap map)
+    public static int getMarshalledSize(PduMap map) throws Exception
     {
         int marshalSize = 0;
 
         marshalSize += ((EntityKind) map.get("entityKind")).getMarshalledSize();
-        marshalSize += ((Domain) map.get("domain")).getMarshalledSize();
+        marshalSize += Domain.getMarshalledSize((PduMap) map.get("domain"));
         marshalSize += ((Country) map.get("country")).getMarshalledSize();
         marshalSize += 1;  // category
         marshalSize += 1;  // subCategory

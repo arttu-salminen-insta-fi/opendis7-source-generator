@@ -7,6 +7,7 @@ package edu.nps.moves.dis7.utilities;
 import edu.nps.moves.dis7.enumerations.*;
 import edu.nps.moves.dis7.pdus.*;
 import edu.nps.moves.dis7.utilities.DisTime.TimestampStyle;
+import com.google.common.primitives.*;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -115,7 +116,7 @@ public class PduFactory
   {
     pdu.getPduStatus().setValue((byte) (PduStatus.AII_ACTIVE | PduStatus.CEI_COUPLED));
     pdu.setExerciseID(defaultExerciseId)
-      .setTimestamp(DisTime.getCurrentDisTimestamp())
+      .setTimestamp(UnsignedInteger.fromIntBits(DisTime.getCurrentDisTimestamp()))
       .setLength((short) pdu.getMarshalledSize());  //todo check if should be done in Pdu class
                                                     // NOTE: This is not the correct size as there may be additional data not yet set in this PDU
     return pdu;
@@ -124,7 +125,7 @@ public class PduFactory
   private LiveEntityFamilyPdu addBoilerPlate(LiveEntityFamilyPdu pdu)
   {
     pdu.setExerciseID(defaultExerciseId)
-      .setTimestamp(DisTime.getCurrentDisTimestamp())
+      .setTimestamp(UnsignedInteger.fromIntBits(DisTime.getCurrentDisTimestamp()))
       .setLength((short) pdu.getMarshalledSize());  //todo check if should be done in Pdu class
 
     return pdu;
@@ -573,7 +574,7 @@ public class PduFactory
       VariableDatum vardat = new VariableDatum();
       vardat.setVariableDatumID(typ);
       vardat.setVariableDatumValue(s.getBytes());
-      vardat.setVariableDatumLength(s.getBytes().length * 8);
+      vardat.setVariableDatumLength(UnsignedInteger.valueOf((long) s.getBytes().length * 8));
       list.add(vardat);
     });
 
@@ -1285,7 +1286,7 @@ public class PduFactory
       VariableDatum vardat = new VariableDatum();
       vardat.setVariableDatumID(typ);
       vardat.setVariableDatumValue(s.getBytes());
-      vardat.setVariableDatumLength(s.getBytes().length * 8);
+      vardat.setVariableDatumLength(UnsignedInteger.valueOf((long) s.getBytes().length * 8));
       list.add(vardat);
     });
 

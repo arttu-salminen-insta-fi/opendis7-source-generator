@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 /**
- * This class autogenerates Java source code from XML PDU definitions, specifically 
+ * This class autogenerates Java source code from XML PDU definitions, specifically
  * producing most source code needed for the opendis7-java distribution.
  * Given the input object, something of an abstract syntax tree, this generates a source code file in the Java language.
  * It has ivars, getters, setters, and serialization/deserialization methods.
@@ -33,26 +33,40 @@ public class JavaGenerator extends AbstractGenerator
      */
 
     /**
-     * Maps the primitive types listed in the XML file (key) to the java types (value)
+     * Datatype with which the primitive is prepresented in a Pdu in this opendis implementation. This can also be a Class with certain unsigned primitives
+     *
+     * Use with setters, getters, class attributes
      */
-    Properties types = new Properties();
+    Properties primitiveInternalTypes = new Properties();
 
     /**
-     * What primitive types should be marshalled as. This may be different from the Java get/set methods, i.e. an unsigned short might have ints as the getter/setter, but is marshalled as a short.
+     * The actual java primitive types using which the unmarshalling & marshalling should be done.
      */
-    Properties marshalTypes = new Properties();
+    Properties primitiveMarshallingTypes = new Properties();
 
     /**
-     * Similar to above, but used on unmarshalling. There are some special cases (unsigned types) to be handled here.
+     * Templates that convert the given internal representation into bit presentation primitive.
+     * Use via fromInternalToBitRep(String attributeType, String attributeName)
      */
-    Properties unmarshalTypes = new Properties();
+    Properties primitiveFromInternalToBits = new Properties();
+
+    /**
+     * Templates that convert the given bit representation (true git primitive) into internal representation.
+     * Use via fromBitRepToInternal(String attributeType, String bitrep)
+     */
+    Properties primitiveFromBitsToInternal = new Properties();
+
+    /**
+     * Initializations for primitive types when a default value is indicated in XML.
+     */
+    Properties primitiveDefaultInitializations = new Properties();
 
     /**
      * sizes of various primitive types
      */
     Properties primitiveSizes = new Properties();
     Map<String,Integer> primitiveSizesMap = new HashMap<>();
-    
+
     /**
      * A property list that contains java-specific code generation information, such as package names, imports, etc.
      */
@@ -95,48 +109,66 @@ public class JavaGenerator extends AbstractGenerator
         }
 
         final String UNSIGNED_INT8 = "uint8"; // TODO generalize this approach
-        
+
         // Set up a mapping between the strings used in the Open-DIS XML file (key) and the strings used
         // in the generated java file (value), specifically the data types. This could be externalized to
         // a properties file, but there's only a dozen or so and an external props file
         // would just add some complexity.
-        
-        // don't quite get this....  looks in error, duplicating marshallTypes.  
-        // TODO rename all occurrences to marshallTypes since they exactly match (DRY principle)
-        types.setProperty(UNSIGNED_INT8,   "byte");
-        types.setProperty("uint16",  "short");
-        types.setProperty("uint32",  "int");
-        types.setProperty("uint64",  "long");
-        types.setProperty("int8",    "byte");
-        types.setProperty("int16",   "short");
-        types.setProperty("int32",   "int");
-        types.setProperty("int64",   "long");
-        types.setProperty("float32", "float");
-        types.setProperty("float64", "double");
-    
-        // Set up the mapping between Open-DIS primitive types and marshal types.       
-        marshalTypes.setProperty(UNSIGNED_INT8,   "byte");
-        marshalTypes.setProperty("uint16",  "short");
-        marshalTypes.setProperty("uint32",  "int");
-        marshalTypes.setProperty("uint64",  "long");
-        marshalTypes.setProperty("int8",    "byte");
-        marshalTypes.setProperty("int16",   "short");
-        marshalTypes.setProperty("int32",   "int");
-        marshalTypes.setProperty("int64",   "long");
-        marshalTypes.setProperty("float32", "float");
-        marshalTypes.setProperty("float64", "double");
 
-        // Unmarshalling types
-        unmarshalTypes.setProperty(UNSIGNED_INT8,   "UnsignedByte");
-        unmarshalTypes.setProperty("uint16",  "UnsignedShort");
-        unmarshalTypes.setProperty("uint32",  "int");
-        unmarshalTypes.setProperty("uint64",  "long");
-        unmarshalTypes.setProperty("int8",    "byte");
-        unmarshalTypes.setProperty("int16",   "short");
-        unmarshalTypes.setProperty("int32",   "int");
-        unmarshalTypes.setProperty("int64",   "long");
-        unmarshalTypes.setProperty("float32", "float");
-        unmarshalTypes.setProperty("float64", "double");
+        primitiveInternalTypes.setProperty(UNSIGNED_INT8,   "int");
+        primitiveInternalTypes.setProperty("uint16",  "int");
+        primitiveInternalTypes.setProperty("uint32",  "UnsignedInteger");
+        primitiveInternalTypes.setProperty("uint64",  "UnsignedLong");
+        primitiveInternalTypes.setProperty("int8",    "byte");
+        primitiveInternalTypes.setProperty("int16",   "short");
+        primitiveInternalTypes.setProperty("int32",   "int");
+        primitiveInternalTypes.setProperty("int64",   "long");
+        primitiveInternalTypes.setProperty("float32", "float");
+        primitiveInternalTypes.setProperty("float64", "double");
+
+        primitiveMarshallingTypes.setProperty(UNSIGNED_INT8,   "byte");
+        primitiveMarshallingTypes.setProperty("uint16",  "short");
+        primitiveMarshallingTypes.setProperty("uint32",  "int");
+        primitiveMarshallingTypes.setProperty("uint64",  "long");
+        primitiveMarshallingTypes.setProperty("int8",    "byte");
+        primitiveMarshallingTypes.setProperty("int16",   "short");
+        primitiveMarshallingTypes.setProperty("int32",   "int");
+        primitiveMarshallingTypes.setProperty("int64",   "long");
+        primitiveMarshallingTypes.setProperty("float32", "float");
+        primitiveMarshallingTypes.setProperty("float64", "double");
+
+        primitiveFromInternalToBits.setProperty(UNSIGNED_INT8,   "(byte) %s");
+        primitiveFromInternalToBits.setProperty("uint16",  "(short) %s");
+        primitiveFromInternalToBits.setProperty("uint32",  "%s.intValue()");
+        primitiveFromInternalToBits.setProperty("uint64",  "%s.longValue()");
+        primitiveFromInternalToBits.setProperty("int8",    "%s");
+        primitiveFromInternalToBits.setProperty("int16",   "%s");
+        primitiveFromInternalToBits.setProperty("int32",   "%s");
+        primitiveFromInternalToBits.setProperty("int64",   "%s");
+        primitiveFromInternalToBits.setProperty("float32", "%s");
+        primitiveFromInternalToBits.setProperty("float64", "%s");
+
+        primitiveFromBitsToInternal.setProperty(UNSIGNED_INT8,   "Byte.toUnsignedInt(%s)");
+        primitiveFromBitsToInternal.setProperty("uint16",  "Short.toUnsignedInt(%s)");
+        primitiveFromBitsToInternal.setProperty("uint32",  "UnsignedInteger.fromIntBits(%s)");
+        primitiveFromBitsToInternal.setProperty("uint64",  "UnsignedLong.fromLongBits(%s)");
+        primitiveFromBitsToInternal.setProperty("int8",    "(byte) %s");
+        primitiveFromBitsToInternal.setProperty("int16",   "(short) %s");
+        primitiveFromBitsToInternal.setProperty("int32",   "(int) %s");
+        primitiveFromBitsToInternal.setProperty("int64",   "(long) %s");
+        primitiveFromBitsToInternal.setProperty("float32", "(float) %s");
+        primitiveFromBitsToInternal.setProperty("float64", "(double) %s");
+
+        primitiveDefaultInitializations.setProperty(UNSIGNED_INT8,   "(int) %s");
+        primitiveDefaultInitializations.setProperty("uint16",  "(int) %s");
+        primitiveDefaultInitializations.setProperty("uint32",  "UnsignedInteger.valueOf(%s)");
+        primitiveDefaultInitializations.setProperty("uint64",  "UnsignedLong.valueOf((long) %s)");
+        primitiveDefaultInitializations.setProperty("int8",    "(byte) %s");
+        primitiveDefaultInitializations.setProperty("int16",   "(short) %s");
+        primitiveDefaultInitializations.setProperty("int32",   "(int) %s");
+        primitiveDefaultInitializations.setProperty("int64",   "(long) %s");
+        primitiveDefaultInitializations.setProperty("float32", "(float) %s");
+        primitiveDefaultInitializations.setProperty("float64", "(double) %s");
 
         // How big various primitive types are
         primitiveSizes.setProperty(UNSIGNED_INT8,   "1");
@@ -149,7 +181,7 @@ public class JavaGenerator extends AbstractGenerator
         primitiveSizes.setProperty("int64",   "8");
         primitiveSizes.setProperty("float32", "4");
         primitiveSizes.setProperty("float64", "8");
-        
+
         primitiveSizesMap.put(UNSIGNED_INT8,   1);
         primitiveSizesMap.put("uint16",  2);
         primitiveSizesMap.put("uint32",  4);
@@ -159,9 +191,9 @@ public class JavaGenerator extends AbstractGenerator
         primitiveSizesMap.put("int32",   4);
         primitiveSizesMap.put("int64",   8);
         primitiveSizesMap.put("float32", 4);
-        primitiveSizesMap.put("float64", 8); 
+        primitiveSizesMap.put("float64", 8);
     }
-    
+
     private String        packageInfoPath;
     private File          packageInfoFile;
     private StringBuilder packageInfoBuilder;
@@ -173,9 +205,9 @@ public class JavaGenerator extends AbstractGenerator
     public void writeClasses()
     {
         int classCount = 0;
-        
+
         readTemplates();  // get the license
-        
+
         createGeneratedSourceDirectory(true); // boolean: whether to clean out prior files, if any exist in that directory
 
         Iterator classDescriptionsIterator = classDescriptions.values().iterator();
@@ -222,12 +254,12 @@ public class JavaGenerator extends AbstractGenerator
             }
 
         } // End while
-        
+
         packageInfoPath = getGeneratedSourceDirectoryName() + "/edu/nps/moves/dis7/pdus/" + "package-info.java";
         packageInfoFile = new File(packageInfoPath);
-        
+
         Writer packageInfoFileWriter;
-        try 
+        try
         {
             packageInfoFile.createNewFile();
             packageInfoFileWriter = new FileWriter(packageInfoFile, StandardCharsets.UTF_8);
@@ -263,7 +295,7 @@ public class JavaGenerator extends AbstractGenerator
             );
             ex.printStackTrace(System.err);
         }
-        
+
         System.out.println (JavaGenerator.class.getName() + " complete, " + classCount + " classes written.");
 
     } // End write classes
@@ -287,14 +319,14 @@ public class JavaGenerator extends AbstractGenerator
             writeClassComments(pw, aClass);
             pw.flush();
             writeClassDeclaration(pw, aClass);
-            
+
             if(aClass.getAliasFor()!= null) {
                 try (pw) {
                     pw.flush();
                 }
                 return;
             }
-            
+
             if (aClass.getName().endsWith("Pdu"))
             {
                 pw.print("\n" +
@@ -308,7 +340,7 @@ public class JavaGenerator extends AbstractGenerator
                 pw.println("NAME = \"" + aClass.getName() + "\";\n" +
 "   ");
             }
-            
+
             if (aClass.getName().equals("Pdu")) // abstract superclass methods for instances
             {
                 String textBlock = """ 
@@ -698,8 +730,6 @@ public class JavaGenerator extends AbstractGenerator
             pw.flush();
             writeGettersAndSetters(pw, aClass);
             pw.flush();
-            writeBitflagMethods(pw, aClass);
-            pw.flush();
             writeMarshalMethod(pw, aClass);
             pw.flush();
             writeUnmarshallMethod(pw, aClass);
@@ -746,26 +776,37 @@ public class JavaGenerator extends AbstractGenerator
             pw.flush();
         }
     }
-    
+
     /** Additional methods of interest for Pdu class */
     private void writePduUtilityMethods(PrintWriter pw, GeneratedClass aClass)
     {
         pw.println();
         pw.println("// autogenerated by JavaGenerator.writePduUtilityMethods()");
         pw.println();
-        
+
         StringBuilder utilitySourceCodeBlock = new StringBuilder();
-            utilitySourceCodeBlock.append("/** Utility setter for {@link Pdu#timestamp} converting double (or float) to\n")
-            .append("  * Timestamp in seconds at 2^31 - 1 units past top of hour\n")
-            .append("  * @see setTimestamp\n")
-            .append("  * @see edu.nps.moves.dis7.utilities.DisTime\n")
-            .append("  * @param newTimestamp new timestamp in seconds\n")
-            .append("  * @return same object to permit progressive setters */\n")
-            .append("public synchronized Pdu setTimestampSeconds(double newTimestamp)\n")
+        utilitySourceCodeBlock
+            .append("/** Utility setter for {@link Pdu#timestamp} converting double (or float) to\n")
+            .append("* Timestamp in seconds at 2^31 - 1 units past top of hour\n")
+            .append("* @see setTimestamp\n")
+            .append("* @see edu.nps.moves.dis7.utilities.DisTime\n")
+            .append("* @param newTimestampSeconds new timestamp in seconds\n")
+            .append("* @param absoluteTime whether absolute/relative timestamp indicator bit should be set to 1 (absolute)\n")
+            .append("* @return same object to permit progressive setters */\n")
+            .append("public synchronized Pdu setTimestampSeconds(double newTimestampSeconds, boolean absoluteTime)\n")
             .append("{\n")
-            .append("    timestamp = (int) ((newTimestamp * 3600.0) / Integer.MAX_VALUE);\n")
+            .append("    if (newTimestampSeconds >= 3600.0 || newTimestampSeconds < 0.0) {\n")
+            .append("        throw new IllegalArgumentException(\"Illegal timestamp seconds value: \" + newTimestampSeconds);\n")
+            .append("    }\n")
+            .append("    double fractionOfHour = newTimestampSeconds / (double) 3600.0;\n")
+            .append("    int timestampBits = (int) (fractionOfHour * Integer.MAX_VALUE);\n")
+            .append("    if (absoluteTime) {\n")
+            .append("        timestampBits |= (1 << 31);\n")
+            .append("    }\n")
+            .append("    timestamp = UnsignedInteger.fromIntBits(timestampBits);\n")
             .append("    return this;\n")
-            .append("}      \n")
+            .append("}\n")
+
             .append("/** Utility getter for {@link Pdu#timestamp} converting \n")
             .append("  * integer timestamp at 2^31 - 1 units past top of hour to double (or float)\n")
             .append("  * @see getTimestamp\n")
@@ -773,36 +814,19 @@ public class JavaGenerator extends AbstractGenerator
             .append("  * @return fractional timestamp past hour */\n")
             .append("public double getTimestampSeconds()\n")
             .append("{\n")
-            .append("    return timestamp * Integer.MAX_VALUE / 3600.0;\n")
+            .append("    int timestampBits = timestamp.intValue();\n")
+            .append("    timestampBits &= Integer.MAX_VALUE;\n")
+            .append("    double frac = (double) timestampBits / Integer.MAX_VALUE;\n")
+            .append("    return frac * 3600.0;\n")
             .append("}\n")
-            .append(" /**\n")
-            .append("  * Whether or not timestamp for this Pdu occurs after timestamp as another Pdu.\n")
-            .append("  * @param pdu2 second Pdu for comparison\n")
-            .append("  * @return whether timestamp for this Pdu occurs later\n")
-            .append("  */\n")
-            .append("  public boolean occursAfter(Pdu pdu2)\n")
-            .append("  {\n")
-            .append("     return (getTimestamp() < pdu2.getTimestamp());\n")
-            .append("  }\n")
-            .append(" /**\n")
-            .append("  * Whether or not timestamp for this Pdu occurs before timestamp as another Pdu.\n")
-            .append("  * @param pdu2 second Pdu for comparison\n")
-            .append("  * @return whether timestamp for this Pdu occurs earlier\n")
-            .append("  */\n")
-            .append("  public boolean occursBefore(Pdu pdu2)\n")
-            .append("  {\n")
-            .append("     return (getTimestamp() < pdu2.getTimestamp());\n")
-            .append("  }\n")
-            .append(" /**\n")
-            .append("  * Whether or not this Pdu occurs at same timestamp as another Pdu.\n")
-            .append("  * @param pdu2 second Pdu for comparison\n")
-            .append("  * @return whether timestamps are identical for both Pdus\n")
-            .append("  */\n")
-            .append("  public boolean occursSameTime(Pdu pdu2)\n")
-            .append("  {\n")
-            .append("     return (getTimestamp() == pdu2.getTimestamp());\n")
-            .append("  }\n");
-        
+
+            .append("/**\n")
+            .append(" * Utility check if timestamp is absolute\n")
+            .append(" */\n")
+            .append("    public boolean isAbsoluteTimestamp() {\n")
+            .append("        return timestamp.intValue() < 0;\n")
+            .append("    }\n");
+
         pw.println(utilitySourceCodeBlock.toString());
         pw.println();
     }
@@ -811,7 +835,7 @@ public class JavaGenerator extends AbstractGenerator
     {
         pw.println("    // writeEntityStateUtilityMethods");
         pw.println();
-        
+
         StringBuilder utilitySourceCodeBlock = new StringBuilder();
         // """multiline text block""" would be nice but that is JDK 14+
         // https://stackoverflow.com/questions/878573/does-java-have-support-for-multiline-strings
@@ -836,7 +860,7 @@ public class JavaGenerator extends AbstractGenerator
             .append("      NORTHWEST\n")
             .append("  }\n")
             .append("\n")
-                
+
             .append("  /** Utility method to set entity linear velocity using speed and direction\n")
             .append("    * @param speed in meters/second\n")
             .append("    * @param direction using Directions enumerations\n")
@@ -886,7 +910,7 @@ public class JavaGenerator extends AbstractGenerator
             .append("      setEntityLinearVelocity(newVelocity);\n")
             .append("      return this;\n")
             .append("    }\n")
-                
+
             .append("   /** Setter for {@link EntityStatePdu#entityLocation}\n")
             .append("     * @param x location\n")
             .append("     * @param y location\n")
@@ -898,7 +922,7 @@ public class JavaGenerator extends AbstractGenerator
             .append("       entityLocation = new Vector3Double().setX(x).setY(y).setZ(z);\n")
             .append("       return this;\n")
             .append("   }\n")
-        
+
             .append("   /** Advance location using linear velocities for a single timestep\n")
             .append("    * @param timestep duration of travel\n")
             .append("    * @return same object to permit progressive setters */\n")
@@ -925,7 +949,7 @@ public class JavaGenerator extends AbstractGenerator
             .append("        entityOrientation = pEntityOrientation;\n")
             .append("        return this;\n")
             .append("    }\n")
-                
+
             .append("   /** Marking utility to clear character values\n")
             .append("    * @return same object to permit progressive setters */\n")
             .append("    public synchronized EntityStatePdu clearMarking()\n")
@@ -934,7 +958,7 @@ public class JavaGenerator extends AbstractGenerator
             .append("       marking.setCharacters(emptyByteArray);\n")
             .append("       return this;\n")
             .append("   }\n")
-                
+
             .append("    /** Marking utility to set character values, 11 characters maximum\n")
             .append("    *@param newMarking new 11-character string to assign as marking value\n")
             .append("    * @return same object to permit progressive setters */\n")
@@ -949,16 +973,16 @@ public class JavaGenerator extends AbstractGenerator
             .append("           \n")
             .append("       return this;\n")
             .append("   }\n")
-                
+
             .append("   /** Marking utility to get character values as a string\n")
             .append("    * @return 11-character String value corresponding to marking */\n")
             .append("   public String getMarkingString()\n")
             .append("   {\n")
             .append("       return new String(marking.getCharacters());\n")
             .append("   }\n");
-        
+
         // TODO downcaset Vector3Double to Vector3Float
-        
+
         pw.println(utilitySourceCodeBlock.toString());
         pw.println();
     }
@@ -1009,10 +1033,10 @@ public class JavaGenerator extends AbstractGenerator
     {
         return new String(Files.readAllBytes(Paths.get(getClass().getResource(s).toURI())));
     }
-    
+
     /**
      * Write the license text as a java description at the top of the file.
-     */ 
+     */
     private void writeLicense(PrintWriter printWriter, GeneratedClass aClass)
     {
       if(licenseTemplate == null)
@@ -1068,7 +1092,7 @@ public class JavaGenerator extends AbstractGenerator
         pw.println("/**");
         if (aClass.getClassComments() != null)
             pw.println(" * " + aClass.getClassComments());
-        
+
         pw.println(" * "+specSourceTemplate);
         pw.println(" */");
     }
@@ -1082,7 +1106,7 @@ public class JavaGenerator extends AbstractGenerator
     private void writeClassDeclaration(PrintWriter pw, GeneratedClass aClass)
     {
         // Class declaration
-        if(aClass.getAliasFor() != null) 
+        if(aClass.getAliasFor() != null)
         {
           // need to avoid javadoc warning "warning: use of default constructor, which does not provide a comment"
           // https://docs.oracle.com/javase/tutorial/java/IandI/super.html
@@ -1098,12 +1122,12 @@ public class JavaGenerator extends AbstractGenerator
           pw.println("}");
           return;
         }
-        
+
         String parentClass = aClass.getParentClass();
         String interfaces = aClass.getInterfaces();
 
         String abstractcls = aClass.isAbstract() ? "abstract " : "";
-        
+
         if (parentClass.equalsIgnoreCase("root"))
             parentClass = "Object";
 
@@ -1121,7 +1145,7 @@ public class JavaGenerator extends AbstractGenerator
     /**
      * Write instance variables (ivars)
      * @param pw PrintWriter
-     * @param aClass class of interest 
+     * @param aClass class of interest
      */
     private void writeIvars(PrintWriter pw, GeneratedClass aClass)
     {
@@ -1134,20 +1158,20 @@ public class JavaGenerator extends AbstractGenerator
             String attributeType;
             int listLength;
             String className;
-            
+
             String fieldaccess = "protected"; // allow subclassing anAttribute.isHidden()? "private":"protected";
-            
+
             switch (anAttribute.attributeKind) {
                 case STATIC_IVAR:
                     //if (anAttribute.getAttributeKind() == GeneratedClassAttribute.ClassAttributeType.STATIC_IVAR) {
-                    attributeType = types.getProperty(anAttribute.getType());
+                    attributeType = primitiveInternalTypes.getProperty(anAttribute.getType());
                     String value = anAttribute.getDefaultValue();
                     pw.print  ("   /** Default static instance variable */\n");
                     pw.print  ("   public static " + attributeType + "  " + anAttribute.getName());
-                    pw.println(" = " + value + ";");
+                    pw.println(" = " + defaultPrimitiveValueInitialization(anAttribute.getType(), value) + ";");
                     break;
 
-                    // This attribute is a primitive. 
+                    // This attribute is a primitive.
                 case PRIMITIVE:
                     // The primitive type--we need to do a lookup from the abstract type in the
                     // xml to the java-specific type. The output should look something like
@@ -1155,7 +1179,7 @@ public class JavaGenerator extends AbstractGenerator
                     // /** This is a description */
                     // protected int foo;
                     //
-                    attributeType = types.getProperty(anAttribute.getType());
+                    attributeType = primitiveInternalTypes.getProperty(anAttribute.getType());
                     if ((anAttribute.getComment() != null) && !anAttribute.getComment().trim().isEmpty())
                     {
                          pw.println("   /** " + anAttribute.getComment() + " */");
@@ -1165,8 +1189,21 @@ public class JavaGenerator extends AbstractGenerator
                     String defaultValue = anAttribute.getDefaultValue();
 
                     pw.print("   " + fieldaccess + " " + attributeType + " " + anAttribute.getName());
-                    if (defaultValue != null)
-                        pw.print(" = (" + attributeType + ")" + defaultValue); // Needs cast to primitive type for float/double issues
+                    if (defaultValue != null) {
+                        try {
+                            pw.print(" = " + defaultPrimitiveValueInitialization(anAttribute.getType(), defaultValue)); // Needs cast to primitive type for float/double issues
+                        } catch (Exception e) {
+                            System.out.println("Exception with " + anAttribute.getType() + " - " + defaultValue);
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    // Class style internal values should be initiated even when no specific default value to be non-null
+                    else if (anAttribute.getType().equals("uint32")) {
+                        pw.print(" = UnsignedInteger.ZERO");
+                    }
+                    else if (anAttribute.getType().equals("uint64")) {
+                        pw.print(" = UnsignedLong.ZERO");
+                    }
                     pw.println(";\n");
                     break; // end of primitive attribute type
 
@@ -1205,8 +1242,8 @@ public class JavaGenerator extends AbstractGenerator
                     }
                     else pw.println("   /** " + anAttribute.getName() + " is an undescribed parameter... */");
 
-                    pw.println("   " + fieldaccess + " " + types.getProperty(attributeType) + "[]  " + anAttribute.getName() + " = new "
-                        + types.getProperty(attributeType) + "[" + listLength + "]" + "; \n");
+                    pw.println("   " + fieldaccess + " " + primitiveMarshallingTypes.getProperty(attributeType) + "[]  " + anAttribute.getName() + " = new "
+                        + primitiveMarshallingTypes.getProperty(attributeType) + "[" + listLength + "]" + "; \n");
                     break;
 
                 // The attribute is a variable list of some kind. 
@@ -1260,7 +1297,7 @@ public class JavaGenerator extends AbstractGenerator
                     else
                         pw.println("   " + fieldaccess + " " + className + " " + anAttribute.getName() + " = " + anAttribute.getDefaultValue() + ";\n");
                     break;
-                    
+
                 case PADTO16:
                     pw.println("   /** pad to 16-bit boundary */\n");
                     pw.println("   private byte[] "+anAttribute.getName()+" = new byte[0];\n");
@@ -1273,15 +1310,15 @@ public class JavaGenerator extends AbstractGenerator
                     pw.println("   /** pad to 64-bit boundary */\n");
                     pw.println("   private byte[] "+anAttribute.getName()+" = new byte[0];\n");
                     break;
-                    
+
             }
         } // End of loop through ivars
     }
-  
+
     private void writeCopyMethods(PrintWriter pw, GeneratedClass aClass)
     {
         int BYTE_BUFFER_SIZE = 400; // TODO what is expected max buffer size?
-        
+
         if (aClass.getName().equals(("Pdu")))
         {
             pw.println("    /** Create deep copy of current object using PduFactory.");
@@ -1298,7 +1335,7 @@ public class JavaGenerator extends AbstractGenerator
             pw.println("         catch (Exception e)");
             pw.println("         {");
             pw.println("             System.err.println(\"" + aClass.getName() + " copyByPduFactory() Exception: \" + e.toString());");
-            pw.println("             System.exit(-1); // TODO: Abruptly ending VM not a best practice"); 
+            pw.println("             System.exit(-1); // TODO: Abruptly ending VM not a best practice");
             pw.println("         }");
             pw.println("         return newPdu;");
             pw.println("     }");
@@ -1333,7 +1370,7 @@ public class JavaGenerator extends AbstractGenerator
             pw.println("     return newCopy;");
             pw.println(" }");
             pw.println();
-            
+
             pw.println("/** byteArrayOutputStream (baos) is used for marshal/unmarshal serialization");
             pw.println("   * @see copyDataOutputStream() */");
             pw.println("protected ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();");
@@ -1375,7 +1412,7 @@ public class JavaGenerator extends AbstractGenerator
             pw.println(" }");
         }
     }
-  
+
     private void writeConstructor(PrintWriter pw, GeneratedClass aClass)
     {
         // Write a constructor
@@ -1394,7 +1431,7 @@ public class JavaGenerator extends AbstractGenerator
             GeneratedClass currentClass = aClass;
             String aType = null;
             ClassAttributeType aKind=null;
-            
+
             String attName=null;
             while (currentClass != null) {
                 for (GeneratedClassAttribute anAttribute : currentClass.classAttributes) {
@@ -1417,13 +1454,13 @@ public class JavaGenerator extends AbstractGenerator
                 if(aKind == ClassAttributeType.SISO_ENUM)
                     pw.println("    " + anInit.getSetterMethodName() + "( " + anInit.getVariableValue() + " );");
                 else
-                    pw.println("    " + anInit.getSetterMethodName() + "( (" + types.getProperty(aType) + ")" + anInit.getVariableValue() + " );");
+                    pw.println("    " + anInit.getSetterMethodName() + "( (" + primitiveInternalTypes.getProperty(aType) + ")" + anInit.getVariableValue() + " );");
             }
         } // End initialize initial values
-        
-        pw.println(" }");    
+
+        pw.println(" }");
     }
-    
+
     /**
      * Produce custom getMarshalledSize() method
      * @param printWriter output
@@ -1487,7 +1524,7 @@ public class JavaGenerator extends AbstractGenerator
                     printWriter.println("   if (" + anAttribute.getName() + " != null)");
                     printWriter.println("       marshalSize += "+anAttribute.getName()+".length;");
                     break;
-            }          
+            }
         }
         printWriter.println();
         printWriter.println("   return marshalSize;");
@@ -1544,7 +1581,7 @@ public class JavaGenerator extends AbstractGenerator
                     break;
 
                 case PRIMITIVE_LIST:
-                    String marshalType = marshalTypes.getProperty(anAttribute.getType());
+                    String marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
                     pw.println("    " + marshalType + "[] " + anAttribute.getName() + " = (" + marshalType + "[]) map.get(\"" + anAttribute.getName() + "\");");
                     pw.println("    for (int idx = 0; idx < " + anAttribute.getName() + ".length; idx++)");
                     pw.println("        marshalSize += " + primitiveSizes.get(anAttribute.getType()) + ";");
@@ -1574,7 +1611,7 @@ public class JavaGenerator extends AbstractGenerator
         pw.println("}");
         pw.println();
     }
- 
+
     private void writeGettersAndSetters(PrintWriter pw, GeneratedClass aClass)
     {
         pw.println();
@@ -1589,12 +1626,12 @@ public class JavaGenerator extends AbstractGenerator
             //
             if(anAttribute.isHidden())
                 continue;
-            
+
             switch (anAttribute.getAttributeKind()) {
 
                 case PRIMITIVE:
                     if (anAttribute.getIsDynamicListLengthField() == false) {
-                        String beanType = types.getProperty(anAttribute.getType());
+                        String beanType = primitiveInternalTypes.getProperty(anAttribute.getType());
                         pw.println("/** Setter for {@link "+aClass.getName()+"#"+anAttribute.getName()+"}");
                         if (anAttribute.getName().equals("timestamp"))
                         {
@@ -1602,7 +1639,7 @@ public class JavaGenerator extends AbstractGenerator
                             pw.println("  * @see setTimestampSeconds");
                             pw.println("  * @see edu.nps.moves.dis7.utilities.DisTime");
                         }
-                        pw.println("  * @param p" + this.initialCapital(anAttribute.getName()) + " new value of interest");
+                        pw.println("  * @param p" + this.initialCapital(anAttribute.getName()) + " new value of interest. Value space " + anAttribute.getType());
                         pw.println("  * @return same object to permit progressive setters */");
                         pw.print("public synchronized ");
                         pw.print(aClass.getName());
@@ -1610,7 +1647,7 @@ public class JavaGenerator extends AbstractGenerator
                         pw.println("{\n    " + anAttribute.getName() + " = p" + this.initialCapital(anAttribute.getName()) + ";");
                         pw.println("    return this;");
                         pw.println("}");
-                        
+
                         // utility setter to allow int types
                         if (beanType.equals("byte") || beanType.equals("short") || beanType.equals("long"))
                         {
@@ -1646,34 +1683,6 @@ public class JavaGenerator extends AbstractGenerator
                         pw.println("{\n    return " + anAttribute.getName() + "; \n}");
                         pw.println();
                     }
-                    else //todo, now obsolete with new definition of PRIMITIVE_LIST  // This is the count field for a dynamic list
-                    {
-                        String beanType = types.getProperty(anAttribute.getType());
-                        GeneratedClassAttribute listAttribute = anAttribute.getDynamicListClassAttribute();
-
-                        pw.println("/** Utility method to get size of field");
-                        pw.println(" * @return size of field */");
-                        pw.println("public " + beanType + " get" + this.initialCapital(anAttribute.getName()) + "()");
-                        pw.println("{\n    return (" + beanType + ")" + listAttribute.getName() + ".size(); \n}");
-
-                        pw.println();
-
-                        pw.println("/** Note that setting this value will not change the marshalled value. The list whose length this describes is used for that purpose.");
-                        pw.println(" * The get" + anAttribute.getName() + " method will also be based on the actual list length rather than this value. ");
-                        pw.println(" * The method is simply here for java bean completeness.");
-                        pw.println(" * @param p" + this.initialCapital(anAttribute.getName()) + " passed parameter");
-                        pw.println(" * @return this object");
-                        pw.println(" */");
-                        pw.print("public synchronized ");
-                        pw.print(aClass.getName());
-                        pw.println(" set" + this.initialCapital(anAttribute.getName()) + "(" + beanType + " p" + this.initialCapital(anAttribute.getName()) + ")");
-                        pw.println("{\n    " + anAttribute.getName() + " = p" + this.initialCapital(anAttribute.getName()) + ";");
-                        pw.println("    return this;");
-                        pw.println("}");
-
-                        pw.println();
-
-                    }
                     break; // End is primitive
 
                 // The attribute is a class of some sort. Generate getters and setters.
@@ -1687,7 +1696,7 @@ public class JavaGenerator extends AbstractGenerator
                     pw.println("{\n    " + anAttribute.getName() + " = p" + this.initialCapital(anAttribute.getName()) + ";");
                     pw.println("    return this;");
                     pw.println("}");
-                    
+
                     pw.println("/** Getter for {@link "+aClass.getName()+"#"+anAttribute.getName()+"}");
                     pw.println("  * @return value of interest */");
                     pw.println("public " + anAttribute.getType() + " get" + this.initialCapital(anAttribute.getName()) + "()");
@@ -1701,7 +1710,7 @@ public class JavaGenerator extends AbstractGenerator
                     pw.println("}\n");
                     pw.println();
                     break;
-                    
+
                 // The attribute is an array of some sort. Generate getters and setters.
                 case PRIMITIVE_LIST:
                     pw.println("/** Setter for {@link "+aClass.getName()+"#"+anAttribute.getName()+"}");
@@ -1709,7 +1718,7 @@ public class JavaGenerator extends AbstractGenerator
                     pw.println("  * @return same object to permit progressive setters */");
                     pw.print("public synchronized ");
                     pw.print(aClass.getName());
-                    pw.println(" set" + this.initialCapital(anAttribute.getName()) + "(" + types.getProperty(anAttribute.getType()) + "[] p" + this.initialCapital(anAttribute.getName()) + ")");
+                    pw.println(" set" + this.initialCapital(anAttribute.getName()) + "(" + primitiveMarshallingTypes.getProperty(anAttribute.getType()) + "[] p" + this.initialCapital(anAttribute.getName()) + ")");
 
                     if (!anAttribute.isFixedLength())
                         pw.println("{\n    " + anAttribute.getName() + " = p" + this.initialCapital(anAttribute.getName()) + ";");
@@ -1720,7 +1729,7 @@ public class JavaGenerator extends AbstractGenerator
                     pw.println("}");
                     pw.println("/** Getter for {@link "+aClass.getName()+"#"+anAttribute.getName()+"}");
                     pw.println("  * @return value of interest */");
-                    pw.println("public " + types.getProperty(anAttribute.getType()) + "[] get" + this.initialCapital(anAttribute.getName()) + "()");
+                    pw.println("public " + primitiveMarshallingTypes.getProperty(anAttribute.getType()) + "[] get" + this.initialCapital(anAttribute.getName()) + "()");
                     pw.println("{\n    return " + anAttribute.getName() + "; \n}");
                     pw.println();
                     break;
@@ -1761,7 +1770,7 @@ public class JavaGenerator extends AbstractGenerator
                     pw.println("{\n    return " + anAttribute.getName() + "; \n}");
                     pw.println();
                     break;
-                    
+
                 case SISO_BITFIELD:
                     String bitfieldtype = anAttribute.getType();
                     pw.println("/** Setter for {@link "+aClass.getName()+"#"+anAttribute.getName()+"}");
@@ -1773,7 +1782,7 @@ public class JavaGenerator extends AbstractGenerator
                     pw.println("{\n    " + anAttribute.getName() + " = p" + this.initialCapital(anAttribute.getName()) + ";");
                     pw.println("    return this;");
                     pw.println("}");
-                    
+
                     pw.println("/** Getter for {@link "+aClass.getName()+"#"+anAttribute.getName()+"}");
                     pw.println("  * @return value of interest */");
                     pw.println("public " + bitfieldtype + " get" + this.initialCapital(anAttribute.getName()) + "()");
@@ -1782,74 +1791,6 @@ public class JavaGenerator extends AbstractGenerator
                     break;
             }
         } // End of loop trough writing getter/setter methods
-    }
-
-    /**
-     * Some fields have integers with bit fields defined, eg an integer where bits 0-2 represent some value, while bits 3-4 represent another value, and so on. This writes accessor and mutator methods
-     * for those fields.
-     *
-     * @param pw PrintWriter
-     * @param aClass class of interest
-     */
-    private void writeBitflagMethods(PrintWriter pw, GeneratedClass aClass)
-    {
-        List attributes = aClass.getClassAttributes();
-
-        for (int idx = 0; idx < attributes.size(); idx++) {
-            GeneratedClassAttribute anAttribute = (GeneratedClassAttribute) attributes.get(idx);
-
-            switch (anAttribute.getAttributeKind()) {
-
-                // Anything with bitfields must be a primitive type
-                case PRIMITIVE:
-                    List bitfields = anAttribute.bitFieldList;
-                    String attributeType = types.getProperty(anAttribute.getType());
-                    String bitfieldIvarName = anAttribute.getName();
-
-                    for (int jdx = 0; jdx < bitfields.size(); jdx++) {
-                        GeneratedBitField bitfield = (GeneratedBitField) bitfields.get(jdx);
-                        String capped = this.initialCapital(bitfield.name);
-                        String cappedIvar = this.initialCapital(bitfieldIvarName);
-                        int shiftBits = super.getBitsToShift(anAttribute, bitfield.mask);
-
-                        // write getter
-                        pw.println();
-                        if (bitfield.description != null) {
-                            pw.println("/**\n * " + bitfield.description + "\n */");
-                        }
-
-                        pw.println("public int get" + cappedIvar + "_" + bitfield.name + "()");
-                        pw.println("{");
-
-                        pw.println("    " + attributeType + " val = (" + attributeType + ")(this." + bitfield.parentAttribute.getName() + "   & " + "(" + attributeType + ")" + bitfield.mask + ");");
-                        pw.println("    return (int)(val >> " + shiftBits + ");");
-                        pw.println("}\n");
-
-                        // Write the setter/mutator
-                        pw.println();
-                        if (bitfield.description != null) {
-                            pw.println("/** \n * " + bitfield.description + "\n */");
-                        }
-                        pw.println("public synchronized void set" + cappedIvar + "_" + bitfield.name + "(int val)");
-                        pw.println("{");
-                        pw.println("    " + attributeType + " " + " aVal = 0;");
-                        pw.println("    this." + bitfield.parentAttribute.getName() + " &= (" + attributeType + ")(~" + bitfield.mask + "); // clear bits");
-                        pw.println("    aVal = (" + attributeType + ")(val << " + shiftBits + ");");
-                        pw.println("    this." + bitfield.parentAttribute.getName() + " = (" + attributeType + ")(this." + bitfield.parentAttribute.getName() + " | aVal);");
-                        pw.println("}\n");
-                    }
-
-                    break;
-
-                default:
-                    bitfields = anAttribute.bitFieldList;
-                    if (!bitfields.isEmpty()) {
-                        System.out.println("Attempted to use bit flags on a non-primitive field");
-                        System.out.println("Field: " + anAttribute.getName());
-                    }
-            }
-
-        }
     }
 
     private void writeMarshalMethod(PrintWriter pw, GeneratedClass aClass)
@@ -1861,7 +1802,7 @@ public class JavaGenerator extends AbstractGenerator
         pw.println(" * @see java.io.DataOutputStream");
         pw.println(" * @param dos the OutputStream");
         pw.println(" */");
- 
+
 //        if (aClass.getName().endsWith("Pdu"))
         pw.println("@Override");
         pw.println("public synchronized void marshal(DataOutputStream dos) throws Exception");
@@ -1889,7 +1830,7 @@ public class JavaGenerator extends AbstractGenerator
 
             // Write out a method call to serialize a primitive type
               case PRIMITIVE:
-                marshalType = marshalTypes.getProperty(anAttribute.getType());
+                marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
                 capped = this.initialCapital(marshalType);
 
                 // If we're a normal primitivetype, marshal out directly; otherwise, marshall out
@@ -1920,8 +1861,9 @@ public class JavaGenerator extends AbstractGenerator
                   }
                 }
 
+                // Singlular element without dependencies
                 else {
-                  pw.println("       dos.write" + capped + "(" + anAttribute.getName() + ");");
+                  pw.println("       dos.write" + capped + "(" + fromInternalToBitRep(anAttribute.getType(), anAttribute.getName()) + ");");
                 }
                 break;
 
@@ -1934,11 +1876,11 @@ public class JavaGenerator extends AbstractGenerator
                     pw.println("       " + anAttribute.getName() + ".marshal(dos);");
 
                     break;
-                    
+
                 case SISO_BITFIELD:
-                    pw.println("       " + anAttribute.getName() + ".marshal(dos);"); 
+                    pw.println("       " + anAttribute.getName() + ".marshal(dos);");
                     break;
-                    
+
                 // Write out a method call to serialize a class.
                 case CLASSREF:
                     marshalType = anAttribute.getType();
@@ -1950,7 +1892,7 @@ public class JavaGenerator extends AbstractGenerator
                     else {
                     	pw.println("       " + anAttribute.getName() + ".marshal(dos);");
                     }
-                    
+
                     break;
 
                 // Write out the method call to marshal a fixed length list, aka an array.
@@ -1958,7 +1900,7 @@ public class JavaGenerator extends AbstractGenerator
                     pw.println();
                     pw.println("       for (int idx = 0; idx < " + anAttribute.getName() + ".length; idx++)");
 
-                    marshalType = marshalTypes.getProperty(anAttribute.getType());
+                    marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
 
                     capped = this.initialCapital(marshalType);
                     pw.println("           dos.write" + capped + "(" + anAttribute.getName() + "[idx]);");
@@ -1977,8 +1919,6 @@ public class JavaGenerator extends AbstractGenerator
                     pw.println("       for (int idx = 0; idx < " + anAttribute.getName() + ".size(); idx++)");
                     pw.println("       {");
 
-                    marshalType = marshalTypes.getProperty(anAttribute.getType());
-
                     pw.println("            " + anAttribute.getType() + " a" + initialCapital(anAttribute.getType() + " = "
                         + anAttribute.getName() + ".get(idx);"));
                     pw.println("            a" + initialCapital(anAttribute.getType()) + ".marshal(dos);");
@@ -1986,7 +1926,7 @@ public class JavaGenerator extends AbstractGenerator
                     pw.println("       }");
                     pw.println();
                     break;
-                
+
                 case PADTO16:
                     pw.println("       "+anAttribute.getName()+" = new byte[Align.to16bits(dos)];");
                     break;
@@ -1996,7 +1936,7 @@ public class JavaGenerator extends AbstractGenerator
                 case PADTO64:
                     pw.println("       "+anAttribute.getName()+" = new byte[Align.to64bits(dos)];");
                     break;
-                    
+
             }
 
         } // End of loop through the ivars for a marshal method
@@ -2026,7 +1966,7 @@ public class JavaGenerator extends AbstractGenerator
         pw.println("{");
         pw.flush();
         pw.println("    int uPosition = 0;");
-        
+
         if (!(aClass.getParentClass().equalsIgnoreCase("root")))
             pw.println("    uPosition += super.unmarshal(dis);\n");
 
@@ -2042,34 +1982,21 @@ public class JavaGenerator extends AbstractGenerator
             }
             String attributeName= anAttribute.getName();
             switch(anAttribute.getAttributeKind()) {
-                case PRIMITIVE:            
-                    String marshalType = unmarshalTypes.getProperty(anAttribute.getType());
+                case PRIMITIVE:
+                    String marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
                     String capped = this.initialCapital(marshalType);
-                
-                    if (marshalType.equalsIgnoreCase("UnsignedByte")) {// || marshalType.equalsIgnoreCase("uint8"))
-                        pw.println("        " + attributeName + " = (byte)dis.read" + capped + "();");
-                        pw.println("        uPosition += 1;");
-                    }
-                    else if (marshalType.equalsIgnoreCase("UnsignedShort")) {/// || marshalType.equalsIgnoreCase("uint16"))
-                        pw.println("        " + attributeName + " = (short)dis.read" + capped + "();");
-                        pw.println("        uPosition += 2;");
-                    }
-                    else if (marshalType.equalsIgnoreCase("UnsignedLong")) { // || marshalType.equalsIgnoreCase("uint64"))
-                        pw.println("        " + attributeName + " = (long)dis.readLong" + "();"); // ^^^This is wrong; need to read unsigned here
-                        pw.println("        uPosition += 8;");
-                    }
-                    else {
-                        pw.println("        " + attributeName + " = dis.read" + capped + "();");
-                        pw.println("        uPosition += 4;");
-                    }
+
+                    pw.println("        " + attributeName + " = " + fromBitRepToInternal(anAttribute.getType(), "dis.read" + capped + "()") + ";");
+                    pw.println("        uPosition += " + primitiveSizes.get(anAttribute.getType()) + ";");
+
                     pw.flush();
                     break;
-                
+
                 case SISO_ENUM:
                     pw.println("        " + attributeName + " = "+anAttribute.getType()+".unmarshalEnum(dis);");
                     pw.println("        uPosition += " + attributeName + ".getMarshalledSize();");
                     break;
-                    
+
                 case SISO_BITFIELD:
                 case CLASSREF:
                 	if (anAttribute.getName().startsWith("iFFPduLayer")) {
@@ -2084,21 +2011,22 @@ public class JavaGenerator extends AbstractGenerator
                     	pw.println("        	checkWhichLayersNeedsUnmarshaling();");
                     }
                     break;
-                    
+
                 case PRIMITIVE_LIST:
                     if (anAttribute.getCountFieldName() != null) {
+                        String length;
                         if (anAttribute.isCountFieldInOctets()) {
-                            pw.println("        " + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[" + anAttribute.getCountFieldName() + " - " + anAttribute.getExtraOctets() + "];");
-                            pw.println("        for (int idx = 0; idx < " + anAttribute.getCountFieldName() + " - " + anAttribute.getExtraOctets() + "; idx++)");
+                            length = "((Number) " + anAttribute.getCountFieldName() + ").intValue() - " + anAttribute.getExtraOctets();
                         }
                         else if (anAttribute.isCountFieldInBits()) {
-                            pw.println("        " + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[(" + anAttribute.getCountFieldName() + " - " + anAttribute.getExtraBits() + " + 7) / 8];");
-                            pw.println("        for (int idx = 0; idx < (" + anAttribute.getCountFieldName() + " - " + anAttribute.getExtraBits() + " + 7) / 8; idx++)");
+                            length = "(((Number) " + anAttribute.getCountFieldName() + ").intValue() - " + anAttribute.getExtraBits() + " + 7) / 8";
                         }
                         else {
-                            pw.println("        " + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[" + anAttribute.getCountFieldName() + "];");
-                            pw.println("        for (int idx = 0; idx < " + anAttribute.getCountFieldName() + "; idx++)");
+                            length = "((Number) " + anAttribute.getCountFieldName() + ").intValue()";
                         }
+                        pw.println("        " + anAttribute.getName() + " = new " + primitiveMarshallingTypes.getProperty(anAttribute.getType()) + "[" + length + "];");
+                        pw.println("        for (int idx = 0; idx < " + length + "; idx++)");
+
                     }
                     else if (anAttribute.getListLength() <= 0) {
                         throw new IllegalArgumentException(String.format("Primitive list length was 0 and no count field was defined! \nGenerated class: %s\nGenerated attribute: %s", aClass, anAttribute));
@@ -2111,10 +2039,10 @@ public class JavaGenerator extends AbstractGenerator
                     // primitive or a class. We need to figure out which. This is done via the expedient
                     // but not very reliable way of trying to do a lookup on the type. If we don't find
                     // it in our map of primitives to marshal types, we assume it is a class.
-                    marshalType = marshalTypes.getProperty(anAttribute.getType());
+                    marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
 
                     if (marshalType == null) { // It's a class
-                        pw.println("            uPosition += " + attributeName + "[idx].unmarshal(dis);");
+                        throw new IllegalArgumentException("Pritive list has no primitive marshaltype: " + anAttribute.getType() + " of class: " + aClass.getName());
                     }
                     else { // It's a primitive
                         int primitiveByteSize = primitiveSizesMap.get(anAttribute.getType());
@@ -2123,10 +2051,10 @@ public class JavaGenerator extends AbstractGenerator
                         pw.println("        uPosition += ("+attributeName + ".length * "+primitiveByteSize+");");
                     }
                     break;
-                    
+
                 case OBJECT_LIST:
                     if (anAttribute.getCountFieldName() != null)
-                        pw.println("        for (int idx = 0; idx < " + anAttribute.getCountFieldName() + "; idx++)");
+                        pw.println("        for (int idx = 0; idx < ((Number) " + anAttribute.getCountFieldName() + ").intValue(); idx++)");
                     else
                         pw.println("        for (int idx = 0; idx < " + anAttribute.getName() + ".size(); idx++)");
 
@@ -2138,7 +2066,7 @@ public class JavaGenerator extends AbstractGenerator
                         pw.println("            uPosition += anX.getMarshalledSize();");
                     }
                     else {
-                        marshalType = marshalTypes.getProperty(anAttribute.getType());
+                        marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
 
                         if (marshalType == null) { // It's a class
                             pw.println("            " + anAttribute.getType() + " anX = new " + anAttribute.getType() + "();");
@@ -2146,15 +2074,13 @@ public class JavaGenerator extends AbstractGenerator
                             pw.println("            " + anAttribute.getName() + ".add(anX);");
                         }
                         else  { // It's a primitive
-                            capped = this.initialCapital(marshalType);
-                            pw.println("            dis.read" + capped + "(" + anAttribute.getName() + ");");
-                            pw.println("            uPosition += 4; // mike check");
+                            throw new IllegalArgumentException("Object list has primitive marshaltype: " + anAttribute.getType() + " of class: " + aClass.getName());
                         }
                     }
                     pw.println("        }");
                     pw.println();
                     break;
-                    
+
                 case PADTO16:
                     pw.println("        "+anAttribute.getName() + " = new byte[Align.from16bits(uPosition,dis)];");
                     pw.println("        uPosition += " + anAttribute.getName() + ".length;");
@@ -2166,14 +2092,14 @@ public class JavaGenerator extends AbstractGenerator
                 case PADTO64:
                     pw.println("        "+anAttribute.getName() + " = new byte[Align.from64bits(uPosition,dis)];");
                     pw.println("        uPosition += " + anAttribute.getName() + ".length;");
-                    break;                   
+                    break;
             }
         } // End of loop through ivars for writing the unmarshal method
 
         pw.println("    }");
 //        pw.println("\n    catch(Exception e)");
 //        pw.println("    { \n      System.err.println(e); \n    }");
-        
+
         pw.println("    return getMarshalledSize();");
         pw.println("}\n");
     }
@@ -2211,10 +2137,10 @@ public class JavaGenerator extends AbstractGenerator
             }
             String marshalType;
             String capped;
-            
+
             switch(anAttribute.getAttributeKind()) {
                 case PRIMITIVE:
-                    marshalType = marshalTypes.getProperty(anAttribute.getType());
+                    marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
                     capped = this.initialCapital(marshalType);
                     if( capped.equals("Byte") )
                         capped = "";    // ByteBuffer just has put() for bytes
@@ -2243,10 +2169,11 @@ public class JavaGenerator extends AbstractGenerator
                         }
                     }
                     else
-                       pw.println("   byteBuffer.put" + capped + "( (" + marshalType + ")" + anAttribute.getName() + ");");
+                        // Singlular element without dependencies
+                        pw.println("   byteBuffer.put" + capped + "(" + fromInternalToBitRep(anAttribute.getType(), anAttribute.getName()) + ");");
 
                     break;
-                    
+
                 case SISO_ENUM:
                 case SISO_BITFIELD:
                 case CLASSREF:
@@ -2257,9 +2184,9 @@ public class JavaGenerator extends AbstractGenerator
                 	else {
                 		pw.println("   " + anAttribute.getName() + ".marshal(byteBuffer);" );
                 	}
-                    
+
                     break;
-                    
+
                 case PRIMITIVE_LIST:
                     pw.println();
                     pw.println("   for (int idx = 0; idx < " + anAttribute.getName() + ".length; idx++)");
@@ -2269,7 +2196,7 @@ public class JavaGenerator extends AbstractGenerator
                     // but not very reliable way of trying to do a lookup on the type. If we don't find
                     // it in our map of primitives to marshal types, we assume it is a class.
 
-                    marshalType = marshalTypes.getProperty(anAttribute.getType());
+                    marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
 
                     if(anAttribute.getUnderlyingTypeIsPrimitive())
                     {
@@ -2283,7 +2210,7 @@ public class JavaGenerator extends AbstractGenerator
 
                     pw.println();
                     break;
-                    
+
                 case OBJECT_LIST:
                     pw.println();
                     pw.println("   for (int idx = 0; idx < " + anAttribute.getName() + ".size(); idx++)");
@@ -2294,7 +2221,7 @@ public class JavaGenerator extends AbstractGenerator
                     // but not very reliable way of trying to do a lookup on the type. If we don't find
                     // it in our map of primitives to marshal types, we assume it is a class.
 
-                    marshalType = marshalTypes.getProperty(anAttribute.getType());
+                    marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
 
                     if(anAttribute.getUnderlyingTypeIsPrimitive())
                     {
@@ -2314,7 +2241,7 @@ public class JavaGenerator extends AbstractGenerator
                     pw.println("   }");
                     pw.println();
                     break;
-                                  
+
                 case PADTO16:
                     pw.println("   "+anAttribute.getName()+" = new byte[Align.to16bits(byteBuffer)];");
                     break;
@@ -2324,7 +2251,7 @@ public class JavaGenerator extends AbstractGenerator
                 case PADTO64:
                     pw.println("   "+anAttribute.getName()+" = new byte[Align.to64bits(byteBuffer)];");
                     break;
-            }   
+            }
         } // End of loop through the ivars for a marshal method
 
         pw.println("}");
@@ -2354,7 +2281,7 @@ public class JavaGenerator extends AbstractGenerator
 //        pw.println("    try");
         pw.println("    {");
         // Loop through the class attributes, generating the output for each.
-        for (GeneratedClassAttribute anAttribute : aClass.getClassAttributes()) { 
+        for (GeneratedClassAttribute anAttribute : aClass.getClassAttributes()) {
 
             if(anAttribute.shouldSerialize == false) {
                  pw.println("        // attribute " + anAttribute.getName() + " marked as not serialized");
@@ -2364,24 +2291,17 @@ public class JavaGenerator extends AbstractGenerator
             String capped;
             switch(anAttribute.getAttributeKind()) {
                 case PRIMITIVE:
-                    marshalType = unmarshalTypes.getProperty(anAttribute.getType());
+                    marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
                     capped = this.initialCapital(marshalType);
                     if( capped.equals("Byte") )
                         capped = "";
-                
-                    if(marshalType.equalsIgnoreCase("UnsignedByte"))
-                        pw.println("        " + anAttribute.getName() + " = (byte)(byteBuffer.get() & 0xFF);");               
-                    else if (marshalType.equalsIgnoreCase("UnsignedShort"))
-                        pw.println("        " + anAttribute.getName() + " = (short)(byteBuffer.getShort() & 0xFFFF);");               
-                    else
-                        pw.println("        " + anAttribute.getName() + " = byteBuffer.get" + capped + "();");
-                    
+                    pw.println("        " + anAttribute.getName() + " = " + fromBitRepToInternal(anAttribute.getType(), "byteBuffer.get" + capped + "()") + ";");
                     break;
-                    
+
                 case SISO_ENUM:
                     pw.println("        " + anAttribute.getName() + " = "+anAttribute.getType()+".unmarshalEnum(byteBuffer);");
                     break;
-                    
+
                 case SISO_BITFIELD:
                 case CLASSREF:
                 	if (anAttribute.getName().startsWith("iFFPduLayer")) {
@@ -2399,18 +2319,18 @@ public class JavaGenerator extends AbstractGenerator
 
                 case PRIMITIVE_LIST:
                     if (anAttribute.getCountFieldName() != null) {
+                        String length;
                         if (anAttribute.isCountFieldInOctets()) {
-                            pw.println("        " + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[" + anAttribute.getCountFieldName() + " - " + anAttribute.getExtraOctets() + "];");
-                            pw.println("        for (int idx = 0; idx < " + anAttribute.getCountFieldName() + " - " + anAttribute.getExtraOctets() + "; idx++)");
+                            length = "((Number) " + anAttribute.getCountFieldName() + ").intValue() - " + anAttribute.getExtraOctets();
                         }
                         else if (anAttribute.isCountFieldInBits()) {
-                            pw.println("        " + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[(" + anAttribute.getCountFieldName() + " - " + anAttribute.getExtraBits() + " + 7) / 8];");
-                            pw.println("        for (int idx = 0; idx < (" + anAttribute.getCountFieldName() + " - " + anAttribute.getExtraBits() + " + 7) / 8; idx++)");
+                            length = "(((Number) " + anAttribute.getCountFieldName() + ").intValue() - " + anAttribute.getExtraBits() + " + 7) / 8";
                         }
                         else {
-                            pw.println("        " + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[" + anAttribute.getCountFieldName() + "];");
-                            pw.println("        for (int idx = 0; idx < " + anAttribute.getCountFieldName() + "; idx++)");
+                            length = "((Number) " + anAttribute.getCountFieldName() + ").intValue()";
                         }
+                        pw.println("        " + anAttribute.getName() + " = new " + primitiveMarshallingTypes.getProperty(anAttribute.getType()) + "[" + length + "];");
+                        pw.println("        for (int idx = 0; idx < " + length + "; idx++)");
                     }
                     else if (anAttribute.getListLength() <= 0) {
                         throw new IllegalArgumentException(String.format("Primitive list length was 0 and no count field was defined! \nGenerated class: %s\nGenerated attribute: %s", aClass, anAttribute));
@@ -2419,10 +2339,10 @@ public class JavaGenerator extends AbstractGenerator
                         pw.println("        for (int idx = 0; idx < " + anAttribute.getName() + ".length; idx++)");
                     }
 
-                    marshalType = marshalTypes.getProperty(anAttribute.getType());
+                    marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
 
                     if(marshalType == null) // It's a class  // should be unnecessary w/ refactor
-                        pw.println("            " + anAttribute.getName() + "[idx].unmarshal(byteBuffer);" );
+                        throw new IllegalArgumentException("Pritive list has no primitive marshaltype: " + anAttribute.getType() + " of class: " + aClass.getName());
                     else { // It's a primitive
                         capped = this.initialCapital(marshalType);
                         if( capped.equals("Byte") )
@@ -2430,13 +2350,13 @@ public class JavaGenerator extends AbstractGenerator
                         pw.println("            " +  anAttribute.getName() + "[idx] = byteBuffer.get" + capped + "();");
                     }
                     break;
-                    
+
                 case OBJECT_LIST:
                     if(anAttribute.getCountFieldName() != null)
-                        pw.println("        for (int idx = 0; idx < " + anAttribute.getCountFieldName() + "; idx++)");
+                        pw.println("        for (int idx = 0; idx < ((Number) " + anAttribute.getCountFieldName() + ").intValue(); idx++)");
                     else
                         pw.println("        for (int idx = 0; idx < " + anAttribute.getName() + ".size(); idx++)");
-                
+
                     pw.println("        {");
 
                     if(anAttribute.getUnderlyingTypeIsEnum()) {
@@ -2444,7 +2364,7 @@ public class JavaGenerator extends AbstractGenerator
                         pw.println("        " + anAttribute.getName() + ".add(anX);");
                     }
                     else {
-                        marshalType = marshalTypes.getProperty(anAttribute.getType());
+                        marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
 
                         if(marshalType == null) { // It's a class
                             pw.println("            " + anAttribute.getType() + " anX = new " + anAttribute.getType() + "();");
@@ -2452,17 +2372,14 @@ public class JavaGenerator extends AbstractGenerator
                             pw.println("            " + anAttribute.getName() + ".add(anX);");
                         }
                         else { // It's a primitive  // should be unnecessary now w/ refactor
-                            capped = this.initialCapital(marshalType);
-                            if( capped.equals("Byte") )
-                                capped = "";
-                            pw.println("            byteBuffer.get" + capped + "(" + anAttribute.getName() + ");");
+                            throw new IllegalArgumentException("Object list has primitive marshaltype: " + anAttribute.getType() + " of class: " + aClass.getName());
                         }
                     }
                     pw.println("        }");
                     pw.println();
                     break;
-                    
-                                    
+
+
                 case PADTO16:
                     pw.println("        "+anAttribute.getName() + " = new byte[Align.from16bits(byteBuffer)];");
                     break;
@@ -2474,7 +2391,7 @@ public class JavaGenerator extends AbstractGenerator
                     break;
             }
         } // End of loop through ivars for writing the unmarshal method
-        
+
         pw.println("    }");
 //        pw.println("    catch (java.nio.BufferUnderflowException bue)");
 //        pw.println("    {");
@@ -2517,18 +2434,11 @@ public class JavaGenerator extends AbstractGenerator
             String capped;
             switch(anAttribute.getAttributeKind()) {
                 case PRIMITIVE:
-                    marshalType = unmarshalTypes.getProperty(anAttribute.getType());
+                    marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
                     capped = this.initialCapital(marshalType);
                     if( capped.equals("Byte") )
                         capped = "";
-
-                    if(marshalType.equalsIgnoreCase("UnsignedByte"))
-                        pw.println("    map.put(\"" + anAttribute.getName() + "\", (byte)(byteBuffer.get() & 0xFF));");
-                    else if (marshalType.equalsIgnoreCase("UnsignedShort"))
-                        pw.println("    map.put(\"" + anAttribute.getName() + "\", (short)(byteBuffer.getShort() & 0xFFFF));");
-                    else
-                        pw.println("    map.put(\"" + anAttribute.getName() + "\", byteBuffer.get" + capped + "());");
-
+                    pw.println("    map.put(\"" + anAttribute.getName() + "\", " + fromBitRepToInternal(anAttribute.getType(), "byteBuffer.get" + capped + "()") + ");");
                     break;
 
                 case SISO_ENUM:
@@ -2555,30 +2465,30 @@ public class JavaGenerator extends AbstractGenerator
                         if (anAttribute.isCountFieldInOctets()) {
                             pw.println("    // Valid primitive list varying length with octets");
 
-                            pw.println("    " + types.getProperty(anAttribute.getType()) + "[] " + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraOctets() + "];");
+                            pw.println("    " + primitiveMarshallingTypes.getProperty(anAttribute.getType()) + "[] " + anAttribute.getName() + " = new " + primitiveMarshallingTypes.getProperty(anAttribute.getType()) + "[((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraOctets() + "];");
                             pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraOctets() + "; idx++)");
                         }
                         else if (anAttribute.isCountFieldInBits()) {
                             pw.println("    // Valid primitive list varying length with bits");
-                            pw.println("    " + types.getProperty(anAttribute.getType()) + "[] "  + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[(((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraBits() + " + 7) / 8];");
+                            pw.println("    " + primitiveMarshallingTypes.getProperty(anAttribute.getType()) + "[] "  + anAttribute.getName() + " = new " + primitiveMarshallingTypes.getProperty(anAttribute.getType()) + "[(((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraBits() + " + 7) / 8];");
                             pw.println("    for (int idx = 0; idx < (((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue() - " + anAttribute.getExtraBits() + " + 7) / 8; idx++)");
                         }
                         else {
                             pw.println("    // Valid primitive list varying length");
-                            pw.println("    " + types.getProperty(anAttribute.getType()) + "[] "  + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue()];");
+                            pw.println("    " + primitiveMarshallingTypes.getProperty(anAttribute.getType()) + "[] "  + anAttribute.getName() + " = new " + primitiveMarshallingTypes.getProperty(anAttribute.getType()) + "[((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue()];");
                             pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
                         }
                     }
                     else if (anAttribute.getListLength() > 0) {
                         pw.println("    // Valid (> 0) primitive list fixed length");
-                        pw.println("    " + types.getProperty(anAttribute.getType()) + "[] "  + anAttribute.getName() + " = new " + types.getProperty(anAttribute.getType()) + "[" + anAttribute.getListLength() + "];");
+                        pw.println("    " + primitiveMarshallingTypes.getProperty(anAttribute.getType()) + "[] "  + anAttribute.getName() + " = new " + primitiveMarshallingTypes.getProperty(anAttribute.getType()) + "[" + anAttribute.getListLength() + "];");
                         pw.println("    for (int idx = 0; idx < " + anAttribute.getListLength() + "; idx++)");
                     }
                     else {
                         throw new IllegalArgumentException(String.format("Primitive list length was 0 and no count field was defined! \nGenerated class: %s\nGenerated attribute: %s", aClass, anAttribute));
                     }
 
-                    marshalType = marshalTypes.getProperty(anAttribute.getType());
+                    marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
 
                     if(marshalType == null) // It's a class  // should be unnecessary w/ refactor
                         throw new RuntimeException("Primitivelist with a class type, illegal.");
@@ -2604,7 +2514,7 @@ public class JavaGenerator extends AbstractGenerator
                         pw.println("            map.put(\"" + anAttribute.getName() + "\" + String.valueOf(idx), anX);");
                     }
                     else {
-                        marshalType = marshalTypes.getProperty(anAttribute.getType());
+                        marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
 
                         if(marshalType == null) { // It's a class
                             pw.println("        map.put(\"" + anAttribute.getName() + "\" + String.valueOf(idx), " + anAttribute.getType() + ".fromBufferToMap(byteBuffer));");
@@ -2667,7 +2577,7 @@ public class JavaGenerator extends AbstractGenerator
 
             switch(anAttribute.getAttributeKind()) {
                 case PRIMITIVE:
-                    marshalType = marshalTypes.getProperty(anAttribute.getType());
+                    marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
                     capped = this.initialCapital(marshalType);
                     if( capped.equals("Byte") )
                         capped = "";    // ByteBuffer just has put() for bytes
@@ -2693,7 +2603,7 @@ public class JavaGenerator extends AbstractGenerator
                 case PRIMITIVE_LIST:
                     pw.println();
 
-                    marshalType = marshalTypes.getProperty(anAttribute.getType());
+                    marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
                     if(anAttribute.getUnderlyingTypeIsPrimitive())
                     {
                         capped = this.initialCapital(marshalType);
@@ -2714,7 +2624,7 @@ public class JavaGenerator extends AbstractGenerator
                     pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
                     pw.println("    {");
 
-                    marshalType = marshalTypes.getProperty(anAttribute.getType());
+                    marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
 
                     if(anAttribute.getUnderlyingTypeIsPrimitive())
                     {
@@ -2930,7 +2840,7 @@ public class JavaGenerator extends AbstractGenerator
         
     }
    */
- 
+
     /**
      * Write the code for an equality operator. This allows you to compare two
      * objects for equality.The code should look like
@@ -3007,7 +2917,7 @@ public class JavaGenerator extends AbstractGenerator
             if (anAttribute.isHidden())
               continue;
             String attname = anAttribute.getName();
-            
+
             switch (anAttribute.getAttributeKind()) {
               case PRIMITIVE:
                 pw.println("     if( ! (" + attname + " == rhs." + attname + ")) return false;");
@@ -3022,7 +2932,7 @@ public class JavaGenerator extends AbstractGenerator
               case OBJECT_LIST:
                 pw.println("     if( ! Objects.equals(" + attname + ", rhs." + attname + ") ) return false;");
                 break;
-                
+
               case PRIMITIVE_LIST:
                 pw.println();
                 pw.println("     for (int idx = 0; idx < "+ anAttribute.getListLength() + "; idx++)");
@@ -3047,7 +2957,7 @@ public class JavaGenerator extends AbstractGenerator
             System.err.println(e);
         }
     }
- 
+
     /**
      * Build the toString() method for this class, using the toString() methods of the
      * fields of the object
@@ -3062,7 +2972,11 @@ public class JavaGenerator extends AbstractGenerator
         pw.println(" {");
         pw.println("    StringBuilder sb  = new StringBuilder();");
         pw.println("    StringBuilder sb2 = new StringBuilder();");
-        pw.println("    sb.append(getClass().getSimpleName());");
+
+        if(!(aClass.getParentClass().equalsIgnoreCase("root")))
+            pw.println("    sb.append(super.toString());");
+        else
+            pw.println("    sb.append(getClass().getSimpleName());");
 
         List<GeneratedClassAttribute> objlists = new ArrayList<>();
 
@@ -3083,12 +2997,12 @@ public class JavaGenerator extends AbstractGenerator
 
         if (!objlists.isEmpty())
             objlists.forEach(attr -> writeList(pw, attr));
-    
+
         pw.println();
         pw.println("   return sb.toString();");
         pw.println(" }");
     }
-  
+
     private void writePrimitiveList(PrintWriter pw, GeneratedClassAttribute attr)
     {
         pw.print  ("    sb.append(\" ");
@@ -3097,7 +3011,7 @@ public class JavaGenerator extends AbstractGenerator
         pw.print  ("    sb.append(Arrays.toString(");
         pw.print  (attr.getName());
         pw.println(")); // writePrimitiveList");
-        
+
 //      pw.print("    sb.append(\" ");
 //      pw.print(attr.getName());
 //      pw.println(": \").append(\"\\n\");");
@@ -3105,7 +3019,7 @@ public class JavaGenerator extends AbstractGenerator
 //      pw.print(attr.getName());
 //      pw.println(")).append(\"\\n\");");
     }
-  
+
     private void writeList(PrintWriter pw, GeneratedClassAttribute attr)
     {
         pw.print  ("    sb.append(\" ");
@@ -3118,7 +3032,7 @@ public class JavaGenerator extends AbstractGenerator
         pw.println("    sb.append(sb2.toString().trim());");
         pw.println("    // https://stackoverflow.com/questions/2242471/clearing-a-string-buffer-builder-after-loop");
         pw.println("    sb2.setLength(0); // reset");
-    
+
 //      pw.print("    sb.append(\" ");
 //      pw.print(attr.getName());
 //      pw.println(": \").append(\"\\n\");");
@@ -3126,7 +3040,7 @@ public class JavaGenerator extends AbstractGenerator
 //      pw.print(attr.getName());
 //      pw.println(".forEach(r->{ sb.append(r.getClass().getSimpleName()).append(\": \").append(r).append(\"\\n\");});");
     }
-    
+
     private void writeOneToString(PrintWriter pw, GeneratedClassAttribute attr)
     {
         pw.print  ("    sb.append(\" ");
@@ -3134,15 +3048,15 @@ public class JavaGenerator extends AbstractGenerator
         pw.print(":\").append(");
         pw.print  (attr.getName());
         pw.println("); // writeOneToString");
-        
+
 //        pw.print("    sb.append(\" ");
 //        pw.print(attr.getName());
 //        pw.print(": \").append(");
 //        pw.print(attr.getName());
 //        pw.println(").append(\"\\n\");");
     }
-   
-    /** 
+
+    /**
      * returns a string with the first letter capitalized.
      * @param aString of interest
      * @return same string with first letter capitalized
@@ -3152,13 +3066,13 @@ public class JavaGenerator extends AbstractGenerator
     {
       if(aString == null)   //test test!
         return "";
-      
+
       StringBuffer stb = new StringBuffer(aString);
       stb.setCharAt(0, Character.toUpperCase(aString.charAt(0)));
 
       return new String(stb);
     }
-    
+
     /**
      * returns a string with the first letter lower case.
      */
@@ -3170,7 +3084,7 @@ public class JavaGenerator extends AbstractGenerator
 
         return new String(stb);
     }
-    
+
     private void writeIFFPduSpecificVariables(PrintWriter pw) {
     	pw.println("    /** Indexes are for unmarshaling fundamentalParameters.getInformationLayers() */");
         for (int i = 2; i < 8; i++) {
@@ -3179,7 +3093,7 @@ public class JavaGenerator extends AbstractGenerator
         pw.println("   private static final String TRANSPONDER = \"TRANSPONDER\";");
         pw.println("   private static final String INTERROGATOR = \"INTERROGATOR\";");
     }
-    
+
     /**
      * This is needed for only IFFPdu
      * @param pw
@@ -3188,7 +3102,7 @@ public class JavaGenerator extends AbstractGenerator
     	pw.println("");
     	pw.println(" /** Does not initialize iFFPduLayerFormatDatas if systemID.getSystemType contains both transponder and interrogator, you need to choose one.*/");
     	pw.println(" private void checkWhichLayersNeedsUnmarshaling() {");
-    	pw.println("	 byte informationLayers = fundamentalParameters.getInformationLayers();\n");
+    	pw.println("	 int informationLayers = fundamentalParameters.getInformationLayers();\n");
     	for (int i = 2; i < 8; i++) {
     		if (i == 2 || i == 5) {
     	    	pw.println("	 if (((informationLayers & 1 << LAYER_DATA_"+ i +"_BIT_INDEX) > 0)) {");
@@ -3234,7 +3148,7 @@ public class JavaGenerator extends AbstractGenerator
         }
         pw.println(" }");
     }
-    
+
     private void writeHashCodeMethod(PrintWriter pw, GeneratedClass aClass) {
     	List<GeneratedClassAttribute> classAttributes = aClass.getClassAttributes();
     	if (classAttributes.isEmpty()) {
@@ -3261,7 +3175,19 @@ public class JavaGenerator extends AbstractGenerator
         		pw.println("	                     this." + classAttributes.get(attributeIndex).getName() + ",");
         	}
         }
-        pw.println(" }");    
+        pw.println(" }");
+    }
+
+    private String fromInternalToBitRep(String attributeType, String attributeName) {
+        return String.format((String) primitiveFromInternalToBits.get(attributeType), attributeName);
+    }
+
+    private String fromBitRepToInternal(String attributeType, String bitRep) {
+        return String.format((String) primitiveFromBitsToInternal.get(attributeType), bitRep);
+    }
+
+    private String defaultPrimitiveValueInitialization(String attributeType, String defaultValue) {
+        return String.format((String) primitiveDefaultInitializations.get(attributeType), defaultValue);
     }
 
 }

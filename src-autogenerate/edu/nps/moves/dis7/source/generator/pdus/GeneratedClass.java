@@ -49,9 +49,6 @@ public class GeneratedClass
     /** whether this class should be abstract */
     protected boolean abstractClass = false;
 
-    /** whether this class completely overwrites super class marshalling */
-    protected boolean overwriteSuperMarshalling = false;
-    
     /** Constructor creates and configures a new instance object */
     public GeneratedClass()
     {
@@ -245,21 +242,5 @@ public class GeneratedClass
     public String getAliasFor()
     {
       return aliasFor;
-    }
-
-    /**
-     * set overwrites super marshalling
-     * @param shouldOverwriteSuperMarshalling
-     */
-    public void setOverwriteSuperMarshalling(String shouldOverwriteSuperMarshalling) {
-        this.overwriteSuperMarshalling = Boolean.parseBoolean(shouldOverwriteSuperMarshalling);
-    }
-
-    /**
-     * get overwrites super marshalling
-     * @return
-     */
-    public boolean overwritesSuperMarshalling() {
-        return this.overwriteSuperMarshalling;
     }
 }

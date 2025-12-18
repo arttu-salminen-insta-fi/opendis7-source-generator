@@ -562,13 +562,8 @@ dB and RPM)"/>
     </class>
 
     <!-- Section 6.2.19.2 -->
-    <class name="MunitionDescriptor" inheritsFrom="Descriptor"
-           overwriteSuperMarshalling="true"
-           comment="Represents the firing or detonation of a munition. Section 6.2.19.2">
-
-        <attribute name="munitionType" comment="What munition was used in the burst">
-            <classRef name="EntityType"/>
-        </attribute>
+    <class name="MunitionDescriptorFields" inheritsFrom="root"
+           comment="Represents the firing or detonation of a munition records specific fields. Section 6.2.19.2">
 
         <attribute name="warhead" comment="type of warhead enumeration">
             <sisoenum type="MunitionDescriptorWarhead" uid="60" comment="uid 60"/>
@@ -589,14 +584,9 @@ dB and RPM)"/>
     </class>
 
     <!-- Section 6.2.19.3 -->
-    <class name="ExplosionDescriptor"
-           inheritsFrom="Descriptor"
-           overwriteSuperMarshalling="true"
-           comment="Explosion of a non-munition. Section 6.2.19.3">
-
-        <attribute name="explodingObject" comment="Type of the object that exploded. See 6.2.30">
-            <classRef name="EntityType"/>
-        </attribute>
+    <class name="ExplosionDescriptorFields"
+           inheritsFrom="root"
+           comment="Explosion of a non-munition records specific fields. Section 6.2.19.3">
 
         <attribute name="explosiveMaterial"
                    comment="Material that exploded. Can be grain dust, tnt, gasoline, etc. Enumeration">
@@ -615,14 +605,9 @@ dB and RPM)"/>
     </class>
 
     <!-- Section 6.2.19.3 -->
-    <class name="ExpendableDescriptor"
-           inheritsFrom="Descriptor"
-           overwriteSuperMarshalling="true"
-           comment="Burst of chaff or expendible device. Section 6.2.19.4">
-
-        <attribute name="expendableType" comment="Type of the object that exploded">
-            <classRef name="EntityType"/>
-        </attribute>
+    <class name="ExpendableDescriptorFields"
+           inheritsFrom="root"
+           comment="Burst of chaff or expendible device records specific fields. Section 6.2.19.4">
 
         <attribute name="padding"
                    comment="zero-filled array of padding bits for byte alignment and consistent sizing of PDU data">

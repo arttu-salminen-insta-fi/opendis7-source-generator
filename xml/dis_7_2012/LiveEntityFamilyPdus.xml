@@ -165,8 +165,8 @@
             <classRef name="LiveEntityRelativeWorldCoordinates"/>
         </attribute>
         
-        <attribute name="munitionDescriptor">
-            <classRef name="MunitionDescriptor"/>
+        <attribute name="descriptor">
+            <classRef name="Descriptor"/>
         </attribute>
         
         <attribute name="velocity">
@@ -221,8 +221,8 @@
             <classRef name="LiveEntityOrientation16"/>
         </attribute>
         
-        <attribute name="munitionDescriptor">
-            <classRef name="MunitionDescriptor"/>
+        <attribute name="descriptor">
+            <classRef name="Descriptor"/>
         </attribute>
         
         <attribute name="entityLocation">

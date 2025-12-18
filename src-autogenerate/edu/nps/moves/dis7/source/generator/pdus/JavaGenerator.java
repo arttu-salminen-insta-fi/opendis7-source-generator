@@ -1827,12 +1827,8 @@ public class JavaGenerator extends AbstractGenerator
         // If we're a sublcass of another class, we should first call super
         // to make sure the superclass's ivars are marshaled out.
         // Exception to this is when the class completely overwrites base class marshalling
-        if (!(aClass.getParentClass().equalsIgnoreCase("root")) && !aClass.overwritesSuperMarshalling())
+        if (!(aClass.getParentClass().equalsIgnoreCase("root")))
             pw.println("    super.marshal(dos);");
-
-        if (aClass.overwritesSuperMarshalling()) {
-            pw.println("    // this class exceptionally overwrites all marshalling from base class");
-        }
 
 //        pw.println("    try");
         pw.println("\n    {");
@@ -1988,12 +1984,8 @@ public class JavaGenerator extends AbstractGenerator
         pw.flush();
         pw.println("    int uPosition = 0;");
 
-        if (!(aClass.getParentClass().equalsIgnoreCase("root")) && !aClass.overwritesSuperMarshalling())
+        if (!(aClass.getParentClass().equalsIgnoreCase("root")))
             pw.println("    uPosition += super.unmarshal(dis);\n");
-
-        if (aClass.overwritesSuperMarshalling()) {
-            pw.println("    // this class exceptionally overwrites all marshalling from base class");
-        }
 
 //        pw.println("    try");
         pw.println("\n    {");
@@ -2148,12 +2140,8 @@ public class JavaGenerator extends AbstractGenerator
         // If we're a sublcass of another class, we should first call super
         // to make sure the superclass's ivars are marshaled out.
         // Exception to this is when the class completely overwrites base class marshalling
-        if(!(aClass.getParentClass().equalsIgnoreCase("root")) && !aClass.overwritesSuperMarshalling())
+        if(!(aClass.getParentClass().equalsIgnoreCase("root")))
             pw.println("   super.marshal(byteBuffer);");
-
-        if (aClass.overwritesSuperMarshalling()) {
-            pw.println("    // this class exceptionally overwrites all marshalling from base class");
-        }
 
         //pw.println("    try \n    {");
 
@@ -2304,12 +2292,8 @@ public class JavaGenerator extends AbstractGenerator
         pw.println("public synchronized int unmarshal(java.nio.ByteBuffer byteBuffer) throws Exception"); // throws EnumNotFoundException");
         pw.println("{");
 
-        if(!(aClass.getParentClass().equalsIgnoreCase("root")) && !aClass.overwritesSuperMarshalling())
+        if(!(aClass.getParentClass().equalsIgnoreCase("root")))
             pw.println("    super.unmarshal(byteBuffer);\n");
-
-        if (aClass.overwritesSuperMarshalling()) {
-            pw.println("    // this class exceptionally overwrites all marshalling from base class");
-        }
 
 //        pw.println("    try");
         pw.println("    {");

@@ -179,10 +179,10 @@ public class PduFactory
     return si;
   }
 
-  private MunitionDescriptor newMunitionDescriptor()
+  private Descriptor newDescriptor()
   {
-    MunitionDescriptor md = new MunitionDescriptor()
-      .setMunitionType(newEntityType());
+      Descriptor md = new Descriptor()
+      .setEntityType(newEntityType());
     /*
             .setFuse(MunitionDescriptorFuse.OTHER)
             .setWarhead(MunitionDescriptorWarhead.OTHER);
@@ -254,7 +254,7 @@ public class PduFactory
       .setMunitionExpendibleID(newEntityID())
       .setTargetEntityID(newEntityID())
       .setEventID(new EventIdentifier())
-      .setDescriptor(newMunitionDescriptor());
+      .setDescriptor(newDescriptor());
     /*
             .setLocationInWorldCoordinates(new Vector3Double())
      */
@@ -270,7 +270,7 @@ public class PduFactory
   {
     DetonationPdu pdu = new DetonationPdu()
       .setEventID(newEventIdentifier())
-      .setDescriptor(newMunitionDescriptor());
+      .setDescriptor(newDescriptor());
     /*
             .setDetonationResult(DetonationResult.OTHER)
      */
@@ -1047,7 +1047,7 @@ public class PduFactory
       .setFiringLiveEntityId(newEntityID())
       .setMunitionLiveEntityId(newEntityID())
       .setTargetLiveEntityId(newEntityID())
-      .setMunitionDescriptor(newMunitionDescriptor());
+      .setDescriptor(newDescriptor());
     /*
             .setLocation(new LiveEntityRelativeWorldCoordinates())
             .setVelocity(new LiveEntityLinearVelocity())
@@ -1068,7 +1068,7 @@ public class PduFactory
       .setFiringLiveEntityId(newEntityID())
       .setMunitionLiveEntityId(newEntityID())
       .setTargetLiveEntityId(newEntityID())
-      .setMunitionDescriptor(newMunitionDescriptor());
+      .setDescriptor(newDescriptor());
     /*
             .setEntityLocation(new LiveEntityLinearVelocity())
             .setMunitionOrientation(new LiveEntityOrientation16())

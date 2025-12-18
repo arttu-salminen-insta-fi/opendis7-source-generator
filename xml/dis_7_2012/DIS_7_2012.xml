@@ -25,7 +25,7 @@
         annotations here are used only by XMLPG, the source code generation tool.
     -->
     <!--, edu.nps.moves.disenum.*, edu.nps.moves.disutil.*"-->
-    <java imports="java.util.*, java.io.*, edu.nps.moves.dis7.enumerations.*, com.google.common.primitives.*"
+    <java imports="java.util.*, java.io.*, edu.nps.moves.dis7.enumerations.*, com.google.common.primitives.*, com.google.common.base.Preconditions"
           package="edu.nps.moves.dis7"
           directory="main/java/edu/nps/moves/dis7"/>
 

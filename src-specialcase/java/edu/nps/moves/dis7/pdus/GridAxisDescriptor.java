@@ -11,6 +11,8 @@ package edu.nps.moves.dis7.pdus;
 
 import java.util.*;
 import java.io.*;
+
+import com.google.common.base.Preconditions;
 import edu.nps.moves.dis7.enumerations.*;
 
 /**
@@ -105,6 +107,8 @@ public class GridAxisDescriptor extends Object implements Serializable, Marshall
      * @param pDomainPointsXi new value of interest. Value space uint16
      * @return same object to permit progressive setters */
     public synchronized GridAxisDescriptor setDomainPointsXi(int pDomainPointsXi){
+        // Checking value is in value space uint16
+        Preconditions.checkArgument(pDomainPointsXi >= 0 && pDomainPointsXi <= 65535, "value outside valid value space");
         domainPointsXi = pDomainPointsXi;
         return this;
     }
@@ -119,6 +123,8 @@ public class GridAxisDescriptor extends Object implements Serializable, Marshall
      * @param pInterleafFactor new value of interest. Value space uint8
      * @return same object to permit progressive setters */
     public synchronized GridAxisDescriptor setInterleafFactor(int pInterleafFactor){
+        // Checking value is in value space uint8
+        Preconditions.checkArgument(pInterleafFactor >= 0 && pInterleafFactor <= 255, "value outside valid value space");
         interleafFactor = pInterleafFactor;
         return this;
     }

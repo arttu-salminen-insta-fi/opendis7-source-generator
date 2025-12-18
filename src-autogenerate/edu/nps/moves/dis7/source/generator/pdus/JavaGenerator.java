@@ -62,6 +62,11 @@ public class JavaGenerator extends AbstractGenerator
     Properties primitiveDefaultInitializations = new Properties();
 
     /**
+     * Use via primitiveValueSpaceCheck()
+     */
+    Properties primitiveValueRangeChecks = new Properties();
+
+    /**
      * sizes of various primitive types
      */
     Properties primitiveSizes = new Properties();
@@ -169,6 +174,9 @@ public class JavaGenerator extends AbstractGenerator
         primitiveDefaultInitializations.setProperty("int64",   "(long) %s");
         primitiveDefaultInitializations.setProperty("float32", "(float) %s");
         primitiveDefaultInitializations.setProperty("float64", "(double) %s");
+
+        primitiveValueRangeChecks.setProperty(UNSIGNED_INT8,   "%s >= 0 && %s <= 255");
+        primitiveValueRangeChecks.setProperty("uint16",  "%s >= 0 && %s <= 65535");
 
         // How big various primitive types are
         primitiveSizes.setProperty(UNSIGNED_INT8,   "1");
@@ -1182,9 +1190,10 @@ public class JavaGenerator extends AbstractGenerator
                     attributeType = primitiveInternalTypes.getProperty(anAttribute.getType());
                     if ((anAttribute.getComment() != null) && !anAttribute.getComment().trim().isEmpty())
                     {
-                         pw.println("   /** " + anAttribute.getComment() + " */");
+                         pw.println("   /** " + anAttribute.getComment() + " \n   Value space: " + anAttribute.getType() +  " */");
                     }
-                    else pw.println("   /** " + anAttribute.getName() + " is an undescribed parameter... */");
+                    else pw.println("   /** " + anAttribute.getName() + " is an undescribed parameter...\n   Value space: " + anAttribute.getType() +" */");
+
 
                     String defaultValue = anAttribute.getDefaultValue();
 
@@ -1645,7 +1654,13 @@ public class JavaGenerator extends AbstractGenerator
                         pw.print("public synchronized ");
                         pw.print(aClass.getName());
                         pw.println(" set" + this.initialCapital(anAttribute.getName()) + "(" + beanType + " p" + this.initialCapital(anAttribute.getName()) + ")");
-                        pw.println("{\n    " + anAttribute.getName() + " = p" + this.initialCapital(anAttribute.getName()) + ";");
+                        pw.println("{");
+                        String valSpaceCheck = primitiveValueSpaceCheck(anAttribute.getType(), "p" + this.initialCapital(anAttribute.getName()));
+                        if (valSpaceCheck != null) {
+                            pw.println("    // Checking value is in value space " + anAttribute.getType());
+                            pw.println("    Preconditions.checkArgument(" + valSpaceCheck + ", \"Value outside valid value space\");");
+                        }
+                        pw.println("    " + anAttribute.getName() + " = p" + this.initialCapital(anAttribute.getName()) + ";");
                         pw.println("    return this;");
                         pw.println("}");
 
@@ -3206,6 +3221,14 @@ public class JavaGenerator extends AbstractGenerator
 
     private String defaultPrimitiveValueInitialization(String attributeType, String defaultValue) {
         return String.format((String) primitiveDefaultInitializations.get(attributeType), defaultValue);
+    }
+
+    private String primitiveValueSpaceCheck(String attributeType, String variable) {
+        Object check = primitiveValueRangeChecks.get(attributeType);
+        if (check != null) {
+            return String.format((String) check, variable, variable);
+        }
+        return null;
     }
 
 }

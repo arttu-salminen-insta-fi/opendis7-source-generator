@@ -11,6 +11,8 @@ package edu.nps.moves.dis7.pdus;
 
 import java.util.*;
 import java.io.*;
+
+import com.google.common.base.Preconditions;
 import edu.nps.moves.dis7.enumerations.*;
 
 /**
@@ -120,6 +122,8 @@ public Country getCountry()
   * @param pCategory new value of interest. Value space uint8
   * @return same object to permit progressive setters */
 public synchronized EntityType setCategory(int pCategory){
+    // Checking value is in value space uint8
+    Preconditions.checkArgument(pCategory >= 0 && pCategory <= 255, "value outside valid value space");
     category = pCategory;
     return this;
 }
@@ -134,6 +138,8 @@ public int getCategory()
   * @param pSubCategory new value of interest. Value space uint8
   * @return same object to permit progressive setters */
 public synchronized EntityType setSubCategory(int pSubCategory){
+    // Checking value is in value space uint8
+    Preconditions.checkArgument(pSubCategory >= 0 && pSubCategory <= 255, "value outside valid value space");
     subCategory = pSubCategory;
     return this;
 }
@@ -148,6 +154,8 @@ public int getSubCategory()
   * @param pSpecific new value of interest. Value space uint8
   * @return same object to permit progressive setters */
 public synchronized EntityType setSpecific(int pSpecific){
+    // Checking value is in value space uint8
+    Preconditions.checkArgument(pSpecific >= 0 && pSpecific <= 255, "value outside valid value space");
     specific = pSpecific;
     return this;
 }
@@ -162,6 +170,8 @@ public int getSpecific()
   * @param pExtra new value of interest. Value space uint8
   * @return same object to permit progressive setters */
 public synchronized EntityType setExtra(int pExtra){
+    // Checking value is in value space uint8
+    Preconditions.checkArgument(pExtra >= 0 && pExtra <= 255, "value outside valid value space");
     extra = pExtra;
     return this;
 }

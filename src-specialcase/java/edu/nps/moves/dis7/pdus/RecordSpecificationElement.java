@@ -12,6 +12,7 @@ package edu.nps.moves.dis7.pdus;
 import java.util.*;
 import java.io.*;
 
+import com.google.common.base.Preconditions;
 import com.google.common.primitives.*;
 import edu.nps.moves.dis7.enumerations.*;
 
@@ -123,6 +124,8 @@ public class RecordSpecificationElement extends Object implements Serializable, 
      * @param pRecordLength new value of interest. Value space uint16
      * @return same object to permit progressive setters */
     public synchronized RecordSpecificationElement setRecordLength(int pRecordLength){
+        // Checking value is in value space uint16
+        Preconditions.checkArgument(pRecordLength >= 0 && pRecordLength <= 65535, "value outside valid value space");
         recordLength = pRecordLength;
         return this;
     }
@@ -137,6 +140,8 @@ public class RecordSpecificationElement extends Object implements Serializable, 
      * @param pRecordCount new value of interest. Value space uint16
      * @return same object to permit progressive setters */
     public synchronized RecordSpecificationElement setRecordCount(int pRecordCount){
+        // Checking value is in value space uint16
+        Preconditions.checkArgument(pRecordCount >= 0 && pRecordCount <= 65535, "value outside valid value space");
         recordCount = pRecordCount;
         return this;
     }

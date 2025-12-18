@@ -19,11 +19,11 @@
         </attribute>
        
         <attribute name="modelType" comment="model type">
-            <sisoenum type="EnvironmentalProcessModelType" comment="uid 248"/>
+            <sisoenum type="EnvironmentalProcessModelType" uid="248" comment="uid 248"/>
         </attribute>
        
         <attribute name="environmentStatus" comment="Environment status">
-            <sisobitfield type="EnvironmentalProcessEnvironmentStatus" size="8" comment="uid 249"/>
+            <sisobitfield type="EnvironmentalProcessEnvironmentStatus" size="8" uid="249" comment="uid 249"/>
         </attribute>
        
         <attribute name="numberOfEnvironmentRecords" hidden="true" comment="number of environment records ">
@@ -64,7 +64,7 @@
         </attribute>
        
         <attribute name="coordinateSystem" comment="coordinate system of the grid">
-            <sisoenum type="GriddedDataCoordinateSystem" comment="uid 244"/>
+            <sisoenum type="GriddedDataCoordinateSystem" uid="244" comment="uid 244"/>
         </attribute>
        
         <attribute name="numberOfGridAxes" hidden="true" comment="number of grid axes for the environmental data">
@@ -72,7 +72,7 @@
         </attribute>
        
         <attribute name="constantGrid" comment="are domain grid axes identidal to those of the priveious domain update?">
-            <sisoenum type="GriddedDataConstantGrid" comment="uid 245"/>
+            <sisoenum type="GriddedDataConstantGrid" uid="245" comment="uid 245"/>
         </attribute>
        
         <attribute name="environmentType" comment="type of environment">
@@ -135,11 +135,11 @@
         </attribute>
    
         <attribute name="forceID" comment="force ID provides a unique identifier">
-            <sisoenum type="ForceID" comment="uid 6"/>
+            <sisoenum type="ForceID" uid="6" comment="uid 6"/>
         </attribute>
    
         <attribute name="modifications" comment="modifications">
-            <sisobitfield type="ObjectStateModificationPointObject" size="8" comment="uid 240"/>
+            <sisobitfield type="ObjectStateModificationPointObject" size="8" uid="240" comment="uid 240"/>
         </attribute>
    
         <attribute name="objectType" comment="Object type">
@@ -159,7 +159,7 @@
         </attribute>
            
         <attribute name="generObjectAppearance" comment="General object apperance">
-            <sisobitfield type="ObjectStateAppearanceGeneral" size="16" comment="uid 229"/>
+            <sisobitfield type="ObjectStateAppearanceGeneral" size="16" uid="229" comment="uid 229"/>
         </attribute>
    
         <attribute name="padding1">
@@ -198,7 +198,7 @@
         </attribute>
    
         <attribute name="forceID" comment="force ID provides a unique identifier">
-            <sisoenum type="ForceID" comment="uid 6"/>
+            <sisoenum type="ForceID" uid="6" comment="uid 6"/>
         </attribute>
    
         <attribute name="numberOfLinearSegments" hidden="true" comment="number of linear segment parameters">
@@ -243,11 +243,11 @@
         </attribute>
    
         <attribute name="forceID" comment="force ID provides a unique identifier">
-            <sisoenum type="ForceID" comment="uid 6"/>
+            <sisoenum type="ForceID" uid="6" comment="uid 6"/>
         </attribute>
    
         <attribute name="modifications" comment="modifications enumeration">
-            <sisobitfield type="ObjectStateModificationArealObject" size="8" comment="uid 242"/>
+            <sisobitfield type="ObjectStateModificationArealObject" size="8" uid="242" comment="uid 242"/>
         </attribute>
 
         <attribute name="objectType" comment="Object type">

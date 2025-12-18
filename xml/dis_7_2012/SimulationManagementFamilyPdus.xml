@@ -61,11 +61,11 @@
         </attribute>
 
         <attribute name="reason" comment="Reason the simulation was stopped or frozen (see section 7 of SISO-REF-010) represented by an 8-bit enumeration">
-            <sisoenum type="StopFreezeReason" comment="uid 67"/>
+            <sisoenum type="StopFreezeReason" uid="67" comment="uid 67"/>
         </attribute>
 
         <attribute name="frozenBehavior" comment="Internal behavior of the entity (or simulation) and its appearance while frozen to the other participants">
-            <sisobitfield type="StopFreezeFrozenBehavior" size="8" comment="uid 68"/>
+            <sisobitfield type="StopFreezeFrozenBehavior" size="8" uid="68" comment="uid 68"/>
         </attribute>
 
         <attribute name="padding1" comment="padding">
@@ -83,11 +83,11 @@
         <initialValue name="pduType" value="DisPduType.ACKNOWLEDGE"/>
 
         <attribute name="acknowledgeFlag" comment="type of message being acknowledged">
-            <sisoenum type="AcknowledgeAcknowledgeFlag" comment="uid 69"/>
+            <sisoenum type="AcknowledgeAcknowledgeFlag" uid="69" comment="uid 69"/>
         </attribute>
 
         <attribute name="responseFlag" comment="Whether or not the receiving entity was able to comply with the request">
-            <sisoenum type="AcknowledgeResponseFlag" comment="uid 70"/>
+            <sisoenum type="AcknowledgeResponseFlag" uid="70" comment="uid 70"/>
         </attribute>
 
         <attribute name="requestID" comment="Request ID that is unique">
@@ -105,7 +105,7 @@
         </attribute>
     
         <attribute name="actionID" comment="identifies the particular action being requested(see Section 7 of SISO-REF-010).">
-            <sisoenum type="ActionRequestActionID" comment="uid 71"/>
+            <sisoenum type="ActionRequestActionID" uid="71" comment="uid 71"/>
         </attribute>
     
         <attribute name="numberOfFixedDatumRecords" hidden="true" comment="Number of fixed datum records">
@@ -139,7 +139,7 @@
         </attribute>
     
         <attribute name="requestStatus" comment="Status of response">
-            <sisoenum type="ActionResponseRequestStatus" comment="uid 72"/>
+            <sisoenum type="ActionResponseRequestStatus" uid="72" comment="uid 72"/>
         </attribute>
     
         <attribute name="numberOfFixedDatumRecords" hidden="true" comment="Number of fixed datum records">
@@ -272,7 +272,7 @@
         <initialValue name="pduType" value="DisPduType.EVENT_REPORT"/>
     
         <attribute name="eventType" comment="Type of event">
-            <sisoenum type="EventReportEventType" comment="uid 73"/>
+            <sisoenum type="EventReportEventType" uid="73" comment="uid 73"/>
         </attribute>
       
         <attribute name="padding1" comment="padding">

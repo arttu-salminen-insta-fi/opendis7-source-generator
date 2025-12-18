@@ -21,7 +21,7 @@
         </attribute>
 
         <attribute name="serviceTypeRequested" comment="Type of service requested, Section 7.4.2">
-            <sisoenum type="ServiceRequestServiceTypeRequested" comment="uid 63"/>
+            <sisoenum type="ServiceRequestServiceTypeRequested" uid="63" comment="uid 63"/>
         </attribute>
 
         <attribute name="numberOfSupplyTypes" hidden="true" comment="How many requested, Section 7.4.2">
@@ -140,7 +140,7 @@
         </attribute>
 
         <attribute name="repair" comment="Enumeration for type of repair.  See 6.2.74">
-            <sisoenum type="RepairCompleteRepair" comment="uid 64"/>
+            <sisoenum type="RepairCompleteRepair" uid="64" comment="uid 64"/>
         </attribute>
 
         <attribute name="padding4" comment="padding, number prevents conflict with superclass ivar name">
@@ -162,7 +162,7 @@
         </attribute>
 
         <attribute name="repairResult" comment="Result of repair operation">
-            <sisoenum type="RepairResponseRepairResult" comment="uid 64"/>
+            <sisoenum type="RepairResponseRepairResult" uid="64" comment="uid 64"/>
         </attribute>
 
         <attribute name="padding1" comment="padding">

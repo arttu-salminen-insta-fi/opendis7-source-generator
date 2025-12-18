@@ -19,7 +19,7 @@
         <initialValue name="pduType" value="DisPduType.CREATE_ENTITY_RELIABLE"/>
 
         <attribute name="requiredReliabilityService" comment="level of reliability service used for this transaction">
-            <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
+            <sisoenum type="RequiredReliabilityService" uid="74" comment="uid 74"/>
         </attribute>
    
         <attribute name="padding1">
@@ -43,7 +43,7 @@
         <initialValue name="pduType" value="DisPduType.REMOVE_ENTITY_RELIABLE"/>
 
         <attribute name="requiredReliabilityService" comment="level of reliability service used for this transaction">
-            <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
+            <sisoenum type="RequiredReliabilityService" uid="74" comment="uid 74"/>
         </attribute>
    
         <attribute name="padding1">
@@ -75,7 +75,7 @@
         </attribute>
    
         <attribute name="requiredReliabilityService" comment="level of reliability service used for this transaction">
-            <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
+            <sisoenum type="RequiredReliabilityService" uid="74" comment="uid 74"/>
         </attribute>
    
         <attribute name="padding1">
@@ -103,15 +103,15 @@
         </attribute>
    
         <attribute name="reason" comment="Reason for stopping/freezing simulation">
-            <sisoenum type="StopFreezeReason" comment="uid 67"/>
+            <sisoenum type="StopFreezeReason" uid="67" comment="uid 67"/>
         </attribute>
    
         <attribute name="frozenBehavior" comment="internal behvior of the simulation while frozen">
-            <sisobitfield type="StopFreezeFrozenBehavior" size="8" comment="uid 68"/>
+            <sisobitfield type="StopFreezeFrozenBehavior" size="8" uid="68" comment="uid 68"/>
         </attribute>
    
         <attribute name="requiredReliabilityService" comment="reliability level">
-            <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
+            <sisoenum type="RequiredReliabilityService" uid="74" comment="uid 74"/>
         </attribute>
    
         <attribute name="padding1" comment="padding">
@@ -132,11 +132,11 @@
         <initialValue name="pduType" value="DisPduType.ACKNOWLEDGE_RELIABLE"/>
    
         <attribute name="acknowledgeFlag" comment="ack flags">
-            <sisoenum type="AcknowledgeAcknowledgeFlag" comment="uid 69"/>
+            <sisoenum type="AcknowledgeAcknowledgeFlag" uid="69" comment="uid 69"/>
         </attribute>
    
         <attribute name="responseFlag" comment="response flags">
-            <sisoenum type="AcknowledgeResponseFlag" comment="uid 70"/>
+            <sisoenum type="AcknowledgeResponseFlag" uid="70" comment="uid 70"/>
         </attribute>
    
         <attribute name="requestID" comment="Request ID provides a unique identifier">
@@ -153,7 +153,7 @@
         <initialValue name="pduType" value="DisPduType.ACTION_REQUEST_RELIABLE"/>
    
         <attribute name="requiredReliabilityService" comment="level of reliability service used for this transaction">
-            <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
+            <sisoenum type="RequiredReliabilityService" uid="74" comment="uid 74"/>
         </attribute>
    
         <attribute name="padding1" comment="padding">
@@ -169,7 +169,7 @@
         </attribute>
    
         <attribute name="actionID" comment="request ID provides a unique identifier">
-            <sisoenum type="ActionRequestActionID" comment="uid 71"/>
+            <sisoenum type="ActionRequestActionID" uid="71" comment="uid 71"/>
         </attribute>
    
         <attribute name="numberOfFixedDatumRecords" hidden="true" comment="Fixed datum record count">
@@ -206,7 +206,7 @@
         </attribute>
    
         <attribute name="responseStatus" comment="status of response">
-            <sisoenum type="ActionResponseRequestStatus" comment="uid 72"/>
+            <sisoenum type="ActionResponseRequestStatus" uid="72" comment="uid 72"/>
         </attribute>
    
         <attribute name="numberOfFixedDatumRecords" hidden="true" comment="Fixed datum record count">
@@ -238,7 +238,7 @@
         <initialValue name="pduType" value="DisPduType.DATA_QUERY_RELIABLE"/>
    
         <attribute name="requiredReliabilityService" comment="level of reliability service used for this transaction">
-            <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
+            <sisoenum type="RequiredReliabilityService" uid="74" comment="uid 74"/>
         </attribute>
    
         <attribute name="padding1" comment="padding">
@@ -287,7 +287,7 @@
         <initialValue name="pduType" value="DisPduType.SET_DATA_RELIABLE"/>
    
         <attribute name="requiredReliabilityService" comment="level of reliability service used for this transaction">
-            <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
+            <sisoenum type="RequiredReliabilityService" uid="74" comment="uid 74"/>
         </attribute>
    
         <attribute name="padding1" comment="padding">
@@ -335,7 +335,7 @@
         </attribute>
    
         <attribute name="requiredReliabilityService" comment="level of reliability service used for this transaction">
-            <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
+            <sisoenum type="RequiredReliabilityService" uid="74" comment="uid 74"/>
         </attribute>
 
         <attribute name="padding1" comment="padding">
@@ -376,7 +376,7 @@
         <initialValue name="pduType" value="DisPduType.EVENT_REPORT_RELIABLE"/>
    
         <attribute name="eventType" comment="Event type">
-            <sisoenum type="EventReportEventType" comment="uid 73"/>
+            <sisoenum type="EventReportEventType" uid="73" comment="uid 73"/>
         </attribute>
    
         <attribute name="padding1" comment="padding">
@@ -439,7 +439,7 @@
         </attribute>
    
         <attribute name="requiredReliabilityService" comment="level of reliability service used for this transaction">
-            <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
+            <sisoenum type="RequiredReliabilityService" uid="74" comment="uid 74"/>
         </attribute>
    
         <attribute name="padding1" comment="padding">
@@ -447,7 +447,7 @@
         </attribute>
    
         <attribute name="eventType" comment="event type">
-            <sisoenum type="RecordQueryREventType" comment="uid 334"/>
+            <sisoenum type="RecordQueryREventType" uid="334" comment="uid 334"/>
         </attribute>
    
         <attribute name="time" comment="time">
@@ -478,7 +478,7 @@
         </attribute>
        
         <attribute name="requiredReliabilityService" comment="level of reliability service used for this transaction">
-            <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
+            <sisoenum type="RequiredReliabilityService" uid="74" comment="uid 74"/>
         </attribute>
        
         <attribute name="padding1">
@@ -510,7 +510,7 @@
         </attribute>
        
         <attribute name="requiredReliabilityService" comment="level of reliability service used for this transaction">
-            <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
+            <sisoenum type="RequiredReliabilityService" uid="74" comment="uid 74"/>
         </attribute>
        
         <attribute name="padding1">
@@ -518,7 +518,7 @@
         </attribute>
        
         <attribute name="eventType">
-            <sisoenum type="RecordREventType" comment="uid 333"/>
+            <sisoenum type="RecordREventType" uid="333" comment="uid 333"/>
         </attribute>
        
         <attribute name="recordSets" comment="record sets">

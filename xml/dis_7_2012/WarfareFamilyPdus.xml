@@ -86,7 +86,7 @@
         </attribute>
 
         <attribute name="detonationResult" comment="result of the detonation, Section 7.3.3 ">
-            <sisoenum type="DetonationResult" comment="uid 62"/>
+            <sisoenum type="DetonationResult" uid="62" comment="uid 62"/>
         </attribute>
 
         <attribute name="numberOfVariableParameters" hidden="true" comment="How many articulation parameters we have, Section 7.3.3 ">
@@ -155,11 +155,11 @@
         </attribute>
 
         <attribute name="flags" comment="16bit Boolean field shall contain various flags to indicate status information needed to process a DE, Section 7.3.4 ">
-            <sisobitfield type="DEFireFlags" size="16" comment="uid 313"/>
+            <sisobitfield type="DEFireFlags" size="16" uid="313" comment="uid 313"/>
         </attribute>
 
         <attribute name="pulseShape" comment="Field shall identify the pulse shape and shall be represented as an 8-bit enumeration, Section 7.3.4 ">
-            <sisoenum type="DEFirePulseShape" comment="uid 312"/>
+            <sisoenum type="DEFirePulseShape" uid="312" comment="uid 312"/>
         </attribute>
 
         <attribute name="padding2">

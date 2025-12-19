@@ -10,8 +10,9 @@ import java.util.List;
  * <br>
  * {@link PduMap#values()} should be instances of following types:
  * <br> - Another layer in structure -> {@link PduMap}
- * <br> - List of records etc (OBJECT_LIST) -> {@link List}<{@link PduMap} / {@link Enum}>
+ * <br> - List of records etc (OBJECT_LIST) -> {@link List}<{@link PduMap} / {@link Integer}>
  * <br> - {@link Enum} -> {@link Integer}
+ * <br> - {@link DisBitSet} -> {@link Integer}
  * <br> - uint8 -> {@link Integer}
  * <br> - uint16 -> {@link Integer}
  * <br> - uint32 -> {@link UnsignedInteger}
@@ -22,7 +23,7 @@ import java.util.List;
  * <br> - int64 -> {@link Long}
  * <br> - float32 -> {@link Float}
  * <br> - float64 -> {@link Double}
- * <br> - byte data -> byte[] / short[] / ...
+ * <br> - primitive list -> byte[] / short[] / ...
  */
 public class PduMap extends LinkedHashMap<String, Object> {
 }

@@ -739,6 +739,8 @@ public class GeneratePdusForGivenLanguage  // TODO rename? perhaps GeneratePdusB
                 currentClassAttribute.setAttributeKind(GeneratedClassAttribute.ClassAttributeType.SISO_BITFIELD);
                 currentClassAttribute.setUnderlyingTypeIsPrimitive(false);
             }
+            else
+                currentClassAttribute.setUnderlyingTypeIsBitField(true);
 
             for (int idx = 0; idx < attributes.getLength(); idx++) {
                 String nm = attributes.getQName(idx);

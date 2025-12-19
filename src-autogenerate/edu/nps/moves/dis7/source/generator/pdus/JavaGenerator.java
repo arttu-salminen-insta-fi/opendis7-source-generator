@@ -1579,7 +1579,6 @@ public class JavaGenerator extends AbstractGenerator
                     break;
 
                 case CLASSREF:
-                case SISO_BITFIELD:
                     if (anAttribute.getName().startsWith("iFFPduLayer")) {
                         pw.println("    if (map.containsKey(\"" + anAttribute.getName() + "\"))");
                         pw.println("        marshalSize += " + anAttribute.getType() + ".getMarshalledSize((PduMap) map.get(\"" + anAttribute.getName() + "\"));");
@@ -1587,6 +1586,10 @@ public class JavaGenerator extends AbstractGenerator
                     else {
                         pw.println("    marshalSize += " + anAttribute.getType() + ".getMarshalledSize((PduMap) map.get(\"" + anAttribute.getName() + "\"));");
                     }
+                    break;
+
+                case SISO_BITFIELD:
+                    pw.println("    marshalSize += " + anAttribute.getType() + ".getByteLength();");
                     break;
 
                 case PRIMITIVE_LIST:
@@ -1601,8 +1604,12 @@ public class JavaGenerator extends AbstractGenerator
                     pw.println("    for (int idx = 0; idx < ((Number) map.get(\"" + anAttribute.getCountFieldName() + "\")).intValue(); idx++)");
                     if(anAttribute.getUnderlyingTypeIsPrimitive()) {
                         throw new IllegalArgumentException("Object list has underlying primitive type, attribute: " + anAttribute.getName() + " , class: " + aClass.getName());
-                    } else if (anAttribute.getUnderlyingTypeIsEnum()) {
+                    }
+                    else if (anAttribute.getUnderlyingTypeIsEnum()) {
                         pw.println("        marshalSize += " + anAttribute.getType() + ".getEnumForValue(((Number) " + anAttribute.getName() + ".get(idx)).intValue()).getMarshalledSize();");
+                    }
+                    else if (anAttribute.getUnderlyingTypeIsBitField()) {
+                        pw.println("        marshalSize += " + anAttribute.getType() + ".getByteLength();");
                     }
                     else {
                         pw.println("        marshalSize += " + anAttribute.getType() + ".getMarshalledSize((PduMap) " + anAttribute.getName() + ".get(idx));");
@@ -2463,6 +2470,9 @@ public class JavaGenerator extends AbstractGenerator
                     break;
 
                 case SISO_BITFIELD:
+                    pw.println("    map.put(\"" + anAttribute.getName() + "\", " + anAttribute.getType() + ".unmarshallRawValue(byteBuffer));");
+                    break;
+
                 case CLASSREF:
                     if (anAttribute.getName().startsWith("iFFPduLayer")) {
                         pw.println("    if (map.containsKey(\"" + anAttribute.getName() + "\"))");
@@ -2530,6 +2540,9 @@ public class JavaGenerator extends AbstractGenerator
 
                     if(anAttribute.getUnderlyingTypeIsEnum()) {
                         pw.println("        " + anAttribute.getName() + ".add(" + anAttribute.getType() + ".unmarshalEnum(byteBuffer).getValue());");
+                    }
+                    else if (anAttribute.getUnderlyingTypeIsBitField()) {
+                        pw.println("        " + anAttribute.getName() + ".add(" + anAttribute.getType() + ".unmarshallRawValue(byteBuffer));");
                     }
                     else {
                         marshalType = primitiveMarshallingTypes.getProperty(anAttribute.getType());
@@ -2609,6 +2622,9 @@ public class JavaGenerator extends AbstractGenerator
                     break;
 
                 case SISO_BITFIELD:
+                    pw.println("    " + anAttribute.getType() + ".marshallRawValue(((Number) map.get(\"" + anAttribute.getName() + "\")).intValue(), byteBuffer);");
+                    break;
+
                 case CLASSREF:
                     if (anAttribute.getName().startsWith("iFFPduLayer")) {
                         pw.println("    if (map.containsKey(\"" + anAttribute.getName() + "\"))");
@@ -2653,6 +2669,9 @@ public class JavaGenerator extends AbstractGenerator
                     }
                     else if(anAttribute.getUnderlyingTypeIsEnum()) {
                         pw.println("        " + anAttribute.getType() + ".getEnumForValue(((Number) " + anAttribute.getName() + ".get(idx)).intValue()).marshal(byteBuffer);");
+                    }
+                    else if (anAttribute.getUnderlyingTypeIsBitField()) {
+                        pw.println("        " + anAttribute.getType() + ".marshallRawValue(((Number) " + anAttribute.getName() + ".get(idx)).intValue(), byteBuffer);");
                     }
                     else
                     {

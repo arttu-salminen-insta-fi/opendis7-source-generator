@@ -130,6 +130,9 @@ public class GeneratedClassAttribute // TODO consider refactor renaming as Gener
      * consists of primitives
      */    
     protected boolean underlyingTypeIsEnum = false;
+
+    /** If this is a list of some sort, this is true if the list consists of class bitfields */
+    protected boolean underlyingTypeIsBitField = false;
     
     
     /** Some fields, such as Marking, could have arrays that are treated a C strings. At least on the set
@@ -434,6 +437,24 @@ public class GeneratedClassAttribute // TODO consider refactor renaming as Gener
     public boolean getUnderlyingTypeIsEnum()
     {
         return underlyingTypeIsEnum;
+    }
+
+    /**
+     * sets true if the underlying type of a list is a enum
+     * @param newValue of interest
+     */
+    public void setUnderlyingTypeIsBitField(boolean newValue)
+    {
+        underlyingTypeIsBitField = newValue;
+    }
+
+    /**
+     * returns true if this is a list and the underlying type is a primitive
+     * @return value of interest
+     */
+    public boolean getUnderlyingTypeIsBitField()
+    {
+        return underlyingTypeIsBitField;
     }
     
     /**

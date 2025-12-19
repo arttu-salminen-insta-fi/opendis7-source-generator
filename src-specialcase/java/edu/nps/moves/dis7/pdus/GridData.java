@@ -325,8 +325,8 @@ public class GridData extends Object implements Serializable, Marshaller {
         map = new PduMap();
 
         {
-            map.put("sampleType", GriddedDataSampleType.unmarshalEnum(byteBuffer));
-            map.put("dataRepresentation", GriddedDataDataRepresentation.unmarshalEnum(byteBuffer));
+            map.put("sampleType", GriddedDataSampleType.unmarshalEnum(byteBuffer).getValue());
+            map.put("dataRepresentation", GriddedDataDataRepresentation.unmarshalEnum(byteBuffer).getValue());
             switch ((GriddedDataDataRepresentation) map.get("dataRepresentation")) {
                 case TYPE_0 -> {
                     map.put("type0Data", GridDataType0.fromBufferToMap(byteBuffer));
@@ -352,8 +352,8 @@ public class GridData extends Object implements Serializable, Marshaller {
      * @see java.nio.ByteBuffer
      */
     public static void fromMapToBuffer(PduMap map, java.nio.ByteBuffer byteBuffer) throws Exception {
-        ((GriddedDataSampleType) map.get("sampleType")).marshal(byteBuffer);
-        ((GriddedDataDataRepresentation) map.get("dataRepresentation")).marshal(byteBuffer);
+        GriddedDataSampleType.getEnumForValue(((Number) map.get("sampleType")).intValue()).marshal(byteBuffer);
+        GriddedDataDataRepresentation.getEnumForValue(((Number) map.get("dataRepresentation")).intValue()).marshal(byteBuffer);
         if (map.containsKey("type0Data"))
             GridDataType0.fromMapToBuffer((PduMap) map.get("type0Data"), byteBuffer);
         if (map.containsKey("type1Data"))
@@ -372,8 +372,8 @@ public class GridData extends Object implements Serializable, Marshaller {
     public static int getMarshalledSize(PduMap map) throws Exception {
         int marshalSize = 0;
 
-        marshalSize += ((GriddedDataSampleType) map.get("sampleType")).getMarshalledSize();
-        marshalSize += ((GriddedDataDataRepresentation) map.get("dataRepresentation")).getMarshalledSize();
+        marshalSize += GriddedDataSampleType.getEnumForValue(((Number) map.get("sampleType")).intValue()).getMarshalledSize();
+        marshalSize += GriddedDataDataRepresentation.getEnumForValue(((Number) map.get("dataRepresentation")).intValue()).getMarshalledSize();
         if (map.containsKey("type0Data"))
             marshalSize += GridDataType0.getMarshalledSize((PduMap) map.get("type0Data"));
         if (map.containsKey("type1Data"))

@@ -87,6 +87,9 @@
       return "%s: " + super.toString();
   }
 
+  /**
+   * Unmarshall raw value from byteBuffer. Unmarshalled number of bytes depends on bit set implementation.
+   */
   public static int unmarshallRawValue(ByteBuffer byteBuffer) throws Exception
   {
       byte[] bytes = new byte[BYTE_LENGTH];
@@ -94,12 +97,18 @@
       return bytesToInt(bytes);
   }
 
+  /**
+   * Marshall raw value to byteBuffer. Marshalled number of bytes depends on bit set implementation.
+   */
   public static void marshallRawValue(int rawValue, ByteBuffer byteBuffer) throws Exception
   {
       byte[] bytes = intToBytes(rawValue, BYTE_LENGTH);
       byteBuffer.put(bytes);
   }
 
+  /**
+   * Get length of this bit set in bytes.
+   */
   public static int getByteLength() {
       return BYTE_LENGTH;
   }

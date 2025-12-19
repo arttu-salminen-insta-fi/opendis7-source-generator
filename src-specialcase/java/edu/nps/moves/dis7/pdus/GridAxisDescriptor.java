@@ -323,8 +323,9 @@ public class GridAxisDescriptor extends Object implements Serializable, Marshall
             map.put("domainFinalXi", byteBuffer.getDouble());
             map.put("domainPointsXi", Short.toUnsignedInt(byteBuffer.getShort()));
             map.put("interleafFactor", Byte.toUnsignedInt(byteBuffer.get()));
-            map.put("axisType", GridAxisDescriptorAxisType.unmarshalEnum(byteBuffer));
-            switch ((GridAxisDescriptorAxisType) map.get("axisType")) {
+            GridAxisDescriptorAxisType axisType = GridAxisDescriptorAxisType.unmarshalEnum(byteBuffer);
+            map.put("axisType", axisType.getValue());
+            switch (axisType) {
                 case REGULAR_AXIS -> map.put("fixedData", GridAxisDescriptorFixed.fromBufferToMap(byteBuffer));
                 case IRREGULAR_AXIS -> map.put("variableData", GridAxisDescriptorVariable.fromBufferToMap(byteBuffer));
             }
@@ -346,7 +347,7 @@ public class GridAxisDescriptor extends Object implements Serializable, Marshall
         byteBuffer.putDouble(((Number) map.get("domainFinalXi")).doubleValue());
         byteBuffer.putShort(((Number) map.get("domainPointsXi")).shortValue());
         byteBuffer.put(((Number) map.get("interleafFactor")).byteValue());
-        ((GridAxisDescriptorAxisType) map.get("axisType")).marshal(byteBuffer);
+        GridAxisDescriptorAxisType.getEnumForValue(((Number) map.get("axisType")).intValue()).marshal(byteBuffer);
         if (map.containsKey("fixedData"))
             GridAxisDescriptorFixed.fromMapToBuffer((PduMap) map.get("fixedData"), byteBuffer);
         if (map.containsKey("variableData"))
@@ -366,7 +367,7 @@ public class GridAxisDescriptor extends Object implements Serializable, Marshall
         marshalSize += 8;  // domainFinalXi
         marshalSize += 2;  // domainPointsXi
         marshalSize += 1;  // interleafFactor
-        marshalSize += ((GridAxisDescriptorAxisType) map.get("axisType")).getMarshalledSize();
+        marshalSize += GridAxisDescriptorAxisType.getEnumForValue(((Number) map.get("axisType")).intValue()).getMarshalledSize();
         if (map.containsKey("fixedData"))
             marshalSize += GridAxisDescriptorFixed.getMarshalledSize((PduMap) map.get("fixedData"));
         if (map.containsKey("variableData"))

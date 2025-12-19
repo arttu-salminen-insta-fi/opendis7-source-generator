@@ -292,7 +292,7 @@ public class RecordSpecificationElement extends Object implements Serializable, 
         map = new PduMap();
 
         {
-            map.put("recordID", VariableRecordType.unmarshalEnum(byteBuffer));
+            map.put("recordID", VariableRecordType.unmarshalEnum(byteBuffer).getValue());
             map.put("recordSetSerialNumber", UnsignedInteger.fromIntBits(byteBuffer.getInt()));
             map.put("padding1", UnsignedInteger.fromIntBits(byteBuffer.getInt()));
             map.put("recordLength", Short.toUnsignedInt(byteBuffer.getShort()));
@@ -315,7 +315,7 @@ public class RecordSpecificationElement extends Object implements Serializable, 
      */
     public static void fromMapToBuffer(PduMap map, java.nio.ByteBuffer byteBuffer) throws Exception
     {
-        ((VariableRecordType) map.get("recordID")).marshal(byteBuffer);
+        VariableRecordType.getEnumForValue(((Number) map.get("recordID")).intValue()).marshal(byteBuffer);
         byteBuffer.putInt(((Number) map.get("recordSetSerialNumber")).intValue());
         byteBuffer.putInt(((Number) map.get("padding1")).intValue());
         byteBuffer.putShort(((Number) map.get("recordLength")).shortValue());
@@ -336,7 +336,7 @@ public class RecordSpecificationElement extends Object implements Serializable, 
     {
         int marshalSize = 0;
 
-        marshalSize += ((VariableRecordType) map.get("recordID")).getMarshalledSize();
+        marshalSize += VariableRecordType.getEnumForValue(((Number) map.get("recordID")).intValue()).getMarshalledSize();
         marshalSize += 4;  // recordSetSerialNumber
         marshalSize += 4;  // padding1
         marshalSize += 2;  // recordLength

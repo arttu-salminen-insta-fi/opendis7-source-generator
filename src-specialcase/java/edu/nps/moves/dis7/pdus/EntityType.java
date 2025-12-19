@@ -324,13 +324,13 @@ public synchronized int unmarshal(java.nio.ByteBuffer byteBuffer) throws Excepti
         PduMap map = new PduMap();
 
         // attribute entityKind marked as not serialized
-        map.put("entityKind", EntityKind.unmarshalEnum(byteBuffer));
+        map.put("entityKind", EntityKind.unmarshalEnum(byteBuffer).getValue());
 
         // attribute domain marked as not serialized
         map.put("domain", Domain.fromBufferToMap(byteBuffer));
 
         // attribute country marked as not serialized
-        map.put("country", Country.unmarshalEnum(byteBuffer));
+        map.put("country", Country.unmarshalEnum(byteBuffer).getValue());
         // attribute category marked as not serialized
         map.put("category", Byte.toUnsignedInt(byteBuffer.get()));
         // attribute subCategory marked as not serialized
@@ -353,9 +353,9 @@ public synchronized int unmarshal(java.nio.ByteBuffer byteBuffer) throws Excepti
      */
     public static void fromMapToBuffer(PduMap map, java.nio.ByteBuffer byteBuffer) throws Exception
     {
-        ((EntityKind) map.get("entityKind")).marshal(byteBuffer);
+        EntityKind.getEnumForValue(((Number) map.get("entityKind")).intValue()).marshal(byteBuffer);
         Domain.fromMapToBuffer((PduMap) map.get("domain"), byteBuffer);
-        ((Country) map.get("country")).marshal(byteBuffer);
+        Country.getEnumForValue(((Number) map.get("country")).intValue()).marshal(byteBuffer);
         byteBuffer.put(((Number) map.get("category")).byteValue());
         byteBuffer.put(((Number) map.get("subCategory")).byteValue());
         byteBuffer.put(((Number) map.get("specific")).byteValue());
@@ -371,9 +371,9 @@ public synchronized int unmarshal(java.nio.ByteBuffer byteBuffer) throws Excepti
     {
         int marshalSize = 0;
 
-        marshalSize += ((EntityKind) map.get("entityKind")).getMarshalledSize();
+        marshalSize += EntityKind.getEnumForValue(((Number) map.get("entityKind")).intValue()).getMarshalledSize();
         marshalSize += Domain.getMarshalledSize((PduMap) map.get("domain"));
-        marshalSize += ((Country) map.get("country")).getMarshalledSize();
+        marshalSize += Country.getEnumForValue(((Number) map.get("country")).intValue()).getMarshalledSize();
         marshalSize += 1;  // category
         marshalSize += 1;  // subCategory
         marshalSize += 1;  // specific

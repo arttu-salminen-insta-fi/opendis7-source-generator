@@ -621,7 +621,7 @@ This field defines the active  emission  parameter  index,  beam  scan  pattern,
         </attribute>
         
         <attribute name="aircraftAddress" comment="Unique ICAO Mode S aircraft address, part of Mode S transponder basic data fields.">
-            <primitive type="uint32"/>
+            <primitive type="uint32" formatting="hex"/>
         </attribute>
         
         <attribute name="aircraftIdentificationType" comment="Aircraft identification type, part of Mode S transponder basic data fields.">

@@ -25,7 +25,7 @@
         annotations here are used only by XMLPG, the source code generation tool.
     -->
     <!--, edu.nps.moves.disenum.*, edu.nps.moves.disutil.*"-->
-    <java imports="java.util.*, java.io.*, edu.nps.moves.dis7.enumerations.*"
+    <java imports="java.util.*, java.io.*, edu.nps.moves.dis7.enumerations.*, com.google.common.primitives.*, com.google.common.base.Preconditions"
           package="edu.nps.moves.dis7"
           directory="main/java/edu/nps/moves/dis7"/>
 
@@ -63,13 +63,13 @@
         </attribute>
         <!--
         <attribute name="domain1">
-            <sisoenum type="PlatformDomain" comment="uid 8"/>
+            <sisoenum type="PlatformDomain" uid="8" comment="uid 8"/>
         </attribute>
         <attribute name="domain2">
-            <sisoenum type="MunitionDomain" comment="uid 14" />
+            <sisoenum type="MunitionDomain" uid="14" comment="uid 14" />
         </attribute>
         <attribute name="domain3">
-            <sisoenum type="SupplyDomain" comment="uid 600" /> 
+            <sisoenum type="SupplyDomain" uid="600" comment="uid 600" /> 
         </attribute>
         -->
     </class>
@@ -77,11 +77,11 @@
     <class name="AcousticEmitter" inheritsFrom="root" comment="Information about a specific UA emitter. Section 6.2.2.">
 
         <attribute name="acousticSystemName" comment="The system for a particular UA emitter, and an enumeration">
-            <sisoenum type="UAAcousticSystemName" comment="uid 144"/>
+            <sisoenum type="UAAcousticSystemName" uid="144" comment="uid 144"/>
         </attribute>
 
         <attribute name="acousticFunction" comment="The function of the acoustic system">
-            <sisoenum type="UAAcousticEmitterSystemFunction" comment="uid 145"/>
+            <sisoenum type="UAAcousticEmitterSystemFunction" uid="145" comment="uid 145"/>
         </attribute>
 
         <attribute name="acousticIDNumber" comment="The UA emitter identification number relative to a specific system">
@@ -108,7 +108,7 @@
            comment="Specifies the character set used in the first byte, followed by up to 31 characters of text data. Section 6.2.4. ">
 
         <attribute name="characterSet" comment="The character set">
-            <sisoenum type="EntityMarkingCharacterSet" comment="uid 45"/>
+            <sisoenum type="EntityMarkingCharacterSet" uid="45" comment="uid 45"/>
         </attribute>
 
         <attribute name="characters" comment="The characters">
@@ -124,16 +124,16 @@
 
         <attribute name="aggregateKind"
                    comment="Grouping criterion used to group the aggregate. Enumeration from EBV document">
-            <sisoenum type="AggregateStateAggregateKind" comment="uid 206"/>
+            <sisoenum type="AggregateStateAggregateKind" uid="206" comment="uid 206"/>
         </attribute>
 
         <attribute name="domain"
                    comment="Domain of entity (air, surface, subsurface, space, etc.) where zero means domain does not apply.">
-            <sisoenum type="PlatformDomain" comment="uid 8"/>
+            <sisoenum type="PlatformDomain" uid="8" comment="uid 8"/>
         </attribute>
 
         <attribute name="country" comment="country to which the design of the entity is attributed">
-            <sisoenum type="Country" comment="uid 29"/>
+            <sisoenum type="Country" uid="29" comment="uid 29"/>
         </attribute>
 
         <!-- todo spec confusing...uid 207 -->
@@ -142,12 +142,12 @@
         </attribute>
 
         <attribute name="subcategory" comment="subcategory of entity">
-            <sisoenum type="AggregateStateSubcategory" comment="uid 208"/>
+            <sisoenum type="AggregateStateSubcategory" uid="208" comment="uid 208"/>
         </attribute>
 
         <attribute name="specificInfo"
                    comment="specific info based on subcategory field. specific is a reserved word in sql.">
-            <sisoenum type="AggregateStateSpecific" comment="uid 209"/>
+            <sisoenum type="AggregateStateSpecific" uid="209" comment="uid 209"/>
         </attribute>
 
         <attribute name="extra">
@@ -247,7 +247,7 @@ dB and RPM)"/>
 
         <attribute name="referenceSystem"
                    comment="The reference coordinate system wrt which beam direction  is specified. This field should not change over the duration of an exercise. World coordindate systemis prefered for exercises. The entity coordinate system should be used only when highly directional antennas must be precisely modeled.">
-            <sisoenum type="TransmitterAntennaPatternReferenceSystem" comment="uid 168"/>
+            <sisoenum type="TransmitterAntennaPatternReferenceSystem" uid="168" comment="uid 168"/>
         </attribute>
 
         <attribute name="padding1" comment="Padding">
@@ -284,7 +284,7 @@ dB and RPM)"/>
 
         <attribute name="associationType"
                    comment="This field shall indicate the type of association. It shall be represented by an 8-bit enumeration. Values for this field are found in Section 14 of SISO-REF-010">
-            <sisoenum type="EntityAssociationAssociationType" comment="330"/>
+            <sisoenum type="EntityAssociationAssociationType" uid="330" comment="330"/>
         </attribute>
 
         <attribute name="padding"
@@ -361,7 +361,7 @@ dB and RPM)"/>
     </class>
 
     <class name="ChangeOptions" inheritsFrom="root" comment="This is a bitfield. See section 6.2.13 aka B.2.41">
-        <attribute name="value">
+        <attribute name="value" nonBasicDataType="true">
             <primitive type="uint8"/>
         </attribute>
     </class>
@@ -371,7 +371,7 @@ dB and RPM)"/>
 
         <attribute name="beamState"
                    comment="First bit zero means beam is active, first bit = 1 means deactivated. The rest is padding.">
-            <sisoenum type="BeamStatusBeamState" comment="318"/>
+            <sisoenum type="BeamStatusBeamState" uid="318" comment="318"/>
         </attribute>
 
     </class>
@@ -422,19 +422,19 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="componentIdentification" comment="enumeration">
-            <sisoenum type="EntityDamageStatusComponentIdentification" comment="uid 314"/>
+            <sisoenum type="EntityDamageStatusComponentIdentification" uid="314" comment="uid 314"/>
         </attribute>
 
         <attribute name="componentDamageStatus" comment="enumeration">
-            <sisoenum type="DEDamageDescriptionComponentDamageStatus" comment="uid 315"/>
+            <sisoenum type="DEDamageDescriptionComponentDamageStatus" uid="315" comment="uid 315"/>
         </attribute>
 
         <attribute name="componentVisualDamageStatus" comment="enumeration">
-            <sisobitfield type="DEDamageDescriptionComponentVisualDamageStatus" size="8" comment="uid 317"/>
+            <sisobitfield type="DEDamageDescriptionComponentVisualDamageStatus" size="8" uid="317" comment="uid 317"/>
         </attribute>
 
         <attribute name="componentVisualSmokeColor" comment="enumeration">
-            <sisoenum type="DEDamageDescriptionComponentVisualSmokeColor" comment="uid 316"/>
+            <sisoenum type="DEDamageDescriptionComponentVisualSmokeColor" uid="316" comment="uid 316"/>
         </attribute>
 
         <attribute name="fireEventID"
@@ -549,20 +549,28 @@ dB and RPM)"/>
 
     </class>
 
-    <!-- Section 6.2.19.2 -->
-    <class name="MunitionDescriptor" inheritsFrom="root"
-           comment="Represents the firing or detonation of a munition. Section 6.2.19.2">
+    <class name="Descriptor" inheritsFrom="root"
+           comment="Descriptor without specific type. PDUs default to this because specific type is not defined anywhere...">
 
-        <attribute name="munitionType" comment="What munition was used in the burst">
+        <attribute name="entityType" comment="Related munition / explosion / expendable type, only used when Descriptor instance is used!">
             <classRef name="EntityType"/>
         </attribute>
 
+        <attribute name="descriptorRecordFields" comment="Descriptor specific fields, only used when Descriptor instance is used!">
+            <primitive type="uint64" encodedBy="?"/>
+        </attribute>
+    </class>
+
+    <!-- Section 6.2.19.2 -->
+    <class name="MunitionDescriptorFields" inheritsFrom="root"
+           comment="Represents the firing or detonation of a munition records specific fields. Section 6.2.19.2">
+
         <attribute name="warhead" comment="type of warhead enumeration">
-            <sisoenum type="MunitionDescriptorWarhead" comment="uid 60"/>
+            <sisoenum type="MunitionDescriptorWarhead" uid="60" comment="uid 60"/>
         </attribute>
 
         <attribute name="fuse" comment="type of fuse used enumeration">
-            <sisoenum type="MunitionDescriptorFuse" comment="uid 61"/>
+            <sisoenum type="MunitionDescriptorFuse" uid="61" comment="uid 61"/>
         </attribute>
 
         <attribute name="quantity" comment="how many of the munition were fired">
@@ -576,17 +584,13 @@ dB and RPM)"/>
     </class>
 
     <!-- Section 6.2.19.3 -->
-    <class name="ExplosionDescriptor"
+    <class name="ExplosionDescriptorFields"
            inheritsFrom="root"
-           comment="Explosion of a non-munition. Section 6.2.19.3">
-
-        <attribute name="explodingObject" comment="Type of the object that exploded. See 6.2.30">
-            <classRef name="EntityType"/>
-        </attribute>
+           comment="Explosion of a non-munition records specific fields. Section 6.2.19.3">
 
         <attribute name="explosiveMaterial"
                    comment="Material that exploded. Can be grain dust, tnt, gasoline, etc. Enumeration">
-            <sisoenum type="ExplosiveMaterialCategories" comment="uid 310"/>
+            <sisoenum type="ExplosiveMaterialCategories" uid="310" comment="uid 310"/>
         </attribute>
 
         <attribute name="padding"
@@ -601,13 +605,9 @@ dB and RPM)"/>
     </class>
 
     <!-- Section 6.2.19.3 -->
-    <class name="ExpendableDescriptor"
+    <class name="ExpendableDescriptorFields"
            inheritsFrom="root"
-           comment="Burst of chaff or expendible device. Section 6.2.19.4">
-
-        <attribute name="expendableType" comment="Type of the object that exploded">
-            <classRef name="EntityType"/>
-        </attribute>
+           comment="Burst of chaff or expendible device records specific fields. Section 6.2.19.4">
 
         <attribute name="padding"
                    comment="zero-filled array of padding bits for byte alignment and consistent sizing of PDU data">
@@ -706,7 +706,7 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="beamSpotType" comment="Spot Shape ENUM.">
-            <sisoenum type="DEPrecisionAimpointBeamSpotType" comment="uid 311"/>
+            <sisoenum type="DEPrecisionAimpointBeamSpotType" uid="311" comment="uid 311"/>
         </attribute>
 
         <attribute name="beamSpotCrossSectionSemiMajorAxis" comment="Beam Spot Cross Section Semi-Major Axis.">
@@ -780,7 +780,7 @@ dB and RPM)"/>
 
         <attribute name="stateIndicator"
                    comment="indicate if blanking sector data have changed since issuance of the last Blanking Sector attribute record for this beam, if the Blanking Sector attribute record beam has ceased">
-            <sisoenum type="EEAttributeStateIndicator" comment="uid 300"/>
+            <sisoenum type="EEAttributeStateIndicator" uid="300" comment="uid 300"/>
         </attribute>
 
         <attribute name="padding2" comment="Padding">
@@ -848,7 +848,7 @@ dB and RPM)"/>
 
         <attribute name="stateIndicator"
                    comment="This field shall be used to indicate if angle deception data have changed since issuance of the last Angle Deception attribute record for this beam, if the Angle Deception attribute record is part of a heartbeat update to meet periodic update requirements or if the angle deception data for the beam has ceased.">
-            <sisoenum type="EEAttributeStateIndicator" comment="uid 300"/>
+            <sisoenum type="EEAttributeStateIndicator" uid="300" comment="uid 300"/>
         </attribute>
 
         <attribute name="padding2" comment="padding">
@@ -928,7 +928,7 @@ dB and RPM)"/>
 
         <attribute name="stateIndicator"
                    comment="This field shall be used to indicate if false target data have changed since issuance of the last False Targets attribute record for this beam, if the False Targets attribute record is part of a heartbeat update to meet periodic update requirements or if false target data for the beam has ceased.">
-            <sisoenum type="EEAttributeStateIndicator" comment="uid 300"/>
+            <sisoenum type="EEAttributeStateIndicator" uid="300" comment="uid 300"/>
         </attribute>
 
         <attribute name="padding2" comment="padding">
@@ -1008,11 +1008,11 @@ dB and RPM)"/>
            comment="This field shall specify information about a particular emitter system. Section 6.2.23.">
 
         <attribute name="emitterName" comment="Name of the emitter, 16-bit enumeration">
-            <sisoenum type="EmitterName" comment="uid 75"/>
+            <sisoenum type="EmitterName" uid="75" comment="uid 75"/>
         </attribute>
 
         <attribute name="emitterFunction" comment="function of the emitter, 8-bit enumeration">
-            <sisoenum type="EmitterSystemFunction" comment="uid 76"/>
+            <sisoenum type="EmitterSystemFunction" uid="76" comment="uid 76"/>
         </attribute>
 
         <attribute name="emitterIDNumber" comment="emitter ID, 8-bit enumeration">
@@ -1031,15 +1031,15 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="fuelMeasurementUnits" comment="Units in which the fuel is measured">
-            <sisoenum type="FuelMeasurementUnits" comment="uid 328"/>
+            <sisoenum type="FuelMeasurementUnits" uid="328" comment="uid 328"/>
         </attribute>
 
         <attribute name="fuelType" comment="Type of fuel">
-            <sisoenum type="SupplyFuelType" comment="uid 413"/>
+            <sisoenum type="SupplyFuelType" uid="413" comment="uid 413"/>
         </attribute>
 
         <attribute name="fuelLocation" comment="Location of fuel as related to entity. See section 14 of EBV document">
-            <sisoenum type="FuelLocation" comment="uid 329"/>
+            <sisoenum type="FuelLocation" uid="329" comment="uid 329"/>
         </attribute>
 
         <attribute name="padding"
@@ -1070,15 +1070,15 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="fuelMeasurmentUnits" comment="Units of measure">
-            <sisoenum type="FuelMeasurementUnits" comment="uid 328"/>
+            <sisoenum type="FuelMeasurementUnits" uid="328" comment="uid 328"/>
         </attribute>
 
         <attribute name="fuelType">
-            <sisoenum type="SupplyFuelType" comment="uid 413"/>
+            <sisoenum type="SupplyFuelType" uid="413" comment="uid 413"/>
         </attribute>
 
         <attribute name="fuelLocation" comment="fuel  location as related to the entity">
-            <sisoenum type="FuelLocation" comment="uid 329"/>
+            <sisoenum type="FuelLocation" uid="329" comment="uid 329"/>
         </attribute>
 
         <attribute name="padding"
@@ -1126,7 +1126,7 @@ dB and RPM)"/>
            comment="Specifies the character set used in the first byte, followed by 11 characters of text data. Section 6.29">
 
         <attribute name="characterSet" comment="The character set">
-            <sisoenum type="EntityMarkingCharacterSet" comment="uid 45"/>
+            <sisoenum type="EntityMarkingCharacterSet" uid="45" comment="uid 45"/>
         </attribute>
 
         <attribute name="characters" comment="The characters">
@@ -1141,7 +1141,7 @@ dB and RPM)"/>
     <class name="EntityType" inheritsFrom="root" comment="Identifies the type of Entity">
 
         <attribute name="entityKind" comment="Kind of entity">
-            <sisoenum type="EntityKind" comment="uid 7"/>
+            <sisoenum type="EntityKind" uid="7" comment="uid 7"/>
         </attribute>
 
         <!-- TODO: Neet to instantiate with a general Domain, other than Platform, as each domain has similar enum values. Issue #9 -->
@@ -1151,7 +1151,7 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="country" comment="country to which the design of the entity is attributed">
-            <sisoenum type="Country" comment="uid 29"/>
+            <sisoenum type="Country" uid="29" comment="uid 29"/>
         </attribute>
 
         <attribute name="category" comment="category of entity">
@@ -1175,7 +1175,7 @@ dB and RPM)"/>
     <class name="EntityTypeRaw" inheritsFrom="root" comment="Identifies the type of Entity">
 
         <attribute name="entityKind" comment="Kind of entity">
-            <sisoenum type="EntityKind" comment="uid 7"/>
+            <sisoenum type="EntityKind" uid="7" comment="uid 7"/>
         </attribute>
 
         <attribute name="domain" comment="Domain of entity (air, surface, subsurface, space, etc.)">
@@ -1209,7 +1209,7 @@ dB and RPM)"/>
            comment=" Information about a geometry, a state associated with a geometry, a bounding volume, or an associated entity ID.  6.2.31, not fully defined. 'The current definitions can be found in DIS PCR 240'">
 
         <attribute name="environmentType" comment="Record type">
-            <sisoenum type="EnvironmentalProcessRecordType" comment="uid 250"/>
+            <sisoenum type="EnvironmentalProcessRecordType" uid="250" comment="uid 250"/>
         </attribute>
 
         <attribute name="length" comment="length, in bits">
@@ -1347,7 +1347,7 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="expendableStatus">
-            <sisoenum type="MunitionExpendableStatus" comment="uid 327"/>
+            <sisoenum type="MunitionExpendableStatus" uid="327" comment="uid 327"/>
         </attribute>
 
         <attribute name="padding"
@@ -1391,11 +1391,11 @@ dB and RPM)"/>
 
         <attribute name="fixedDatumID" comment="ID of the fixed datum, an enumeration">
             <sisoenum type="VariableRecordType"
-                      comment="uid 66 Variable Record Type values are defined by VariableRecordType enumerations"/>
+                      uid="66" comment="uid 66 Variable Record Type values are defined by VariableRecordType enumerations"/>
         </attribute>
 
         <attribute name="fixedDatumValue" comment="Value for the fixed datum">
-            <primitive type="uint32"/>
+            <primitive type="uint32" encodedBy="fixedDatumID"/>
         </attribute>
 
     </class>
@@ -1403,12 +1403,12 @@ dB and RPM)"/>
     <class name="FundamentalOperationalData" inheritsFrom="root"
            comment="Basic operational data for IFF. Section 6.2.39">
 
-        <attribute name="systemStatus" comment="system status, IEEE DIS 7 defined">
+        <attribute name="systemStatus" comment="system status, IEEE DIS 7 defined" nonBasicDataType="true">
             <primitive type="uint8"/>
         </attribute>
 
         <attribute name="dataField1" comment="data field 1">
-            <primitive type="uint8"/>
+            <primitive type="uint8" encodedBy="systemType"/>
         </attribute>
 
         <attribute name="informationLayers" comment="eight boolean fields">
@@ -1416,31 +1416,31 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="dataField2" comment="enumeration">
-            <primitive type="uint8"/>
+            <primitive type="uint8" encodedBy="systemType"/>
         </attribute>
 
         <attribute name="parameter1" comment="parameter, enumeration">
-            <primitive type="uint16"/>
+            <primitive type="uint16" encodedBy="systemType"/>
         </attribute>
 
         <attribute name="parameter2" comment="parameter, enumeration">
-            <primitive type="uint16"/>
+            <primitive type="uint16" encodedBy="systemType"/>
         </attribute>
 
         <attribute name="parameter3" comment="parameter, enumeration">
-            <primitive type="uint16"/>
+            <primitive type="uint16" encodedBy="systemType"/>
         </attribute>
 
         <attribute name="parameter4" comment="parameter, enumeration">
-            <primitive type="uint16"/>
+            <primitive type="uint16" encodedBy="systemType"/>
         </attribute>
 
         <attribute name="parameter5" comment="parameter, enumeration">
-            <primitive type="uint16"/>
+            <primitive type="uint16" encodedBy="systemType"/>
         </attribute>
 
         <attribute name="parameter6" comment="parameter, enumeration">
-            <primitive type="uint16"/>
+            <primitive type="uint16" encodedBy="systemType"/>
         </attribute>
 
     </class>
@@ -1466,7 +1466,7 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="axisType" comment="type of grid axis">
-            <sisoenum type="GridAxisDescriptorAxisType" comment="uid 377"/>
+            <sisoenum type="GridAxisDescriptorAxisType" uid="377" comment="uid 377"/>
         </attribute>
 
         <attribute name="fixedData">
@@ -1533,11 +1533,11 @@ dB and RPM)"/>
     <class name="GridData" inheritsFrom="root" comment="6.2.41, table 68">
 
         <attribute name="sampleType">
-            <sisoenum type="GriddedDataSampleType" comment="uid 246"/>
+            <sisoenum type="GriddedDataSampleType" uid="246" comment="uid 246"/>
         </attribute>
 
         <attribute name="dataRepresentation">
-            <sisoenum type="GriddedDataDataRepresentation" comment="uid 247"/>
+            <sisoenum type="GriddedDataDataRepresentation" uid="247" comment="uid 247"/>
         </attribute>
 
         <attribute name="type0Data">
@@ -1651,7 +1651,7 @@ dB and RPM)"/>
 
         <attribute name="recordType" initialValue="5501">
             <sisoenum type="VariableRecordType" defaultValue="VariableRecordType.IO_COMMUNICATIONS_NODE"
-                      comment="uid 66 Variable Record Type values are defined by VariableRecordType enumerations"/>
+                      uid="66" comment="uid 66 Variable Record Type values are defined by VariableRecordType enumerations"/>
         </attribute>
 
         <attribute name="recordLength" initialValue="16">
@@ -1659,7 +1659,7 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="commsNodeType">
-            <sisoenum type="IOCommsNodeRecordCommsNodeType" comment="uid 294"/>
+            <sisoenum type="IOCommsNodeRecordCommsNodeType" uid="294" comment="uid 294"/>
         </attribute>
 
         <attribute name="padding"
@@ -1677,7 +1677,7 @@ dB and RPM)"/>
 
         <attribute name="recordType" initialValue="5500">
             <sisoenum type="VariableRecordType" defaultValue="VariableRecordType.IO_EFFECT"
-                      comment="uid 66 Variable Record Type values are defined by VariableRecordType enumerations"/>
+                      uid="66" comment="uid 66 Variable Record Type values are defined by VariableRecordType enumerations"/>
         </attribute>
 
         <attribute name="recordLength" initialValue="16">
@@ -1685,15 +1685,15 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="ioStatus">
-            <sisoenum type="IOEffectsRecordIOStatus" comment="uid 290"/>
+            <sisoenum type="IOEffectsRecordIOStatus" uid="290" comment="uid 290"/>
         </attribute>
 
         <attribute name="ioLinkType">
-            <sisoenum type="IOEffectsRecordIOLinkType" comment="uid 291"/>
+            <sisoenum type="IOEffectsRecordIOLinkType" uid="291" comment="uid 291"/>
         </attribute>
 
         <attribute name="ioEffect">
-            <sisoenum type="IOEffectsRecordIOEffect" comment="uid 292"/>
+            <sisoenum type="IOEffectsRecordIOEffect" uid="292" comment="uid 292"/>
         </attribute>
 
         <attribute name="ioEffectDutyCycle">
@@ -1705,7 +1705,7 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="ioProcess">
-            <sisoenum type="IOEffectsRecordIOProcess" comment="uid 293"/>
+            <sisoenum type="IOEffectsRecordIOProcess" uid="293" comment="uid 293"/>
         </attribute>
 
         <attribute name="padding"
@@ -1733,7 +1733,7 @@ dB and RPM)"/>
 
         <attribute name="recordType" comment="enumeration for type of record">
             <sisoenum type="VariableRecordType"
-                      comment="uid 66 Variable Record Type values are defined by VariableRecordType enumerations"/>
+                      uid="66" comment="uid 66 Variable Record Type values are defined by VariableRecordType enumerations"/>
         </attribute>
 
         <attribute name="recordLength" comment="length of record, including padding">
@@ -1742,7 +1742,7 @@ dB and RPM)"/>
 
         <attribute name="recordSpecificFields"
                    comment="Current implementation also holds the padding bits after unmarshall!">
-            <primitivelist length="0" countFieldName="recordLength" countHasExtraFixedOctets="6" countHasPaddingToBits="32">
+            <primitivelist length="0" countFieldName="recordLength" countHasExtraFixedOctets="6" countHasPaddingToBits="32" encodedBy="recordType">
                 <primitive type="uint8"/>
             </primitivelist>
         </attribute>
@@ -1798,7 +1798,7 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="applicableModes" comment="Applicable modes enumeration">
-            <sisoenum type="IFFApplicableModes" comment="uid 339"/>
+            <sisoenum type="IFFApplicableModes" uid="339" comment="uid 339"/>
         </attribute>
 
         <attribute name="systemSpecificData" comment="System-specific data">
@@ -1813,7 +1813,7 @@ dB and RPM)"/>
            comment="Intercom communications parameters. Section 6.2.46">
 
         <attribute name="recordType" comment="Type of intercom parameters record">
-            <sisoenum type="IntercomControlRecordType" comment="uid 185"/>
+            <sisoenum type="IntercomControlRecordType" uid="185" comment="uid 185"/>
         </attribute>
 
         <attribute name="recordLength" comment="length of record">
@@ -1924,7 +1924,7 @@ dB and RPM)"/>
 
         <attribute name="layerSpecificInformation"
                    comment="field shall specify layer-specific information that varies by System Type (see 6.2.86) and Layer Number.">
-            <primitive type="uint8"/>
+            <primitive type="uint8" encodedBy="layerNumber"/>
         </attribute>
 
         <attribute name="length"
@@ -1944,12 +1944,12 @@ dB and RPM)"/>
 
         <attribute name="segmentModification"
                    comment=" whether a modification has been made to the point object's location or orientation">
-            <sisobitfield type="ObjectStateModificationLinearObject" size="8" comment="UID 241"/>
+            <sisobitfield type="ObjectStateModificationLinearObject" size="8" uid="241" comment="uid 241"/>
         </attribute>
 
         <attribute name="generalSegmentAppearance"
                    comment="general dynamic appearance attributes of the segment. This record shall be defined as a 16-bit record of enumerations. The values defined for this record are included in Section 12 of SISO-REF-010.">
-            <sisobitfield type="ObjectStateAppearanceGeneral" size="16" comment="UID 229"/>
+            <sisobitfield type="ObjectStateAppearanceGeneral" size="16" uid="229" comment="uid 229"/>
         </attribute>
 
         <attribute name="specificSegmentAppearance"
@@ -2067,7 +2067,7 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="majorModulation" comment="The major classification of the modulation type. ">
-            <sisoenum type="TransmitterMajorModulation" comment="UID 155"/>
+            <sisoenum type="TransmitterMajorModulation" uid="155" comment="uid 155"/>
         </attribute>
 
         <attribute name="detail"
@@ -2077,7 +2077,7 @@ dB and RPM)"/>
 
         <attribute name="radioSystem"
                    comment="The radio system associated with this Transmitter PDU and shall be used as the basis to interpret other fields whose values depend on a specific radio system.">
-            <sisoenum type="TransmitterModulationTypeSystem" comment="uid =163"/>
+            <sisoenum type="TransmitterModulationTypeSystem" uid="163" comment="uid =163"/>
         </attribute>
 
     </class>
@@ -2100,7 +2100,7 @@ dB and RPM)"/>
 
         <attribute name="munitionStatus"
                    comment=" the status of the munition. It shall be represented by an 8-bit enumeration. ">
-            <sisoenum type="MunitionExpendableStatus" comment="uid 327"/>
+            <sisoenum type="MunitionExpendableStatus" uid="327" comment="uid 327"/>
         </attribute>
 
         <attribute name="padding"
@@ -2149,7 +2149,7 @@ dB and RPM)"/>
 
         <attribute name="stationName"
                    comment="The station name within the host at which the part entity is located. If the part entity is On Station, this field shall specify the representation of the part's location data fields. This field shall be specified by a 16-bit enumeration ">
-            <sisoenum type="IsPartOfStationName" comment="uid 212"/>
+            <sisoenum type="IsPartOfStationName" uid="212" comment="uid 212"/>
         </attribute>
 
         <attribute name="stationNumber"
@@ -2177,11 +2177,11 @@ dB and RPM)"/>
            comment="The unique designation of an environmental object. Section 6.2.64">
 
         <attribute name="domain" comment="Domain of entity (air, surface, subsurface, space, etc.)">
-            <sisoenum type="PlatformDomain" comment="uid 8"/>
+            <sisoenum type="PlatformDomain" uid="8" comment="uid 8"/>
         </attribute>
 
         <attribute name="objectKind" comment="country to which the design of the entity is attributed">
-            <sisoenum type="ObjectKind" comment="uid 225"/>
+            <sisoenum type="ObjectKind" uid="225" comment="uid 225"/>
         </attribute>
 
         <attribute name="category" comment="category of entity">
@@ -2204,7 +2204,7 @@ dB and RPM)"/>
 
         <attribute name="ownershipStatus"
                    comment="The ownership and/or ownership conflict status of the entity represented by the Entity ID field.">
-            <sisoenum type="OwnershipStatus" comment="uid 332"/>
+            <sisoenum type="OwnershipStatus" uid="332" comment="uid 332"/>
         </attribute>
 
         <attribute name="padding"
@@ -2226,11 +2226,11 @@ dB and RPM)"/>
         </attribute>
   
         <attribute name="pduType" comment="Type of pdu, unique for each PDU class">
-            <sisoenum type="DisPduType" comment="uid 4"/>
+            <sisoenum type="DisPduType" uid="4" comment="uid 4"/>
         </attribute>
   
         <attribute name="protocolFamily" comment="value that refers to the protocol family, eg SimulationManagement, etc">
-            <sisoenum type="DISProtocolFamily" comment="uid 5"/>
+            <sisoenum type="DISProtocolFamily" uid="5" comment="uid 5"/>
         </attribute>
  
         <attribute name="timestamp" comment="Timestamp value">
@@ -2300,7 +2300,7 @@ dB and RPM)"/>
            comment="Identifies the type of radio. Section 6.2.71">
 
         <attribute name="entityKind" comment="Kind of entity">
-            <sisoenum type="EntityKind" defaultValue="EntityKind.RADIO" comment="uid 7"/>
+            <sisoenum type="EntityKind" defaultValue="EntityKind.RADIO" uid="7" comment="uid 7"/>
         </attribute>
 
         <attribute name="domain" comment="Domain of entity (air, surface, subsurface, space, etc.)">
@@ -2308,15 +2308,15 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="country" comment="country to which the design of the entity is attributed">
-            <sisoenum type="Country" comment="uid 29"/>
+            <sisoenum type="Country" uid="29" comment="uid 29"/>
         </attribute>
 
         <attribute name="category" comment="category of entity">
-            <sisoenum type="RadioCategory" comment="uid 22"/>
+            <sisoenum type="RadioCategory" uid="22" comment="uid 22"/>
         </attribute>
 
         <attribute name="subcategory" comment="specific info based on subcategory field">
-            <sisoenum type="RadioSubcategory" comment="uid 23"/>
+            <sisoenum type="RadioSubcategory" uid="23" comment="uid 23"/>
         </attribute>
 
         <attribute name="specific">
@@ -2338,7 +2338,7 @@ dB and RPM)"/>
 
         <attribute name="recordIDs" comment="variable length list of 32-bit record types">
             <objectlist countFieldName="numberOfRecords">
-                <sisoenum type="VariableRecordType" comment="uid = 66"/>
+                <sisoenum type="VariableRecordType" uid="66" comment="uid = 66"/>
                 <!--<classRef name="VariableRecordType"/>-->
             </objectlist>
         </attribute>
@@ -2350,7 +2350,7 @@ dB and RPM)"/>
 
         <attribute name="recordID"
                    comment="The data structure used to convey the parameter values of the record for each record. 32-bit enumeration.">
-            <sisoenum type="VariableRecordType" comment="uid = 66"/>
+            <sisoenum type="VariableRecordType" uid="66" comment="uid = 66"/>
         </attribute>
 
         <attribute name="recordSetSerialNumber" comment="The serial number of the first record in the block of records">
@@ -2404,12 +2404,12 @@ dB and RPM)"/>
 
         <attribute name="nature"
                    comment="The nature or purpose for joining of the part entity to the host entity and shall be represented by a 16-bit enumeration">
-            <sisoenum type="IsPartOfNature" comment="uid 210"/>
+            <sisoenum type="IsPartOfNature" uid="210" comment="uid 210"/>
         </attribute>
 
         <attribute name="position"
                    comment="The position of the part entity with respect to the host entity and shall be represented by a 16-bit enumeration">
-            <sisoenum type="IsPartOfPosition" comment="uid 211"/>
+            <sisoenum type="IsPartOfPosition" uid="211" comment="uid 211"/>
         </attribute>
 
     </class>
@@ -2447,11 +2447,11 @@ dB and RPM)"/>
            comment="An entity's sensor information.  Section 6.2.77.">
 
         <attribute name="sensorTypeSource" comment=" the source of the Sensor Type field ">
-            <sisoenum type="SensorTypeSource" comment="uid 414"/>
+            <sisoenum type="SensorTypeSource" uid="414" comment="uid 414"/>
         </attribute>
 
         <attribute name="sensorOnOffStatus" comment="The on/off status of the sensor">
-            <sisoenum type="SensorOnOffStatus" comment="uid 331"/>
+            <sisoenum type="SensorOnOffStatus" uid="331" comment="uid 331"/>
         </attribute>
 
         <attribute name="sensorType"
@@ -2508,7 +2508,7 @@ dB and RPM)"/>
 
         <attribute name="appearanceRecordList" comment="Variable length list of appearance records">
             <primitivelist length="0" countFieldName="numberOfAppearanceRecords">
-                <primitive type="uint32" comment="UID 31-43 bitsets"/>
+                <primitive type="uint32" uid="31" comment="uid 31-43 bitsets"/>
             </primitivelist>
         </attribute>
 
@@ -2564,7 +2564,7 @@ dB and RPM)"/>
 
         <attribute name="recordType">
             <sisoenum type="VariableRecordType"
-                      comment="uid 66 Variable Record Type values are defined by VariableRecordType enumerations"/>
+                      uid="66" comment="uid 66 Variable Record Type values are defined by VariableRecordType enumerations"/>
         </attribute>
 
         <attribute name="recordLength" hidden="true">
@@ -2598,15 +2598,15 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="fuelMeasurementUnits" comment="Units in which the fuel is measured">
-            <sisoenum type="FuelMeasurementUnits" comment="uid 328"/>
+            <sisoenum type="FuelMeasurementUnits" uid="328" comment="uid 328"/>
         </attribute>
 
         <attribute name="fuelType" comment="Type of fuel">
-            <sisoenum type="SupplyFuelType" comment="uid 413"/>
+            <sisoenum type="SupplyFuelType" uid="413" comment="uid 413"/>
         </attribute>
 
         <attribute name="fuelLocation" comment="Location of fuel as related to entity. See section 14 of EBV document">
-            <sisoenum type="FuelLocation" comment="uid 329"/>
+            <sisoenum type="FuelLocation" uid="329" comment="uid 329"/>
         </attribute>
 
         <attribute name="padding"
@@ -2640,15 +2640,15 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="fuelMeasurementUnits" comment="The fuel measurement units. Enumeration">
-            <sisoenum type="FuelMeasurementUnits" comment="uid 328"/>
+            <sisoenum type="FuelMeasurementUnits" uid="328" comment="uid 328"/>
         </attribute>
 
         <attribute name="fuelType" comment="Fuel type">
-            <sisoenum type="SupplyFuelType" comment="uid 413"/>
+            <sisoenum type="SupplyFuelType" uid="413" comment="uid 413"/>
         </attribute>
 
         <attribute name="fuelLocation" comment="Location of fuel as related to entity. See section 14 of EBV document">
-            <sisoenum type="FuelLocation" comment="uid 329"/>
+            <sisoenum type="FuelLocation" uid="329" comment="uid 329"/>
         </attribute>
 
         <attribute name="padding"
@@ -2674,15 +2674,15 @@ dB and RPM)"/>
     <class name="SystemIdentifier" inheritsFrom="root" comment="The ID of the IFF emitting system. Section 6.2.87">
 
         <attribute name="systemType" comment="general type of emitting system, an enumeration">
-            <sisoenum type="IFFSystemType" comment="uid 82"/>
+            <sisoenum type="IFFSystemType" uid="82" comment="uid 82"/>
         </attribute>
 
         <attribute name="systemName" comment="named type of system, an enumeration">
-            <sisoenum type="IFFSystemName" comment="uid 83"/>
+            <sisoenum type="IFFSystemName" uid="83" comment="uid 83"/>
         </attribute>
 
         <attribute name="systemMode" comment="mode of operation for the system, an enumeration">
-            <sisoenum type="IFFSystemMode" comment="uid 84"/>
+            <sisoenum type="IFFSystemMode" uid="84" comment="uid 84"/>
         </attribute>
 
         <attribute name="changeOptions" comment="status of this PDU, see section 6.2.15">
@@ -2735,11 +2735,11 @@ dB and RPM)"/>
            comment="Regeneration parameters for active emission systems that are variable throughout a scenario. Section 6.2.91">
 
         <attribute name="activeEmissionParameterIndex" comment="Which database record shall be used">
-            <sisoenum type="UAActiveEmissionParameterIndex" comment="uid 146"/>
+            <sisoenum type="UAActiveEmissionParameterIndex" uid="146" comment="uid 146"/>
         </attribute>
 
         <attribute name="scanPattern" comment="The type of scan pattern, If not used, zero">
-            <sisoenum type="UAScanPattern" comment="uid 147"/>
+            <sisoenum type="UAScanPattern" uid="147" comment="uid 147"/>
         </attribute>
 
         <attribute name="beamCenterAzimuthHorizontal" comment="center azimuth bearing of th emain beam. In radians.">
@@ -2785,7 +2785,7 @@ dB and RPM)"/>
         <attribute name="variableDatumID"
                    comment="Type of variable datum to be transmitted. 32-bit enumeration defined in EBV">
             <sisoenum type="VariableRecordType"
-                      comment="uid 66 Variable Record Type values are defined by VariableRecordType enumerations"/>
+                      uid="66" comment="uid 66 Variable Record Type values are defined by VariableRecordType enumerations"/>
         </attribute>
 
         <attribute name="variableDatumLength" comment="Length, IN BITS, of the variable datum.">
@@ -2793,7 +2793,7 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="variableDatumValue" comment="This can be any number of bits long, depending on the datum.">
-            <primitivelist length="0" countFieldName="variableDatumLength" countHasExtraFixedBits="0">
+            <primitivelist length="0" countFieldName="variableDatumLength" countHasExtraFixedBits="0" encodedBy="variableDatumID">
                 <primitive type="uint8"/>
             </primitivelist>
         </attribute>
@@ -2810,7 +2810,7 @@ dB and RPM)"/>
 
         <attribute name="recordType"
                    comment="The identification of the Variable Parameter record. Enumeration from EBV">
-            <sisoenum type="VariableParameterRecordType" comment="uid 56"/>
+            <sisoenum type="VariableParameterRecordType" uid="56" comment="uid 56"/>
         </attribute>
 
         <attribute name="recordSpecificFields" comment="120 bits">
@@ -2827,7 +2827,7 @@ dB and RPM)"/>
         <attribute name="recordType"
                    comment="The identification of the Variable Parameter record. Enumeration from EBV">
             <sisoenum type="VariableParameterRecordType" defaultValue="VariableParameterRecordType.ARTICULATED_PART"
-                      comment="uid 56"/>
+                      uid="56" comment="uid 56"/>
         </attribute>
 
         <attribute name="changeIndicator"
@@ -2841,7 +2841,7 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="parameterType" comment="The type of parameter represented, 32-bit enumeration">
-            <primitive type="uint32" comment="uid 58-59"/>
+            <primitive type="uint32" uid="58" comment="uid 58-59"/>
         </attribute>
 
         <attribute name="parameterValue"
@@ -2862,12 +2862,12 @@ dB and RPM)"/>
         <attribute name="recordType"
                    comment="The identification of the Variable Parameter record. Enumeration from EBV">
             <sisoenum type="VariableParameterRecordType" defaultValue="VariableParameterRecordType.ATTACHED_PART"
-                      comment="uid 56"/>
+                      uid="56" comment="uid 56"/>
         </attribute>
 
         <attribute name="detachedIndicator"
                    comment="0 = attached, 1 = detached. See I.2.3.1 for state transition diagram">
-            <sisoenum type="AttachedPartDetachedIndicator" comment="uid 415"/>
+            <sisoenum type="AttachedPartDetachedIndicator" uid="415" comment="uid 415"/>
         </attribute>
 
         <attribute name="partAttachedTo"
@@ -2876,7 +2876,7 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="parameterType" comment="The location or station to which the part is attached">
-            <sisoenum type="AttachedParts" comment="uid 57"/>
+            <sisoenum type="AttachedParts" uid="57" comment="uid 57"/>
         </attribute>
 
         <attribute name="attachedPartType"
@@ -2892,19 +2892,19 @@ dB and RPM)"/>
         <attribute name="recordType"
                    comment="The identification of the Variable Parameter record. Enumeration from EBV">
             <sisoenum type="VariableParameterRecordType" defaultValue="VariableParameterRecordType.ENTITY_ASSOCIATION"
-                      comment="uid 56"/>
+                      uid="56" comment="uid 56"/>
         </attribute>
 
         <attribute name="changeIndicator" comment="Indicates if this VP has changed since last issuance">
-            <sisoenum type="EntityVPRecordChangeIndicator" comment="uid 320"/>
+            <sisoenum type="EntityVPRecordChangeIndicator" uid="320" comment="uid 320"/>
         </attribute>
 
         <attribute name="associationStatus" comment="Indicates association status between two entities">
-            <sisoenum type="EntityAssociationAssociationType" comment="uid 319"/>
+            <sisoenum type="EntityAssociationAssociationType" uid="319" comment="uid 319"/>
         </attribute>
 
         <attribute name="associationType" comment="Type of association; 8-bit enum">
-            <sisoenum type="EntityAssociationPhysicalAssociationType" comment="uid 323"/>
+            <sisoenum type="EntityAssociationPhysicalAssociationType" uid="323" comment="uid 323"/>
         </attribute>
 
         <attribute name="entityID" comment="Object ID of entity associated with this entity">
@@ -2912,15 +2912,15 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="ownStationLocation" comment="Station location on one's own entity">
-            <sisoenum type="IsPartOfStationName" comment="uid 212"/>
+            <sisoenum type="IsPartOfStationName" uid="212" comment="uid 212"/>
         </attribute>
 
         <attribute name="physicalConnectionType" comment="Type of physical connection">
-            <sisoenum type="EntityAssociationPhysicalConnectionType" comment="uid 324"/>
+            <sisoenum type="EntityAssociationPhysicalConnectionType" uid="324" comment="uid 324"/>
         </attribute>
 
         <attribute name="groupMemberType" comment="Type of member the entity is within the group">
-            <sisoenum type="EntityAssociationGroupMemberType" comment="uid 321"/>
+            <sisoenum type="EntityAssociationGroupMemberType" uid="321" comment="uid 321"/>
         </attribute>
 
         <attribute name="groupNumber" comment="Group if any to which the entity belongs">
@@ -2934,11 +2934,11 @@ dB and RPM)"/>
 
         <attribute name="recordType" comment="The identification of the Variable Parameter record.">
             <sisoenum type="VariableParameterRecordType" defaultValue="VariableParameterRecordType.ENTITY_TYPE"
-                      comment="uid 56"/>
+                      uid="56" comment="uid 56"/>
         </attribute>
 
         <attribute name="changeIndicator" comment="Indicates if this VP has changed since last issuance">
-            <sisoenum type="EntityVPRecordChangeIndicator" comment="uid 320"/>
+            <sisoenum type="EntityVPRecordChangeIndicator" uid="320" comment="uid 320"/>
         </attribute>
 
         <attribute name="entityType" comment="">
@@ -2962,15 +2962,15 @@ dB and RPM)"/>
         <attribute name="recordType"
                    comment="The identification of the Variable Parameter record. Enumeration from EBV">
             <sisoenum type="VariableParameterRecordType" defaultValue="VariableParameterRecordType.SEPARATION"
-                      comment="uid 56"/>
+                      uid="56" comment="uid 56"/>
         </attribute>
 
         <attribute name="reasonForSeparation" comment="Reason for separation. EBV">
-            <sisoenum type="SeparationVPReasonforSeparation" comment="uid 282"/>
+            <sisoenum type="SeparationVPReasonforSeparation" uid="282" comment="uid 282"/>
         </attribute>
 
         <attribute name="preEntityIndicator" comment="Whether the entity existed prior to separation EBV">
-            <sisoenum type="SeparationVPPreEntityIndicator" comment="uid 283"/>
+            <sisoenum type="SeparationVPPreEntityIndicator" uid="283" comment="uid 283"/>
         </attribute>
 
         <attribute name="padding1" comment="padding">
@@ -2995,7 +2995,7 @@ dB and RPM)"/>
 
         <attribute name="recordType" comment="Type of VTP">
             <sisoenum type="VariableRecordType"
-                      comment="uid 66 Variable Record Type values are defined by VariableRecordType enumerations"/>
+                      uid="66" comment="uid 66 Variable Record Type values are defined by VariableRecordType enumerations"/>
         </attribute>
 
         <attribute name="recordLength" comment="Length, in bytes">
@@ -3083,7 +3083,7 @@ dB and RPM)"/>
            comment="Not specified in the standard. This is used by the ESPDU">
 
         <attribute name="deadReckoningAlgorithm" comment="Algorithm to use in computing dead reckoning. See EBV doc.">
-            <sisoenum type="DeadReckoningAlgorithm" comment="uid 44"/>
+            <sisoenum type="DeadReckoningAlgorithm" uid="44" comment="uid 44"/>
         </attribute>
 
         <attribute name="parameters" comment="Dead reckoning parameters. Contents depends on algorithm.">
@@ -3214,7 +3214,7 @@ dB and RPM)"/>
     <class name="LiveDeadReckoningParameters" inheritsFrom="root" comment="16-bit fixed binaries">
 
         <attribute name="deadReckoningAlgorithm">
-            <sisoenum type="DeadReckoningAlgorithm" comment="uid 44"/>
+            <sisoenum type="DeadReckoningAlgorithm" uid="44" comment="uid 44"/>
         </attribute>
         <attribute name="entityLinearAcceleration">
             <classRef name="LEVector3FixedByte"/>
@@ -3232,7 +3232,7 @@ dB and RPM)"/>
            comment="Base class of PduBase and LiveEntityPdu">
 
         <attribute name="protocolVersion" comment="The version of the protocol. 5=DIS-1995, 6=DIS-1998, 7=DIS-2012">
-            <sisoenum type="DISProtocolVersion" comment="uid 3"
+            <sisoenum type="DISProtocolVersion" uid="3" comment="uid 3"
                       defaultValue="DISProtocolVersion.IEEE_12781_2012"/>  <!-- DIS 7 -->
         </attribute>
 
@@ -3241,12 +3241,12 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="pduType" comment="Type of pdu, unique for each PDU class">
-            <sisoenum type="DisPduType" comment="uid 4"/>
+            <sisoenum type="DisPduType" uid="4" comment="uid 4"/>
         </attribute>
 
         <attribute name="protocolFamily"
                    comment="value that refers to the protocol family, eg SimulationManagement, et">
-            <sisoenum type="DISProtocolFamily" comment="uid 5"/>
+            <sisoenum type="DISProtocolFamily" uid="5" comment="uid 5"/>
         </attribute>
 
         <attribute name="timestamp"
@@ -3273,7 +3273,7 @@ dB and RPM)"/>
             <classRef name="PduStatus"/>
         </attribute>
 
-        <attribute name="padding"
+        <attribute name="paddingHeader"
                    comment="zero-filled array of padding bits for byte alignment and consistent sizing of PDU data">
             <primitive type="uint8" defaultValue="0"/>
         </attribute>
@@ -3287,7 +3287,7 @@ dB and RPM)"/>
                     Intercom Attached Indicator (IAI), IFF Simulation Mode (ISM) and Active Interrogation Indicator (AII).">
 
         <attribute name="value" comment="PDU Status Record value containing bitmasked field">
-            <primitive type="uint8" defaultValue="0"/>
+            <primitive type="uint8" defaultValue="0" encodedBy="entityType"/>
         </attribute>
 
     </class>

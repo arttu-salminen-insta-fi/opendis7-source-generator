@@ -4,7 +4,7 @@
            comment="The live entity PDUs have a slightly different header.">
 
         <attribute name="subprotocolNumber" comment="Subprotocol used to decode the PDU. Section 13 of EBV.">
-            <sisoenum type="DISLiveEntitySubprotocolNumber" comment="uid 417"/>
+            <sisoenum type="DISLiveEntitySubprotocolNumber" uid="417" comment="uid 417"/>
         </attribute>
 
         <attribute name="padding" comment="zero-filled array of padding bits for byte alignment and consistent sizing of PDU data">
@@ -87,7 +87,7 @@
         </attribute>
         
         <attribute name="forceId">
-            <sisoenum type="ForceID" comment="uid 6"/>
+            <sisoenum type="ForceID" uid="6" comment="uid 6"/>
         </attribute>
         
         <attribute name="entityType">
@@ -103,7 +103,7 @@
         </attribute>
         
         <attribute name="capabilities">
-            <sisobitfield type="EntityCapabilities" defaultValue="new LandPlatformCapabilities()" size="32" comment="uid 55"/>
+            <sisobitfield type="EntityCapabilities" defaultValue="new LandPlatformCapabilities()" size="32" uid="55" comment="uid 55"/>
         </attribute>
         
         <!-- uid 31-43: LandPlatformAppearance, AirPlatformAppearance, SurfacePlatformAppearance, SubsurfaceFlatformAppearance,
@@ -165,8 +165,8 @@
             <classRef name="LiveEntityRelativeWorldCoordinates"/>
         </attribute>
         
-        <attribute name="munitionDescriptor">
-            <classRef name="MunitionDescriptor"/>
+        <attribute name="descriptor">
+            <classRef name="Descriptor"/>
         </attribute>
         
         <attribute name="velocity">
@@ -221,8 +221,8 @@
             <classRef name="LiveEntityOrientation16"/>
         </attribute>
         
-        <attribute name="munitionDescriptor">
-            <classRef name="MunitionDescriptor"/>
+        <attribute name="descriptor">
+            <classRef name="Descriptor"/>
         </attribute>
         
         <attribute name="entityLocation">

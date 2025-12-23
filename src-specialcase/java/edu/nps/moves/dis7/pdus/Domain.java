@@ -187,6 +187,24 @@ public class Domain
     }
   }
 
+  public static PduMap fromBufferToMap(java.nio.ByteBuffer byteBuffer) throws Exception {
+    PduMap map = new PduMap();
+    map.put("value", Byte.toUnsignedInt(byteBuffer.get()));
+    return map;
+  }
+
+  public static void fromMapToBuffer(PduMap map, java.nio.ByteBuffer byteBuffer) throws Exception
+  {
+    byteBuffer.put(((Number) map.get("value")).byteValue());
+  }
+
+  public static int getMarshalledSize(PduMap map) throws Exception
+  {
+    int marshalSize = 0;
+    marshalSize += 1;  // value
+    return marshalSize;
+  }
+
   @Override
   public String toString()
   {

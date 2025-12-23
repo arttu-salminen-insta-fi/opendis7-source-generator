@@ -12,53 +12,30 @@ import java.nio.ByteBuffer;
  */
 public interface EntityCapabilities extends Marshaller
 {
+    int BIT_LENGTH = 32;
+    int BYTE_LENGTH = (BIT_LENGTH + Byte.SIZE - 1) / Byte.SIZE;
+
     class GenericCapabilityBitSet extends DisBitSet implements EntityCapabilities {
         public GenericCapabilityBitSet() {
-            super(32);
+            super(BIT_LENGTH);
         }
     }
 
-    /**
-     * Unpacks a Pdu into a map from the underlying data.
-     * @throws java.nio.BufferUnderflowException if byteBuffer is too small
-     * @see java.nio.ByteBuffer
-     * @see <a href="https://en.wikipedia.org/wiki/Marshalling_(computer_science)" target="_blank">https://en.wikipedia.org/wiki/Marshalling_(computer_science)</a>
-     * @param byteBuffer The ByteBuffer at the position to begin reading
-     * @return marshalled serialized size in bytes
-     * @throws Exception ByteBuffer-generated exception
-     */
-    static PduMap fromBufferToMap(ByteBuffer byteBuffer) throws Exception
+    static int unmarshallRawValue(ByteBuffer byteBuffer) throws Exception
     {
-        PduMap map = new PduMap();
-
-        // This is so dirty
-        GenericCapabilityBitSet capabilities = new GenericCapabilityBitSet();
-        capabilities.unmarshal(byteBuffer);
-        map.put("entityCapabilities", capabilities);
-
-        return map;
+        byte[] bytes = new byte[BYTE_LENGTH];
+        byteBuffer.get(bytes);
+        return DisBitSet.bytesToInt(bytes);
     }
 
-    /**
-     * Packs a Pdu represented in map into the ByteBuffer.
-     * @throws java.nio.BufferOverflowException if byteBuffer is too small
-     * @throws java.nio.ReadOnlyBufferException if byteBuffer is read only
-     * @see java.nio.ByteBuffer
-     * @param byteBuffer The ByteBuffer at the position to begin writing
-     * @throws Exception ByteBuffer-generated exception
-     */
-    static void fromMapToBuffer(PduMap map, ByteBuffer byteBuffer) throws Exception
+    static void marshallRawValue(int rawValue, ByteBuffer byteBuffer) throws Exception
     {
-        ((EntityCapabilities) map.get("entityCapabilities")).marshal(byteBuffer);
+        byte[] bytes = DisBitSet.intToBytes(rawValue, BYTE_LENGTH);
+        byteBuffer.put(bytes);
     }
 
-    /**
-     * Returns size of this serialized (marshalled) object in bytes
-     * @see <a href="https://en.wikipedia.org/wiki/Marshalling_(computer_science)" target="_blank">https://en.wikipedia.org/wiki/Marshalling_(computer_science)</a>
-     * @return serialized size in bytes
-     */
-    static int getMarshalledSize(PduMap map) {
-        return ((EntityCapabilities) map.get("entityCapabilities")).getMarshalledSize();
+    static int getByteLength() {
+        return BYTE_LENGTH;
     }
 
 }

@@ -15,11 +15,11 @@
         </attribute>
       
         <attribute name="forceID" comment="force ID provides a unique identifier">
-            <sisoenum type="ForceID" comment="uid 6"/>
+            <sisoenum type="ForceID" uid="6" comment="uid 6"/>
         </attribute>
       
         <attribute name="aggregateState" comment="state of aggregate">
-            <sisoenum type="AggregateStateAggregateState" comment="uid 204"/>
+            <sisoenum type="AggregateStateAggregateState" uid="204" comment="uid 204"/>
         </attribute>
       
         <attribute name="aggregateType" comment="entity type of the aggregated entities">
@@ -27,7 +27,7 @@
         </attribute>
       
         <attribute name="formation" comment="formation of aggregated entities">
-            <sisoenum type="AggregateStateFormation" comment="uid 205"/>
+            <sisoenum type="AggregateStateFormation" uid="205" comment="uid 205"/>
         </attribute>
       
         <attribute name="aggregateMarking" comment="marking for aggregate; first char is charset type, rest is char data">
@@ -78,7 +78,7 @@
             </objectlist> 
         </attribute>
         
-        <attribute name="padTo32">
+        <attribute name="padding">
             <padtoboundary length="32"/>
         </attribute>
         
@@ -116,14 +116,14 @@
         </attribute>
       
         <attribute name="groupedEntityCategory" comment="type of entities constituting the group">
-            <sisoenum type="IsGroupOfGroupedEntityCategory" comment="uid 213"/>
+            <sisoenum type="IsGroupOfGroupedEntityCategory" uid="213" comment="uid 213"/>
         </attribute>
       
         <attribute name="numberOfGroupedEntities" hidden="true" comment="Number of individual entities constituting the group">
             <primitive type= "uint8"/>
         </attribute>
       
-        <attribute name="pad" comment="padding">
+        <attribute name="padding" comment="padding">
             <primitive type= "uint32"/>
         </attribute>
       
@@ -161,11 +161,11 @@
         </attribute>
       
         <attribute name="requiredReliabilityService" comment="required level of reliability service.">
-            <sisoenum type="RequiredReliabilityService" comment="uid 74"/>
+            <sisoenum type="RequiredReliabilityService" uid="74" comment="uid 74"/>
         </attribute>
       
         <attribute name="transferType" comment="type of transfer desired">
-            <sisoenum type="TransferControlTransferType" comment="uid 224"/>
+            <sisoenum type="TransferControlTransferType" uid="224" comment="uid 224"/>
         </attribute>
       
         <attribute name="transferEntityID" comment="The entity for which control is being requested to transfer">

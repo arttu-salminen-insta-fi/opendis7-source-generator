@@ -27,19 +27,19 @@ otherwise affect enemy information and decision making while protecting friendly
         </attribute>
               
         <attribute name="IOWarfareType">
-            <sisoenum type="IOActionIOWarfareType" comment="uid 285"/>
+            <sisoenum type="IOActionIOWarfareType" uid="285" comment="uid 285"/>
         </attribute>
         
         <attribute name="IOSimulationSource">
-            <sisoenum type="IOActionIOSimulationSource" comment="uid 286"/>
+            <sisoenum type="IOActionIOSimulationSource" uid="286" comment="uid 286"/>
         </attribute>
         
         <attribute name="IOActionType">
-            <sisoenum type="IOActionIOActionType" comment="uid 287"/>
+            <sisoenum type="IOActionIOActionType" uid="287" comment="uid 287"/>
         </attribute>
         
         <attribute name="IOActionPhase">
-            <sisoenum type="IOActionIOActionPhase" comment="uid 288"/>
+            <sisoenum type="IOActionIOActionPhase" uid="288" comment="uid 288"/>
         </attribute>
         
         <attribute name="padding1">
@@ -76,11 +76,11 @@ otherwise affect enemy information and decision making while protecting friendly
         <initialValue name="pduType" value="DisPduType.INFORMATION_OPERATIONS_REPORT"/>
        
         <attribute name = "ioSimSource">         
-            <sisoenum type="IOActionIOSimulationSource" comment="uid 286"/>
+            <sisoenum type="IOActionIOSimulationSource" uid="286" comment="uid 286"/>
         </attribute>
         
         <attribute name="ioReportType" comment="request ID provides a unique identifier">
-            <sisoenum type="IOReportIOReportType" comment="uid 289"/>
+            <sisoenum type="IOReportIOReportType" uid="289" comment="uid 289"/>
         </attribute>
         
         <attribute name="padding1">

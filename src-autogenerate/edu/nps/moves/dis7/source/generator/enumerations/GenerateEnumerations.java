@@ -692,7 +692,7 @@ public class GenerateEnumerations
                 sb.setLength(sb.length() - 3);
             sb.append(";\n");
 
-            sb.append(String.format(disbitset2Template, classNameCorrected, el.size, classNameCorrected, classNameCorrected, classNameCorrected, classNameCorrected, classNameCorrected, classNameCorrected, classNameCorrected, classNameCorrected, classNameCorrected, classNameCorrected));
+            sb.append(String.format(disbitset2Template, el.size, classNameCorrected, classNameCorrected, classNameCorrected, classNameCorrected, classNameCorrected, classNameCorrected));
 
             // save file
             File targetFile = new File(outputDirectory, classNameCorrected + ".java");

@@ -21,7 +21,7 @@
         </attribute>
   
         <attribute name="stateUpdateIndicator" comment="This field shall be used to indicate if the data in the PDU represents a state update or just data that has changed since issuance of the last Electromagnetic Emission PDU [relative to the identified entity and emission system(s)].">
-            <sisoenum type="ElectromagneticEmissionStateUpdateIndicator" comment="uid 77"/>
+            <sisoenum type="ElectromagneticEmissionStateUpdateIndicator" uid="77" comment="uid 77"/>
         </attribute>
   
         <attribute name="numberOfSystems" hidden="true" comment="This field shall specify the number of emission systems being described in the current PDU.">
@@ -93,7 +93,7 @@
         </attribute>
         
         <attribute name="beamFunction">
-            <sisoenum type="ElectromagneticEmissionBeamFunction" comment="uid 78"/>
+            <sisoenum type="ElectromagneticEmissionBeamFunction" uid="78" comment="uid 78"/>
         </attribute>
         
         <attribute name="numberOfTargets" hidden="true">
@@ -101,7 +101,7 @@
         </attribute>
         
         <attribute name="highDensityTrackJam">
-            <sisoenum type="HighDensityTrackJam" comment="uid 79"/>
+            <sisoenum type="HighDensityTrackJam" uid="79" comment="uid 79"/>
         </attribute>
         
         <attribute name="beamStatus">
@@ -129,7 +129,7 @@
         </attribute> 
   
         <attribute name="codeName" comment="This field shall specify a unique emitter database number assigned to  differentiate between otherwise similar or identical emitter beams within an emitter system.">
-            <sisoenum type="DesignatorSystemName" comment="uid 80"/>
+            <sisoenum type="DesignatorSystemName" uid="80" comment="uid 80"/>
         </attribute>
   
         <attribute name="designatedEntityID" comment="ID of the entity being designated">
@@ -137,7 +137,7 @@
         </attribute> 
   
         <attribute name="designatorCode" comment="This field shall identify the designator code being used by the designating entity ">
-            <sisoenum type="DesignatorDesignatorCode" comment="uid 81"/>
+            <sisoenum type="DesignatorDesignatorCode" uid="81" comment="uid 81"/>
         </attribute>
   
         <attribute name="designatorPower" comment="This field shall identify the designator output power in watts">
@@ -157,7 +157,7 @@
         </attribute> 
   
         <attribute name="deadReckoningAlgorithm" comment="Dead reckoning algorithm">
-            <sisoenum type="DeadReckoningAlgorithm" comment="uid 44"/>
+            <sisoenum type="DeadReckoningAlgorithm" uid="44" comment="uid 44"/>
         </attribute>
   
         <attribute name="padding1" comment="padding">
@@ -187,15 +187,15 @@
         </attribute>
   
         <attribute name="stateChangeIndicator" comment="This field shall be used to indicate whether the data in the UA PDU represent a state update or data that have changed since issuance of the last UA PDU">
-            <sisoenum type= "UAStateChangeUpdateIndicator" comment="uid 143"/>
+            <sisoenum type= "UAStateChangeUpdateIndicator" uid="143" comment="uid 143"/>
         </attribute>
   
-        <attribute name="pad" comment="padding">
+        <attribute name="padding" comment="padding">
             <primitive type= "uint8" default="0"/>
         </attribute>
   
         <attribute name="passiveParameterIndex" comment="This field indicates which database record (or file) shall be used in the definition of passive signature (unintentional) emissions of the entity. The indicated database record (or  file) shall define all noise generated as a function of propulsion plant configurations and associated  auxiliaries.">
-            <sisoenum type= "UAPassiveParameterIndex" comment="uid 148"/>
+            <sisoenum type= "UAPassiveParameterIndex" uid="148" comment="uid 148"/>
         </attribute>
 
         <attribute name="propulsionPlantConfiguration" comment="This field shall specify the entity propulsion plant configuration. This field is used to determine the passive signature characteristics of an entity.">
@@ -351,19 +351,19 @@ This field defines the active  emission  parameter  index,  beam  scan  pattern,
 
 	<class name="Mode5TransponderBasicData" id="74" inheritsFrom="root" comment="B.2.29. Mode 5 transponder basic data">
 		
-		<attribute name="mode5Status" comment="Mode 5 status, part of Mode 5 transponder basic data fields">
+		<attribute name="mode5Status" comment="Mode 5 status, part of Mode 5 transponder basic data fields" nonBasicDataType="true">
             <primitive type="uint16"/>
         </attribute>
         
         <attribute name="personalIdentificationNumber" comment="Personal Identification Number (PIN), part of Mode 5 transponder basic data fields">
-            <primitive type="uint16"/>
+            <primitive type="uint16" formatting="octal"/>
         </attribute>
         
-        <attribute name="mode5MessageFormatsPresent" comment="Mode 5 Message Formats Present, part of Mode 5 transponder basic data fields">
+        <attribute name="mode5MessageFormatsPresent" nonBasicDataType="true" comment="Mode 5 Message Formats Present, part of Mode 5 transponder basic data fields">
             <primitive type="uint32"/>
         </attribute>
         
-        <attribute name="enhancedMode1" comment="Enhanced Mode 1, part of Mode 5 transponder basic data fields">
+        <attribute name="enhancedMode1" comment="Enhanced Mode 1, part of Mode 5 transponder basic data fields" nonBasicDataType="true">
             <primitive type="uint16"/>
         </attribute>
         
@@ -371,12 +371,12 @@ This field defines the active  emission  parameter  index,  beam  scan  pattern,
             <primitive type="uint16" comment="The natioanal origin is the country that owns the platform carrying a Mode 5 transponder."/>
         </attribute>
         
-        <attribute name="supplementalData" comment="Supplemental Data, part of Mode 5 transponder basic data fields">
+        <attribute name="supplementalData" comment="Supplemental Data, part of Mode 5 transponder basic data fields" nonBasicDataType="true">
             <primitive type="uint8"/>
         </attribute>
         
         <attribute name="navigationSource" comment="Navigation Source, part of Mode 5 transponder basic data fields">
-            <sisoenum type="NavigationSource" comment="UID 359"/>
+            <sisoenum type="NavigationSource" uid="359" comment="uid 359"/>
         </attribute>
         
         <attribute name="figureOfMerit" comment="Figure of merit, part of Mode 5 transponder basic data fields">
@@ -419,7 +419,7 @@ This field defines the active  emission  parameter  index,  beam  scan  pattern,
 	
 	<class name="Mode5InterrogatorBasicData" id="76" inheritsFrom="root" comment="B.2.26. Mode 5 interrogator basic data">
 		
-		<attribute name="mode5InterrogatorStatus" comment="Mode 5 interrogator status, part of Mode 5 interrogator basic data fields">
+		<attribute name="mode5InterrogatorStatus" comment="Mode 5 interrogator status, part of Mode 5 interrogator basic data fields" nonBasicDataType="true">
             <primitive type="uint8"/>
         </attribute>
         
@@ -431,7 +431,7 @@ This field defines the active  emission  parameter  index,  beam  scan  pattern,
             <primitive type="uint16"/>
         </attribute>
         
-        <attribute name="mode5MessageFormatsPresent" comment="Mode 5 Message Formats Present, part of Mode 5 interrogator basic data fields">
+        <attribute name="mode5MessageFormatsPresent" comment="Mode 5 Message Formats Present, part of Mode 5 interrogator basic data fields" nonBasicDataType="true">
             <primitive type="uint32"/>
         </attribute>
       
@@ -471,7 +471,7 @@ This field defines the active  emission  parameter  index,  beam  scan  pattern,
         </attribute>
         
         <attribute name="systemSpecificData" comment="Part of Layer 1 basic system data 7.6.5.2.">
-            <primitive type= "uint8"/>
+            <primitive type= "uint8" encodedBy="systemType"/>
         </attribute>
       
         <attribute name="fundamentalParameters" comment="Fundamental parameters. Part of Layer 1 basic system data 7.6.5.2.">
@@ -536,7 +536,7 @@ This field defines the active  emission  parameter  index,  beam  scan  pattern,
     
     <class name="ModeSInterrogatorBasicData" id="79" inheritsFrom="root" comment="B.2.37. Mode S interrogator basic data">
 		
-		<attribute name="modeSInterrogatorStatus" comment="Mode S interrogator status, part of Mode S interrogator basic data fields. See B.2.39.">
+		<attribute name="modeSInterrogatorStatus" nonBasicDataType="true" comment="Mode S interrogator status, part of Mode S interrogator basic data fields. See B.2.39.">
             <primitive type="uint8"/>
         </attribute>
         
@@ -544,7 +544,7 @@ This field defines the active  emission  parameter  index,  beam  scan  pattern,
             <primitive type="uint8"/>
         </attribute>
         
-        <attribute name="modeSLevelsPresent" comment="Mode S levels present, part of Mode S interrogator basic data fields. See B.2.40">
+        <attribute name="modeSLevelsPresent" nonBasicDataType="true" comment="Mode S levels present, part of Mode S interrogator basic data fields. See B.2.40">
             <primitive type="uint8"/>
         </attribute>
         
@@ -604,40 +604,40 @@ This field defines the active  emission  parameter  index,  beam  scan  pattern,
 	
 	<class name="ModeSTransponderBasicData" id="84" inheritsFrom="root" comment="B.2.41. Mode S transponder basic data">
 		
-		<attribute name="modeSTransponderStatus" comment="Mode S transponder status, part of Mode S transponder basic data fields. See B.2.42.">
+		<attribute name="modeSTransponderStatus" nonBasicDataType="true" comment="Mode S transponder status, part of Mode S transponder basic data fields. See B.2.42.">
             <primitive type="uint16"/>
         </attribute>
         
-        <attribute name="modeSLevelsPresent" comment="Mode S levels present, part of Mode S transponder basic data fields. See B.2.40.">
+        <attribute name="modeSLevelsPresent" nonBasicDataType="true" comment="Mode S levels present, part of Mode S transponder basic data fields. See B.2.40.">
             <primitive type="uint8"/>
         </attribute>
         
          <attribute name="aircraftPresentDomain" comment="aircraft present domain">
-            <sisoenum type="AircraftPresentDomain" comment="uid 356"/>
+            <sisoenum type="AircraftPresentDomain" uid="356" comment="uid 356"/>
         </attribute>
         
-        <attribute name="aircraftIdentification" comment="Aircraft identification, part of Mode S transponder basic data fields. See B.2.35.">
+        <attribute name="aircraftIdentification" nonBasicDataType="true" comment="Aircraft identification, part of Mode S transponder basic data fields. See B.2.35.">
             <primitive type="uint64"/>
         </attribute>
         
         <attribute name="aircraftAddress" comment="Unique ICAO Mode S aircraft address, part of Mode S transponder basic data fields.">
-            <primitive type="uint32"/>
+            <primitive type="uint32" formatting="hex"/>
         </attribute>
         
         <attribute name="aircraftIdentificationType" comment="Aircraft identification type, part of Mode S transponder basic data fields.">
-            <sisoenum type="AircraftIdentificationType" comment="uid 357"/>
+            <sisoenum type="AircraftIdentificationType" uid="357" comment="uid 357"/>
         </attribute>
         
-        <attribute name="dapSource" comment="DAP source, part of Mode S transponder basic data fields. See B.2.6.">
+        <attribute name="dapSource" nonBasicDataType="true" comment="DAP source, part of Mode S transponder basic data fields. See B.2.6.">
             <primitive type="uint8"/>
         </attribute>
         
-        <attribute name="modeSAltitude" comment="Mode S altitude, part of Mode S transponder basic data fields. See B.2.36.">
+        <attribute name="modeSAltitude" nonBasicDataType="true" comment="Mode S altitude, part of Mode S transponder basic data fields. See B.2.36.">
             <primitive type="uint16"/>
         </attribute>
         
         <attribute name="capabilityReport" comment="Capability report, part of Mode S transponder basic data fields.">
-            <sisoenum type="CapabilityReport" comment="uid 358"/>
+            <sisoenum type="CapabilityReport" uid="358" comment="uid 358"/>
         </attribute>
         
         <attribute name="padding" comment="Padding">
@@ -673,7 +673,7 @@ This field defines the active  emission  parameter  index,  beam  scan  pattern,
         </attribute>
 
 		<attribute name="dataCategory" comment="Data category">
-            <sisoenum type="DataCategory" comment="uid 369"/>
+            <sisoenum type="DataCategory" uid="369" comment="uid 369"/>
         </attribute>
 
         <attribute name="padding2" comment="Padding">

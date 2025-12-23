@@ -48,7 +48,7 @@ public class GeneratedClass
     
     /** whether this class should be abstract */
     protected boolean abstractClass = false;
-    
+
     /** Constructor creates and configures a new instance object */
     public GeneratedClass()
     {

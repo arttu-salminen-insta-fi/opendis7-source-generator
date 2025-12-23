@@ -31,11 +31,11 @@
         </attribute>
   
         <attribute name="transmitState" comment="transmit state">
-            <sisoenum type="TransmitterTransmitState" comment="uid 164"/>
+            <sisoenum type="TransmitterTransmitState" uid="164" comment="uid 164"/>
         </attribute>
   
         <attribute name="inputSource" comment="input source">
-            <sisoenum type="TransmitterInputSource" comment="uid 165"/>
+            <sisoenum type="TransmitterInputSource" uid="165" comment="uid 165"/>
         </attribute>
   
         <attribute name="variableTransmitterParameterCount" comment="count field">
@@ -51,7 +51,7 @@
         </attribute> 
   
         <attribute name="antennaPatternType" comment="antenna pattern type">
-            <sisoenum type="TransmitterAntennaPatternType" comment="uid 167"/>
+            <sisoenum type="TransmitterAntennaPatternType" uid="167" comment="uid 167"/>
         </attribute>
   
         <attribute name="antennaPatternOctets" hidden="true" comment="antenna pattern record length in octets">
@@ -75,10 +75,10 @@
         </attribute> 
   
         <attribute name="cryptoSystem" comment="crypto system enumeration">
-            <sisoenum type="TransmitterCryptoSystem" comment="uid 166"/>
+            <sisoenum type="TransmitterCryptoSystem" uid="166" comment="uid 166"/>
         </attribute>
   
-        <attribute name="cryptoKeyId" comment="crypto system key identifer">
+        <attribute name="cryptoKeyId" comment="crypto system key identifer" nonBasicDataType="true">
             <primitive type="uint16"/>
         </attribute>
   
@@ -122,12 +122,12 @@
             <classRef name="RadioCommsHeader"/>
         </attribute> 
          
-        <attribute name="encodingScheme" comment="encoding scheme used, and enumeration">
+        <attribute name="encodingScheme" comment="encoding scheme used, and enumeration" nonBasicDataType="true">
             <primitive type="uint16"/>
         </attribute>
   
         <attribute name="tdlType" comment="tdl type">
-            <sisoenum type="SignalTDLType" comment="uid 178"/>
+            <sisoenum type="SignalTDLType" uid="178" comment="uid 178"/>
         </attribute>
   
         <attribute name="sampleRate" comment="sample rate">
@@ -148,7 +148,7 @@
             </primitivelist>
         </attribute>
         
-        <attribute name="padTo32" comment="Wireshark (incorrectly) reports malformed packet unless the whole datagram is aligned to 32-bit boundary; spec says only the pdu">
+        <attribute name="padding" comment="Wireshark (incorrectly) reports malformed packet unless the whole datagram is aligned to 32-bit boundary; spec says only the pdu">
             <padtoboundary length="32"/>
         </attribute>
         
@@ -171,7 +171,7 @@
         </attribute>
   
         <attribute name="tdlType" comment="tactical data link type">
-            <sisoenum type="SignalTDLType" comment="uid 178"/>
+            <sisoenum type="SignalTDLType" uid="178" comment="uid 178"/>
         </attribute>
   
         <attribute name="sampleRate" comment="sample rate">
@@ -192,7 +192,7 @@
             </primitivelist> 
         </attribute>
         
-        <attribute name="padTo32" comment="Wireshark (incorrectly) reports malformed packet unless the whole datagram is aligned to 32-bit boundary; spec says only the pdu">
+        <attribute name="padding" comment="Wireshark (incorrectly) reports malformed packet unless the whole datagram is aligned to 32-bit boundary; spec says only the pdu">
             <padtoboundary length="32"/>
         </attribute>
        
@@ -208,7 +208,7 @@
         </attribute> 
  
         <attribute name="receiverState" comment="encoding scheme used, and enumeration">
-            <sisoenum type="ReceiverReceiverState" comment="uid 179"/>
+            <sisoenum type="ReceiverReceiverState" uid="179" comment="uid 179"/>
         </attribute>
   
         <attribute name="padding1">
@@ -251,7 +251,7 @@
         <initialValue name="pduType" value="DisPduType.INTERCOM_CONTROL"/>
    
         <attribute name="controlType" comment="control type">
-            <sisoenum type="IntercomControlControlType" comment="uid 180"/>
+            <sisoenum type="IntercomControlControlType" uid="180" comment="uid 180"/>
         </attribute>
   
         <attribute name="communicationsChannelType" comment="control type">
@@ -275,11 +275,11 @@
         </attribute>
   
         <attribute name="transmitLineState" comment="current transmit state of the line">
-            <sisoenum type="IntercomControlTransmitLineState" comment="uid 183"/>
+            <sisoenum type="IntercomControlTransmitLineState" uid="183" comment="uid 183"/>
         </attribute>
   
         <attribute name="command" comment="detailed type requested.">
-            <sisoenum type="IntercomControlCommand" comment="uid 182"/>
+            <sisoenum type="IntercomControlCommand" uid="182" comment="uid 182"/>
         </attribute>
 
         <attribute name="masterIntercomReferenceID" comment="eid of the entity that has created this intercom channel, same comments as sourceEntityId">

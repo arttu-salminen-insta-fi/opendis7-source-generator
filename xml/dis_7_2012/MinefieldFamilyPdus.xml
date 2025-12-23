@@ -19,7 +19,7 @@
         </attribute>
    
         <attribute name="forceID" comment="force ID provides a unique identifier">
-            <sisoenum type="ForceID" comment="uid 6"/>
+            <sisoenum type="ForceID" uid="6" comment="uid 6"/>
         </attribute>
    
         <attribute name="numberOfPerimeterPoints" hidden="true" comment="Number of permieter points">
@@ -43,7 +43,7 @@
         </attribute>
    
         <attribute name="appearance" comment="appearance bitflags information needed for displaying the symbology of the minefield as a doctrinal minefield graphic">
-            <sisobitfield type="MinefieldStateAppearanceBitMap" size="16" comment="uid 190"/>
+            <sisobitfield type="MinefieldStateAppearanceBitMap" size="16" uid="190" comment="uid 190"/>
         </attribute>
    
         <attribute name="protocolMode" comment="protocolMode. First two bits are the protocol mode, 14 bits reserved.">
@@ -151,7 +151,7 @@
             <primitive type="uint8"/>
         </attribute>
    
-        <attribute name="padding" comment="zero-filled array of padding bits for byte alignment and consistent sizing of PDU data">
+        <attribute name="padding1" comment="zero-filled array of padding bits for byte alignment and consistent sizing of PDU data">
             <primitive type="uint8" defaultValue="0"/>
         </attribute>
    
@@ -169,7 +169,7 @@
             </objectlist> 
         </attribute>
    
-        <attribute name="padTo32">
+        <attribute name="padding2">
             <padtoboundary length="32"/>
         </attribute>
         
@@ -229,7 +229,7 @@
                
         <attribute name="fusing">
             <objectlist countFieldName="numberOfMinesInThisPdu">
-                <sisobitfield type="MinefieldDataFusing" size="16" comment="uid 192"/>
+                <sisobitfield type="MinefieldDataFusing" size="16" uid="192" comment="uid 192"/>
             </objectlist>
         </attribute>
         
@@ -241,11 +241,11 @@
               
         <attribute name="paintScheme">
             <objectlist countFieldName="numberOfMinesInThisPdu">
-                <sisobitfield type="MinefieldDataPaintScheme" size="8" comment="uid 202"/>
+                <sisobitfield type="MinefieldDataPaintScheme" size="8" uid="202" comment="uid 202"/>
             </objectlist>
         </attribute>
         
-        <attribute name="padTo32_2">
+        <attribute name="padding3">
             <padtoboundary length="32"/>
         </attribute>
         
@@ -255,7 +255,7 @@
             </primitivelist> 
         </attribute>
         
-         <attribute name="padTo32_3">
+         <attribute name="padding4">
             <padtoboundary length="32"/>
         </attribute>
         

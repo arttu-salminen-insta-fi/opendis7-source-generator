@@ -15,7 +15,7 @@
         </attribute>
   
         <attribute name="forceId" comment="What force this entity is affiliated with, eg red, blue, neutral, etc">
-            <sisoenum type="ForceID" comment="uid 6"/>
+            <sisoenum type="ForceID" uid="6" comment="uid 6"/>
         </attribute>
  
         <attribute name="numberOfVariableParameters" hidden="true" comment="How many variable parameters are in the variable length list. In earlier versions of DIS these were known as articulation parameters">
@@ -43,7 +43,7 @@
         </attribute>
 
         <attribute name="entityAppearance" comment="a series of bit flags that are used to help draw the entity, such as smoking, on fire, etc.">
-            <primitive type="uint32"/>
+            <primitive type="uint32" encodedBy="entityType"/>
         </attribute>
 
         <attribute name="deadReckoningParameters" comment="parameters used for dead reckoning">
@@ -55,7 +55,7 @@
         </attribute>
  
         <attribute name="capabilities" comment="a series of bit flags">
-            <sisobitfield type="EntityCapabilities" defaultValue="new LandPlatformCapabilities()" size="32" comment="uid 55"/>
+            <sisobitfield type="EntityCapabilities" defaultValue="new LandPlatformCapabilities()" size="32" uid="55" comment="uid 55" encodedBy="entityType"/>
         </attribute>
 
         <attribute name="variableParameters" comment="variable length list of variable parameters. In earlier DIS versions this was articulation parameters.">
@@ -257,10 +257,10 @@
         </attribute>
 
         <attribute name="collisionType" comment="This field shall identify the type of collision. The Collision Type field shall be represented by an 8-bit record of enumerations">
-            <sisoenum type="CollisionType" comment="uid 189"/>
+            <sisoenum type="CollisionType" uid="189" comment="uid 189"/>
         </attribute>
 
-        <attribute name="pad" comment="some padding">
+        <attribute name="padding" comment="some padding">
             <primitive type="uint8" defaultValue="0"/>
         </attribute>
 
@@ -294,7 +294,7 @@
             <classRef name="EventIdentifier"/>
         </attribute>
 
-        <attribute name="pad" comment="some padding">
+        <attribute name="padding" comment="some padding">
             <primitive type="uint16" defaultValue="0"/>
         </attribute>
 
@@ -373,7 +373,7 @@
         </attribute>
 
         <attribute name="entityAppearance" comment="This field shall specify the dynamic changes to the entity's appearance attributes. This field shall be represented by an Entity Appearance record (see 6.2.26).">
-            <primitive type="uint32"/>
+            <primitive type="uint32" encodedBy="entityType"/>
         </attribute>
 
         <attribute name="variableParameters" comment="This field shall specify the parameter values for each Variable Parameter record that is included (see 6.2.93 and Annex I).">
@@ -401,19 +401,19 @@
         </attribute>
 
         <attribute name="attributeRecordPduType" comment="This field shall represent the type of the PDU that is being extended or updated, if applicable. It shall be represented by an 8-bit enumeration.">
-            <sisoenum type="DisPduType" comment="uid 4"/>
+            <sisoenum type="DisPduType" uid="4" comment="uid 4"/>
         </attribute>
 
         <attribute name="attributeRecordProtocolVersion" comment="This field shall indicate the Protocol Version associated with the Attribute Record PDU Type. It shall be represented by an 8-bit enumeration.">
-            <sisoenum type="DISProtocolFamily" comment="uid 5"/>
+            <sisoenum type="DISProtocolFamily" uid="5" comment="uid 5"/>
         </attribute>
 
         <attribute name="masterAttributeRecordType" comment="This field shall contain the Attribute record type of the Attribute records in the PDU if they all have the same Attribute record type. It shall be represented by a 32-bit enumeration.">
-            <sisoenum type="VariableRecordType" comment="uid 66 Variable Record Type values are defined by VariableRecordType enumerations"/>
+            <sisoenum type="VariableRecordType" uid="66" comment="uid 66 Variable Record Type values are defined by VariableRecordType enumerations"/>
         </attribute>
 
         <attribute name="actionCode" comment="This field shall identify the action code applicable to this Attribute PDU. The Action Code shall apply to all Attribute records contained in the PDU. It shall be represented by an 8-bit enumeration.">
-            <sisoenum type="DISAttributeActionCode" comment="uid 295"/>
+            <sisoenum type="DISAttributeActionCode" uid="295" comment="uid 295"/>
         </attribute>
 
         <attribute name="padding3" comment="Padding">

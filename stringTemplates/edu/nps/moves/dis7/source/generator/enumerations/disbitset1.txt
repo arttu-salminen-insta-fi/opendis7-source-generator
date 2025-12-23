@@ -3,6 +3,8 @@
 package %s;
 
 import edu.nps.moves.dis7.pdus.*;
+import java.nio.ByteBuffer;
+
 
 /**
  * Generated from XML,

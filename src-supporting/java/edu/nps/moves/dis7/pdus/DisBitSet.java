@@ -165,7 +165,7 @@ public abstract class DisBitSet extends BitSet implements Marshaller
         byte[] ba = new byte[byteLength];
         byteBuffer.get(ba);
         unmarshalCommon(ba);
-        
+
         return getMarshalledSize();
     }
 
@@ -206,5 +206,29 @@ public abstract class DisBitSet extends BitSet implements Marshaller
         System.out.flush(); // ensure contiguous console outputs
         System.err.println(ex.getClass().getSimpleName() + ": " + ex.getMessage());
         System.err.flush(); // ensure contiguous console outputs
+    }
+
+    protected static int bytesToInt(byte[] bytes) {
+        if (bytes.length > Integer.BYTES) {
+            throw new IllegalArgumentException("Too many bytes for a long: " + bytes.length);
+        }
+        int result = 0;
+        for (byte byteVal : bytes) {
+            result = (result << 8) | (byteVal & 0xFF);
+        }
+        return result;
+    }
+
+    protected static byte[] intToBytes(int value, int numberOfBytes) {
+        if (numberOfBytes < 0 || numberOfBytes > Integer.BYTES) {
+            throw new IllegalArgumentException("numberOfBytes must be between 0 and 4");
+        }
+
+        byte[] result = new byte[numberOfBytes];
+        for (int i = numberOfBytes - 1; i >= 0; i--) {
+            result[i] = (byte) (value & 0xFF);
+            value >>>= 8;
+        }
+        return result;
     }
 }

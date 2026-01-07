@@ -67,6 +67,11 @@ public class JavaGenerator extends AbstractGenerator
     Properties primitiveValueRangeChecks = new Properties();
 
     /**
+     * Primitive types which use non-primitive object types internally
+     */
+    Properties primitiveObjectInternalTypes = new Properties();
+
+    /**
      * sizes of various primitive types
      */
     Properties primitiveSizes = new Properties();
@@ -177,6 +182,9 @@ public class JavaGenerator extends AbstractGenerator
 
         primitiveValueRangeChecks.setProperty(UNSIGNED_INT8,   "%s >= 0 && %s <= 255");
         primitiveValueRangeChecks.setProperty("uint16",  "%s >= 0 && %s <= 65535");
+
+        primitiveObjectInternalTypes.setProperty("uint32", "UnsignedInteger");
+        primitiveObjectInternalTypes.setProperty("uint64", "UnsignedLong");
 
         // How big various primitive types are
         primitiveSizes.setProperty(UNSIGNED_INT8,   "1");
@@ -2955,7 +2963,12 @@ public class JavaGenerator extends AbstractGenerator
 
             switch (anAttribute.getAttributeKind()) {
               case PRIMITIVE:
-                pw.println("     if( ! (" + attname + " == rhs." + attname + ")) return false;");
+                  if (primitiveObjectInternalTypes.getProperty(anAttribute.getType()) != null) {
+                      pw.println("     if( ! Objects.equals(" + attname + ", rhs." + attname + ") ) return false;");
+                  }
+                  else {
+                      pw.println("     if( ! (" + attname + " == rhs." + attname + ")) return false;");
+                  }
                 break;
 
               case SISO_ENUM:

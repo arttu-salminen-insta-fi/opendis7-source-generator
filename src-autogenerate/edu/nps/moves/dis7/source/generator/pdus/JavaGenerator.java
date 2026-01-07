@@ -807,9 +807,9 @@ public class JavaGenerator extends AbstractGenerator
             .append("        throw new IllegalArgumentException(\"Illegal timestamp seconds value: \" + newTimestampSeconds);\n")
             .append("    }\n")
             .append("    double fractionOfHour = newTimestampSeconds / (double) 3600.0;\n")
-            .append("    int timestampBits = (int) (fractionOfHour * Integer.MAX_VALUE);\n")
+            .append("    int timestampBits = ((int) (fractionOfHour * Integer.MAX_VALUE)) << 1;\n")
             .append("    if (absoluteTime) {\n")
-            .append("        timestampBits |= (1 << 31);\n")
+            .append("        timestampBits |= 1;\n")
             .append("    }\n")
             .append("    timestamp = UnsignedInteger.fromIntBits(timestampBits);\n")
             .append("    return this;\n")
@@ -822,8 +822,7 @@ public class JavaGenerator extends AbstractGenerator
             .append("  * @return fractional timestamp past hour */\n")
             .append("public double getTimestampSeconds()\n")
             .append("{\n")
-            .append("    int timestampBits = timestamp.intValue();\n")
-            .append("    timestampBits &= Integer.MAX_VALUE;\n")
+            .append("    int timestampBits = timestamp.intValue() >>> 1;\n")
             .append("    double frac = (double) timestampBits / Integer.MAX_VALUE;\n")
             .append("    return frac * 3600.0;\n")
             .append("}\n")
@@ -832,7 +831,7 @@ public class JavaGenerator extends AbstractGenerator
             .append(" * Utility check if timestamp is absolute\n")
             .append(" */\n")
             .append("    public boolean isAbsoluteTimestamp() {\n")
-            .append("        return timestamp.intValue() < 0;\n")
+            .append("        return (timestamp.intValue() & 1) != 0;\n")
             .append("    }\n");
 
         pw.println(utilitySourceCodeBlock.toString());

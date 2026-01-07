@@ -380,7 +380,7 @@ dB and RPM)"/>
            comment="Time measurements that exceed one hour are represented by this record. The first field is the hours since the unix epoch (Jan 1 1970, used by most Unix systems and java) and the second field the timestamp units since the top of the hour. Section 6.2.14">
 
         <attribute name="hour" comment="Hours in UTC">
-            <primitive type="uint32"/>
+            <primitive type="int32"/>
         </attribute>
 
         <attribute name="timePastHour" comment="Time past the hour">
@@ -1395,7 +1395,7 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="fixedDatumValue" comment="Value for the fixed datum">
-            <primitive type="uint32" encodedBy="fixedDatumID"/>
+            <primitive type="int32" encodedBy="fixedDatumID"/>
         </attribute>
 
     </class>

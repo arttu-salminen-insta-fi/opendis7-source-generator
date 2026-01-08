@@ -92,7 +92,6 @@
    * Provide simple identifier
    * @return class name, value and name
    */
-    @Override
     public String toPrettyString()
     {
         String padding = new String();

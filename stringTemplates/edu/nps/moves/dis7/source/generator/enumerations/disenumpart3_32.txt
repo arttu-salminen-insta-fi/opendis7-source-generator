@@ -56,7 +56,7 @@
     }
     
     @Override
-    public String toString()
+    public String toPrettyString()
     {
         return "%s: " + getValue() + " " + name();
     }

@@ -1412,7 +1412,17 @@ dB and RPM)"/>
         </attribute>
 
         <attribute name="informationLayers" comment="eight boolean fields">
-            <primitive type="uint8"/>
+            <primitive type="uint8">
+                <bitfield>
+                    <element name="layer1" position="1" length="1"/>
+                    <element name="layer2" position="2" length="1"/>
+                    <element name="layer3" position="3" length="1"/>
+                    <element name="layer4" position="4" length="1"/>
+                    <element name="layer5" position="5" length="1"/>
+                    <element name="layer6" position="6" length="1"/>
+                    <element name="layer7" position="7" length="1"/>
+                </bitfield>
+            </primitive>
         </attribute>
 
         <attribute name="dataField2" comment="enumeration">
@@ -2063,7 +2073,13 @@ dB and RPM)"/>
 
         <attribute name="spreadSpectrum"
                    comment="This field shall indicate the spread spectrum technique or combination of spread spectrum techniques in use. Bit field. 0=freq hopping, 1=psuedo noise, time hopping=2, reamining bits unused">
-            <primitive type="uint16"/>
+            <primitive type="uint16">
+                <bitfield>
+                    <element name="frequencyHopping" position="0" length="1"/>
+                    <element name="pseudoNoise" position="1" length="1"/>
+                    <element name="timeHopping" position="2" length="1"/>
+                </bitfield>
+            </primitive>
         </attribute>
 
         <attribute name="majorModulation" comment="The major classification of the modulation type. ">

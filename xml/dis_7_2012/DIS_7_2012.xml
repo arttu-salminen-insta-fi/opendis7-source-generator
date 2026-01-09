@@ -2072,7 +2072,7 @@ dB and RPM)"/>
 
         <attribute name="detail"
                    comment="provide certain detailed information depending upon the major modulation type, uid 156-162">
-            <primitive type="uint16"/>
+            <primitive type="uint16" encodedBy="majorModulation"/>
         </attribute>
 
         <attribute name="radioSystem"

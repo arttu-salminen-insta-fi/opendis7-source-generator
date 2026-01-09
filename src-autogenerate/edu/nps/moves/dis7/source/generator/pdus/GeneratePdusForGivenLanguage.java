@@ -61,6 +61,7 @@ public class GeneratePdusForGivenLanguage  // TODO rename? perhaps GeneratePdusB
     /** String constant */ public static final String PRIMITIVELIST = "primitivelist";
     /** String constant */ public static final String OBJECTLIST = "objectlist";
     /** String constant */ public static final String LENGTH = "length";
+    /** String constant */ public static final String POSITION = "position";
     /** String constant */ public static final String FIXEDLENGTH = "fixedlength";
     /** String constant */ public static final String COULDBESTRING = "couldbestring";
     /** String constant */ public static final String TRUE = "true";
@@ -82,7 +83,8 @@ public class GeneratePdusForGivenLanguage  // TODO rename? perhaps GeneratePdusB
     /** String constant */ public static final String FLAG = "flag";
     /** String constant */ public static final String MASK = "mask";
     /** String constant */ public static final String STATICIVAR = "staticivar";
-    
+    /** String constant */ public static final String BITFIELDELEMENT = "bitfieldelement";
+
     /** Contains the database of all the classes described by the XML document */
     protected Map<String, GeneratedClass> generatedClassNames = new HashMap<>();
     
@@ -485,15 +487,18 @@ public class GeneratePdusForGivenLanguage  // TODO rename? perhaps GeneratePdusB
                     break;
                     
                 case STATICIVAR:
-                    handleStaticIvar(attributes);
-                    break;
-                    
+                    throw new RuntimeException("'staticivar' not supported");
+
                 case OBJECTLIST:
                     handleObjectList(attributes);
                     break;
 
                 case PRIMITIVELIST:
                     handlePrimitiveList(attributes);
+                    break;
+
+                case BITFIELDELEMENT:
+                    handleBitfieldElement(attributes);
                     break;
             }
         } // end of startElement
@@ -618,21 +623,6 @@ public class GeneratePdusForGivenLanguage  // TODO rename? perhaps GeneratePdusB
                         
                     case ABSTRACT:
                         currentGeneratedClass.setAbstract(attributes.getValue(idx));
-                        break;
-                }
-            }
-        }
-        
-        private void handleStaticIvar(Attributes attributes)
-        {
-            currentClassAttribute.setAttributeKind(GeneratedClassAttribute.ClassAttributeType.STATIC_IVAR);
-            for (int idx = 0; idx < attributes.getLength(); idx++) {
-                switch (attributes.getQName(idx).toLowerCase()) {
-                    case TYPE:
-                        currentClassAttribute.setType(attributes.getValue(idx));
-                        break;
-                    case VALUE:
-                        currentClassAttribute.setDefaultValue(attributes.getValue(idx));
                         break;
                 }
             }
@@ -891,6 +881,27 @@ public class GeneratePdusForGivenLanguage  // TODO rename? perhaps GeneratePdusB
                     break;
               }
             }
+        }
+
+        private void handleBitfieldElement(Attributes attributes) {
+            GeneratedBitFieldElement element = new GeneratedBitFieldElement();
+
+            for (int idx = 0; idx < attributes.getLength(); idx++) {
+                String attributeName = attributes.getQName(idx).toLowerCase();
+                switch (attributeName.toLowerCase()) {
+                    case NAME:
+                        element.setName(attributes.getValue(idx));
+                        break;
+                    case POSITION:
+                        element.setPosition(Integer.parseInt(attributes.getValue(idx)));
+                        break;
+                    case LENGTH:
+                        element.setLength(Integer.parseInt(attributes.getValue(idx)));
+                        break;
+                }
+            }
+
+            currentGeneratedClass.addBitFieldElement(element);
         }
     }
 }

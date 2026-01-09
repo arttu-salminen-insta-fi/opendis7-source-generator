@@ -24,6 +24,8 @@ public class GeneratedClass
     
     /** A list of attribute names and initial values for those attributes. */
     protected List<GeneratedInitialValue> initialValues = new ArrayList<>();
+
+    protected List<GeneratedBitFieldElement> bitFieldElements = new ArrayList<>();
     
     /** comments for this generated class */
     private String comment;
@@ -136,7 +138,15 @@ public class GeneratedClass
     {
         return initialValues;
     }
-    
+
+    public List<GeneratedBitFieldElement> getBitFieldElements() {
+        return bitFieldElements;
+    }
+
+    public void addBitFieldElement(GeneratedBitFieldElement bitFieldElement) {
+        this.bitFieldElements.add(bitFieldElement);
+    }
+
     /** Set the comments associated with this class
      * @param comments of interest */
     public void setComment(String comments)

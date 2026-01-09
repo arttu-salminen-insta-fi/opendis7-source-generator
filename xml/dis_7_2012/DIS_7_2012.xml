@@ -452,40 +452,19 @@ dB and RPM)"/>
            comment="identify which of the optional data fields are contained in the Minefield Data PDU or requested in the Minefield Query PDU. This is a 32-bit record. For each field, true denotes that the data is requested or present and false denotes that the data is neither requested nor present. Section 6.2.16">
 
         <attribute name="bitFlags" comment="Bitflags field">
-            <primitive type="uint32" comment="Bit flags for fields"/>
-        </attribute>
-        <attribute name="GROUND_BURIAL_DEPTH_OFFSET_BIT">
-            <staticivar type="uint32" value="0"/>
-        </attribute>
-        <attribute name="WATER_BURIAL_DEPTH_OFFSET_BIT">
-            <staticivar type="uint32" value="1"/>
-        </attribute>
-        <attribute name="SNOW_BURIAL_DEPTH_OFFSET_BIT">
-            <staticivar type="uint32" value="2"/>
-        </attribute>
-        <attribute name="MINE_ORIENTATION_BIT">
-            <staticivar type="uint32" value="3"/>
-        </attribute>
-        <attribute name="THERMAL_CONSTRAST_BIT">
-            <staticivar type="uint32" value="4"/>
-        </attribute>
-        <attribute name="REFLECTANCE_BIT">
-            <staticivar type="uint32" value="5"/>
-        </attribute>
-        <attribute name="MINE_EMPLACEMENT_TIME_BIT">
-            <staticivar type="uint32" value="6"/>
-        </attribute>
-        <attribute name="TRIP_DETONATION_WIRE_BIT">
-            <staticivar type="uint32" value="7"/>
-        </attribute>
-        <attribute name="FUSING_BIT">
-            <staticivar type="uint32" value="8"/>
-        </attribute>
-        <attribute name="SCALAR_DETECTION_COEFFICIENT_BIT">
-            <staticivar type="uint32" value="9"/>
-        </attribute>
-        <attribute name="PAINT_SCHEME_BIT">
-            <staticivar type="uint32" value="10"/>
+            <primitive type="uint32" comment="Bit flags for fields">
+                <bitfieldelement name="GroundBurialDepthOffset" length="1" position="0"/>
+                <bitfieldelement name="WaterBurialDepthOffset" length="1" position="1"/>
+                <bitfieldelement name="SnowBurialDepthOffset" length="1" position="2"/>
+                <bitfieldelement name="MineOrientation" length="1" position="3"/>
+                <bitfieldelement name="ThermalContrast" length="1" position="4"/>
+                <bitfieldelement name="Reflectance" length="1" position="5"/>
+                <bitfieldelement name="MineEmplacementTime" length="1" position="6"/>
+                <bitfieldelement name="TripDetonationWire" length="1" position="7"/>
+                <bitfieldelement name="Fusing" length="1" position="8"/>
+                <bitfieldelement name="ScalarDetectionCoefficient" length="1" position="9"/>
+                <bitfieldelement name="PaintScheme" length="1" position="10"/>
+            </primitive>
         </attribute>
     </class>
 
@@ -1411,18 +1390,8 @@ dB and RPM)"/>
             <primitive type="uint8" encodedBy="systemType"/>
         </attribute>
 
-        <attribute name="informationLayers" comment="eight boolean fields">
-            <primitive type="uint8">
-                <bitfield>
-                    <element name="layer1" position="1" length="1"/>
-                    <element name="layer2" position="2" length="1"/>
-                    <element name="layer3" position="3" length="1"/>
-                    <element name="layer4" position="4" length="1"/>
-                    <element name="layer5" position="5" length="1"/>
-                    <element name="layer6" position="6" length="1"/>
-                    <element name="layer7" position="7" length="1"/>
-                </bitfield>
-            </primitive>
+        <attribute name="informationLayers" comment="Indicators for Layers 1-7. Indicates Presence (Layer 1) or Applicability (Layer 5)">
+            <classRef name="InformationLayersRecord"/>
         </attribute>
 
         <attribute name="dataField2" comment="enumeration">
@@ -1453,6 +1422,20 @@ dB and RPM)"/>
             <primitive type="uint16" encodedBy="systemType"/>
         </attribute>
 
+    </class>
+
+    <class name="InformationLayersRecord" inheritsFrom="root" comment="Indicators for Layers 1-7 Presence (Layer 1) or Applicability (Layer 5). Section 6.2.45">
+        <attribute name="bitfield" comment="boolean fields">
+            <primitive type="uint8">
+                <bitfieldelement name="layer1" position="1" length="1"/>
+                <bitfieldelement name="layer2" position="2" length="1"/>
+                <bitfieldelement name="layer3" position="3" length="1"/>
+                <bitfieldelement name="layer4" position="4" length="1"/>
+                <bitfieldelement name="layer5" position="5" length="1"/>
+                <bitfieldelement name="layer6" position="6" length="1"/>
+                <bitfieldelement name="layer7" position="7" length="1"/>
+            </primitive>
+        </attribute>
     </class>
 
     <class name="GridAxisDescriptor" inheritsFrom="root"
@@ -2073,13 +2056,7 @@ dB and RPM)"/>
 
         <attribute name="spreadSpectrum"
                    comment="This field shall indicate the spread spectrum technique or combination of spread spectrum techniques in use. Bit field. 0=freq hopping, 1=psuedo noise, time hopping=2, reamining bits unused">
-            <primitive type="uint16">
-                <bitfield>
-                    <element name="frequencyHopping" position="0" length="1"/>
-                    <element name="pseudoNoise" position="1" length="1"/>
-                    <element name="timeHopping" position="2" length="1"/>
-                </bitfield>
-            </primitive>
+            <classRef name="SpreadSpectrum"/>
         </attribute>
 
         <attribute name="majorModulation" comment="The major classification of the modulation type. ">
@@ -2096,6 +2073,16 @@ dB and RPM)"/>
             <sisoenum type="TransmitterModulationTypeSystem" uid="163" comment="uid =163"/>
         </attribute>
 
+    </class>
+
+    <class name="SpreadSpectrum" inheritsFrom="root" comment="Spread spectrom technique or combination of techniques. Section 6.2.59.a">
+        <attribute name="bitfield" comment="Raw bitfield">
+            <primitive type="uint16">
+                <bitfieldelement name="frequencyHopping" position="0" length="1"/>
+                <bitfieldelement name="pseudoNoise" position="1" length="1"/>
+                <bitfieldelement name="timeHopping" position="2" length="1"/>
+            </primitive>
+        </attribute>
     </class>
 
     <class name="Munition" inheritsFrom="root"

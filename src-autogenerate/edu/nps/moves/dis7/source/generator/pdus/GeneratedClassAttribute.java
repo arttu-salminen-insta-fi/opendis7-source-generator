@@ -46,9 +46,7 @@ public class GeneratedClassAttribute // TODO consider refactor renaming as Gener
         /** attribute property */
         PADTO32,
         /** attribute property */
-        PADTO64,
-        /** attribute property */
-        STATIC_IVAR };
+        PADTO64 };
     
     /** Name of this attribute, winds up as the ivar name */
     protected String name;

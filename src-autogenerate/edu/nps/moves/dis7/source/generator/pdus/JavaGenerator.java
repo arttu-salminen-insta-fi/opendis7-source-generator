@@ -738,6 +738,9 @@ public class JavaGenerator extends AbstractGenerator
                 writeIFFPduSpecificVariables(pw);
                 pw.flush();
             }
+            pw.flush();
+            writeBitFieldElements(pw, aClass);
+            pw.flush();
             writeConstructor(pw, aClass);
             pw.flush();
             writeCopyMethods(pw, aClass);
@@ -1177,15 +1180,6 @@ public class JavaGenerator extends AbstractGenerator
             String fieldaccess = "protected"; // allow subclassing anAttribute.isHidden()? "private":"protected";
 
             switch (anAttribute.attributeKind) {
-                case STATIC_IVAR:
-                    //if (anAttribute.getAttributeKind() == GeneratedClassAttribute.ClassAttributeType.STATIC_IVAR) {
-                    attributeType = primitiveInternalTypes.getProperty(anAttribute.getType());
-                    String value = anAttribute.getDefaultValue();
-                    pw.print  ("   /** Default static instance variable */\n");
-                    pw.print  ("   public static " + attributeType + "  " + anAttribute.getName());
-                    pw.println(" = " + defaultPrimitiveValueInitialization(anAttribute.getType(), value) + ";");
-                    break;
-
                     // This attribute is a primitive.
                 case PRIMITIVE:
                     // The primitive type--we need to do a lookup from the abstract type in the
@@ -2038,7 +2032,7 @@ public class JavaGenerator extends AbstractGenerator
                 		pw.println("        uPosition += " + attributeName + ".unmarshal(dis);");
                 	}
                 	if (aClass.getName().equals("IFFPdu") && anAttribute.getName().equals("fundamentalParameters")) {
-                    	pw.println("        if (fundamentalParameters.getInformationLayers() != 0)");
+                    	pw.println("        if (fundamentalParameters.getInformationLayers().getBitfield() != 0)");
                     	pw.println("        	checkWhichLayersNeedsUnmarshaling();");
                     }
                     break;
@@ -2343,7 +2337,7 @@ public class JavaGenerator extends AbstractGenerator
                 		pw.println("        " + anAttribute.getName() + ".unmarshal(byteBuffer);" );
                 	}
                 	if (aClass.getName().equals("IFFPdu") && anAttribute.getName().equals("fundamentalParameters")) {
-                    	pw.println("        if (fundamentalParameters.getInformationLayers() != 0)");
+                    	pw.println("        if (fundamentalParameters.getInformationLayers().getBitfield() != 0)");
                     	pw.println("        	checkWhichLayersNeedsUnmarshaling();");
                     }
                     break;
@@ -2489,7 +2483,7 @@ public class JavaGenerator extends AbstractGenerator
                         pw.println("    map.put(\"" + anAttribute.getName() + "\", " + anAttribute.getType() + ".fromBufferToMap(byteBuffer));" );
                     }
                     if (aClass.getName().equals("IFFPdu") && anAttribute.getName().equals("fundamentalParameters")) {
-                        pw.println("    if (((Number) ((PduMap) map.get(\"fundamentalParameters\")).get(\"informationLayers\")).byteValue() != 0)");
+                        pw.println("    if (((Number) ((PduMap) ((PduMap) map.get(\"fundamentalParameters\")).get(\"informationLayers\")).get(\"bitfield\")).byteValue() != 0)");
                         pw.println("        initLayerKeys(map);");
                     }
                     break;
@@ -3150,7 +3144,7 @@ public class JavaGenerator extends AbstractGenerator
     	pw.println("");
     	pw.println(" /** Does not initialize iFFPduLayerFormatDatas if systemID.getSystemType contains both transponder and interrogator, you need to choose one.*/");
     	pw.println(" private void checkWhichLayersNeedsUnmarshaling() {");
-    	pw.println("	 int informationLayers = fundamentalParameters.getInformationLayers();\n");
+    	pw.println("	 int informationLayers = fundamentalParameters.getInformationLayers().getBitfield();\n");
     	for (int i = 2; i < 8; i++) {
     		if (i == 2 || i == 5) {
     	    	pw.println("	 if (((informationLayers & 1 << LAYER_DATA_"+ i +"_BIT_INDEX) > 0)) {");
@@ -3175,7 +3169,7 @@ public class JavaGenerator extends AbstractGenerator
     private void writeInitLayerKeys(PrintWriter pw) {
         pw.println(" /** Does not initialize iFFPduLayerFormatDatas if systemID.getSystemType contains both transponder and interrogator, you need to choose one.*/");
         pw.println(" private static void initLayerKeys(PduMap map) {");
-        pw.println("	 byte informationLayers = ((Number) ((PduMap) map.get(\"fundamentalParameters\")).get(\"informationLayers\")).byteValue();");
+        pw.println("	 byte informationLayers = ((Number) ((PduMap) ((PduMap) map.get(\"fundamentalParameters\")).get(\"informationLayers\")).get(\"bitfield\")).byteValue();");
         pw.println("     IFFSystemType iffSystemType = IFFSystemType.getEnumForValue(((Number) ((PduMap) map.get(\"systemID\")).get(\"systemType\")).intValue());\n");
         for (int i = 2; i < 8; i++) {
             if (i == 2 || i == 5) {
@@ -3224,6 +3218,37 @@ public class JavaGenerator extends AbstractGenerator
         	}
         }
         pw.println(" }");
+    }
+
+    private void writeBitFieldElements(PrintWriter pw, GeneratedClass aClass) {
+        List<GeneratedBitFieldElement> elements = aClass.getBitFieldElements();
+        if (elements.isEmpty()) {
+            return;
+        }
+        pw.println(" // Bit field element helpers");
+        for (GeneratedBitFieldElement element : elements) {
+            pw.println(" public static final BitFieldElement " + generateBitFieldElementName(element.getName()) + "_BIT" +
+                    " = new BitFieldElement(" + element.getPosition() + ", " + element.getLength() + ");");
+            pw.println();
+        }
+    }
+
+    private static String generateBitFieldElementName(String xmlName) {
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < xmlName.length(); i++) {
+            char c = xmlName.charAt(i);
+
+            // If the original character is an uppercase letter, prepend '_'
+            if (Character.isUpperCase(c) && i != 0) {
+                result.append('_');
+            }
+
+            // Append the uppercase version of the character
+            result.append(Character.toUpperCase(c));
+        }
+
+        return result.toString();
     }
 
     private String fromInternalToBitRep(String attributeType, String attributeName) {

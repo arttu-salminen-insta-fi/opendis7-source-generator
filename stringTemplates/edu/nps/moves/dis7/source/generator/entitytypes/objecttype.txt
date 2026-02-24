@@ -13,5 +13,5 @@ import edu.nps.moves.dis7.enumerations.*;
 public class %s extends ObjectType
 {
     /** Default constructor */
-    public %s()
+    public %s() throws EnumNotFoundException
     {

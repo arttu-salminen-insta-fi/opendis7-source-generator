@@ -1460,7 +1460,7 @@ public class PduFactory
    * @param data an array of PDU data
    * @return A PDU of the appropriate concrete subclass of PDU or null if there was an error
    */
-  public synchronized Pdu createPdu(byte data[])
+  public synchronized Pdu createPdu(byte data[]) throws Exception
   {
     if ((data == null) || (data.length == 0))
         System.err.println ("[PduFactory] createPdu(byte data[]) received null array, unable to determine pduType");
@@ -1475,7 +1475,7 @@ public class PduFactory
    * @param byteBuffer the buffer containing PDU data to input
    * @return A PDU of the appropriate concrete subclass of PDU or null if there was an error
    */
-  public synchronized Pdu createPdu(ByteBuffer byteBuffer)
+  public synchronized Pdu createPdu(ByteBuffer byteBuffer) throws Exception
   {
     DisPduType pduType;
     
@@ -1496,7 +1496,7 @@ public class PduFactory
    * @param byteArray byte array
    * @return the DisPduType
    */
-  private DisPduType getTypeFromByteArray(byte[] byteArray)
+  private DisPduType getTypeFromByteArray(byte[] byteArray) throws EnumNotFoundException
   {
     DisPduType pduType;
     

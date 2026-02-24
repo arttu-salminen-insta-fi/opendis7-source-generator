@@ -29,7 +29,7 @@
      * @param byteBuffer ByteBuffer for input
      * @return enumeration of interest
      */
-    static %s unmarshalEnum (ByteBuffer byteBuffer) {
+    static %s unmarshalEnum (ByteBuffer byteBuffer) throws Exception{
         return getEnumForValue(byteBuffer.getInt());
     }
 

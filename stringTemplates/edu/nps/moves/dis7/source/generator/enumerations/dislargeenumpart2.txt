@@ -23,19 +23,16 @@
      * @param value integer value of interest
      * @return enumeration corresponding to numeric value
      */
-    static %s getEnumForValue(int value) {
+    static %s getEnumForValue(int value) throws EnumNotFoundException {
         int[] lastValues = {%s};
-        Function<Integer, %s>[] enumGetters = new Function[] { %s };
+        EnumGetterFunction<Integer, %s>[] enumGetters = new EnumGetterFunction[] { %s };
 
         for (int i = 0; i < lastValues.length; i++) {
             if (value <= lastValues[i]) {
                 return enumGetters[i].apply(value);
             }
         }
-        System.out.flush(); // ensure contiguous console outputs
-        System.err.println("No corresponding enumeration found for value " + value + " of enum %s");
-        System.err.flush(); // ensure contiguous console outputs
-        return null;
+        throw new EnumNotFoundException("No corresponding enumeration found for value " + value + " of enum %s");
     }
 
     /**

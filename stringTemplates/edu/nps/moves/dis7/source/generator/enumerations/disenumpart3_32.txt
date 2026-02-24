@@ -31,7 +31,7 @@
      * @see <a href="https://en.wikipedia.org/wiki/Marshalling_(computer_science)" target="_blank">https://en.wikipedia.org/wiki/Marshalling_(computer_science)</a>
      * @param byteBuffer ByteBuffer for input
      * @return enumeration of interest */
-    public static %s unmarshalEnum (ByteBuffer byteBuffer)
+    public static %s unmarshalEnum (ByteBuffer byteBuffer) throws Exception
     {
         return getEnumForValue(byteBuffer.getInt());
     }

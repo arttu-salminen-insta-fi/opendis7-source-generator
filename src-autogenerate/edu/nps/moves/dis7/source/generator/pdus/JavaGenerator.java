@@ -3168,7 +3168,7 @@ public class JavaGenerator extends AbstractGenerator
 
     private void writeInitLayerKeys(PrintWriter pw) {
         pw.println(" /** Does not initialize iFFPduLayerFormatDatas if systemID.getSystemType contains both transponder and interrogator, you need to choose one.*/");
-        pw.println(" private static void initLayerKeys(PduMap map) {");
+        pw.println(" private static void initLayerKeys(PduMap map) throws Exception {");
         pw.println("	 byte informationLayers = ((Number) ((PduMap) ((PduMap) map.get(\"fundamentalParameters\")).get(\"informationLayers\")).get(\"bitfield\")).byteValue();");
         pw.println("     IFFSystemType iffSystemType = IFFSystemType.getEnumForValue(((Number) ((PduMap) map.get(\"systemID\")).get(\"systemType\")).intValue());\n");
         for (int i = 2; i < 8; i++) {

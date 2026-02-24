@@ -38,16 +38,13 @@
      * @param value integer value of interest
      * @return enumeration corresponding to numeric value
      */
-    public static %s getEnumForValue(int value)
+    public static %s getEnumForValue(int value) throws EnumNotFoundException
     {
        for (%s nextEnum : %s.values())
        {
           if (nextEnum.getValue() == value)
               return nextEnum;
        }
-       System.out.flush(); // ensure contiguous console outputs
-       System.err.println("No corresponding enumeration found for value " + value + " of enum %s");
-       System.err.flush(); // ensure contiguous console outputs
-       return null;
+       throw new EnumNotFoundException("No corresponding enumeration found for value " + value + " of enum %s");
     }
 
